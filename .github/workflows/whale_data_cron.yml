@@ -19,5 +19,4 @@ jobs:
           python-version: '3.11'
 
       - name: Run whale tracker script
-        run: |
-          python whale_tracker.py
+        run: python whale_tracker.py
