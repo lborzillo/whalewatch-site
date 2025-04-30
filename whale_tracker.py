@@ -1,11 +1,6 @@
-import os
 import json
 from datetime import datetime
 
-# Ensure the public directory exists
-os.makedirs("public", exist_ok=True)
-
-# Simulated whale data
 whale_data = {
     "timestamp": datetime.utcnow().isoformat(),
     "whale_trades": [
@@ -14,8 +9,7 @@ whale_data = {
     ]
 }
 
-# Save to public/whales.json
-with open("public/whales.json", "w") as f:
+with open("whales.json", "w") as f:
     json.dump(whale_data, f, indent=2)
 
-print("✅ whale data saved to public/whales.json")
+print("✅ whale data saved to whales.json")
