@@ -108,5 +108,28 @@
     </p>
     <p><strong>Launching soon. Track the whales with us.</strong></p>
   </section>
+
+  <section id="whale-data" style="margin-top: 3em; max-width: 700px;">
+    <h2>Latest Whale Trades</h2>
+    <pre id="whale-output" style="text-align: left; background: #002b3f; padding: 1em; border-radius: 5px; overflow-x: auto;">
+      Loading whale data...
+    </pre>
+  </section>
+
+  <script>
+    fetch("whales.json")
+      .then(response => response.json())
+      .then(data => {
+        const output = document.getElementById("whale-output");
+        const trades = Array.isArray(data.whale_trades) ? data.whale_trades : [data];
+        output.textContent = trades.map(trade =>
+          `${trade.symbol} ${trade.type} @ $${trade.strike} exp ${trade.expiration} – Premium: $${trade.premium.toLocaleString()}`
+        ).join('\n');
+      })
+      .catch(err => {
+        document.getElementById("whale-output").textContent = "Could not load whale data.";
+        console.error(err);
+      });
+  </script>
 </body>
 </html>
