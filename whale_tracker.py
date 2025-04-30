@@ -1,29 +1,18 @@
-name: Daily Whale Tracker
+import os
+import json
+from datetime import datetime
 
-on:
-  schedule:
-    - cron: '0 12 * * *'  # Runs daily at 12:00 UTC
-  workflow_dispatch:
+os.makedirs("public", exist_ok=True)
 
-jobs:
-  run-whale-tracker:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout repo
-        uses: actions/checkout@v3
+whale_data = {
+    "timestamp": datetime.utcnow().isoformat(),
+    "whale_trades": [
+        {"symbol": "AAPL", "type": "CALL", "strike": 180, "expiration": "2025-05-17", "premium": 1500000},
+        {"symbol": "TSLA", "type": "PUT", "strike": 170, "expiration": "2025-06-21", "premium": 1100000}
+    ]
+}
 
-      - name: Set up Python
-        uses: actions/setup-python@v4
-        with:
-          python-version: '3.11'
+with open("public/whales.json", "w") as f:
+    json.dump(whale_data, f, indent=2)
 
-      - name: Run whale tracker script
-        run: python whale_tracker.py
-
-      - name: Commit and push whale data
-        run: |
-          git config user.name "GitHub Actions"
-          git config user.email "actions@github.com"
-          git add whales.json
-          git commit -m "Update whale data [auto]" || echo "No changes to commit"
-          git push
+print("✅ whale data saved to public/whales.json")
