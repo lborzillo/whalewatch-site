@@ -24,6 +24,6 @@ jobs:
         run: |
           git config user.name "GitHub Actions"
           git config user.email "actions@github.com"
-          git add public/whales.json
+          git add whales.json
           git commit -m "Update whale data [auto]" || echo "No changes to commit"
           git push
