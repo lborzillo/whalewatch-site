@@ -1,4 +1,4 @@
-name: Daily Whale Tracker
+name: Daily Whale Tracker v2
 
 on:
   schedule:
