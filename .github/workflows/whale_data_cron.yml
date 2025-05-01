@@ -6,8 +6,9 @@ on:
   workflow_dispatch:
 
 jobs:
-  build-and-deploy:
+  run-whale-tracker:
     runs-on: ubuntu-latest
+
     steps:
       - name: Checkout repo
         uses: actions/checkout@v3
@@ -23,12 +24,12 @@ jobs:
       - name: Copy static files into public
         run: |
           cp index.html public/
-          cp favicon.ico public/ || true  # optional if you have favicon
+          cp favicon.ico public/ || true  # optional
 
-            - name: Debug check public contents 
-            run: |
+      - name: Debug check public contents
+        run: |
           echo "Listing contents of public/"
-          ls -al public
+          ls -al public/
 
       - name: Deploy to gh-pages
         uses: peaceiris/actions-gh-pages@v3
