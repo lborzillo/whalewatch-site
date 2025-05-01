@@ -8,6 +8,7 @@ on:
 jobs:
   run-whale-tracker-v3:
     runs-on: ubuntu-latest
+
     steps:
       - name: Checkout repo
         uses: actions/checkout@v3
@@ -18,19 +19,17 @@ jobs:
           python-version: '3.11'
 
       - name: Run whale tracker script
+        run: python whale_tracker.py
+
+      - name: Debug: list files in public
         run: |
-          python whale_tracker.py
-          echo "✅ Finished running whale_tracker.py"
+          echo "Contents of public/"
+          ls -al public/
 
       - name: Copy static files into public
         run: |
           cp index.html public/
           cp favicon.ico public/ || true  # optional favicon
-
-      - name: Debug check public contents
-        run: |
-          echo "Listing contents of public/"
-          ls -al public/
 
       - name: Deploy to gh-pages
         uses: peaceiris/actions-gh-pages@v3
