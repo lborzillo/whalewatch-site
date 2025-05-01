@@ -12,7 +12,7 @@ jobs:
       - name: Checkout repo
         uses: actions/checkout@v3
         with:
-          fetch-depth: 0  # Important to fetch all commits and branches
+          ref: main  # 🔥 important! checkout the branch
 
       - name: Set up Python
         uses: actions/setup-python@v4
@@ -26,7 +26,6 @@ jobs:
         run: |
           git config user.name "GitHub Actions"
           git config user.email "actions@github.com"
-          git pull origin main
           git add public/whales.json
           git commit -m "Update whale data [auto]" || echo "No changes to commit"
-          git push origin HEAD:main  # 🟢 fixes detached HEAD push
+          git push origin HEAD:main  # 🔥 explicit push to main
