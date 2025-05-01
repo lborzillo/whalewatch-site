@@ -12,7 +12,7 @@ jobs:
       - name: Checkout repo
         uses: actions/checkout@v3
         with:
-          ref: main  # 👈 CRITICAL: checkout main branch explicitly
+          ref: main  # 🟢 critical!
 
       - name: Set up Python
         uses: actions/setup-python@v4
@@ -28,4 +28,4 @@ jobs:
           git config user.email "actions@github.com"
           git add public/whales.json
           git commit -m "Update whale data [auto]" || echo "No changes to commit"
-          git push origin HEAD:main  # 👈 CRITICAL: force push to main
+          git push origin HEAD:main  # 🟢 critical push target
