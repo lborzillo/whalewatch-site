@@ -6,7 +6,7 @@ on:
   workflow_dispatch:
 
 jobs:
-  run-whale-tracker:
+  run-whale-tracker-v3:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repo
