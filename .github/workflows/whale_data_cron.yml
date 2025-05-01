@@ -24,7 +24,7 @@ jobs:
       - name: Copy static files into public
         run: |
           cp index.html public/
-          cp favicon.ico public/ || true
+          cp favicon.ico public/ || true  # optional favicon
 
       - name: Debug check public contents
         run: |
