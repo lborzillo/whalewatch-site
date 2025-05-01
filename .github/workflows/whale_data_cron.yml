@@ -8,7 +8,6 @@ on:
 jobs:
   run-whale-tracker:
     runs-on: ubuntu-latest
-
     steps:
       - name: Checkout repo
         uses: actions/checkout@v3
