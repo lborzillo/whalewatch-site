@@ -20,23 +20,10 @@ jobs:
       - name: Run whale tracker script
         run: python whale_tracker.py
 
-      - name: Debug check files
-        run: |
-          echo "Listing repo root contents:"
-          ls -al
-          echo "Showing git status:"
-          git status
-
       - name: Commit whale data
         run: |
           git config user.name "GitHub Actions"
           git config user.email "actions@github.com"
-          git add whales.json
-          git status  # extra check after git add
+          git add public/whales.json
           git commit -m "Update whale data [auto]" || echo "No changes to commit"
-          git push
-
-      - name: Force GitHub Pages rebuild
-        run: |
-          git commit --allow-empty -m "Trigger GitHub Pages rebuild"
           git push
