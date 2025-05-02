@@ -1,60 +1,40 @@
-import json
-import requests
-from datetime import datetime
-import random
-import os
+name: Daily Whale Tracker
 
-symbol = "AAPL"
-url = f"https://query2.finance.yahoo.com/v7/finance/options/{symbol}"
+on:
+  schedule:
+    - cron: '0 12 * * *'  # Runs daily at 12:00 UTC
+  workflow_dispatch:
 
-headers = {"User-Agent": "Mozilla/5.0"}  # <- FIX: Yahoo blocks requests without this
-response = requests.get(url, headers=headers)
+permissions:
+  contents: write  # ✅ Allow write access to push commits
 
-try:
-    data = response.json()
-except json.JSONDecodeError:
-    print("❌ Failed to parse JSON. Response content:")
-    print(response.text)
-    raise
+jobs:
+  run-whale-tracker:
+    runs-on: ubuntu-latest
 
-options = data.get("optionChain", {}).get("result", [{}])[0]
-calls = options.get("options", [{}])[0].get("calls", [])
-puts = options.get("options", [{}])[0].get("puts", [])
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v3
+        with:
+          persist-credentials: false  # ✅ prevent using default token
+          
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
 
-whale_trades = []
+      - name: Install dependencies
+        run: pip install requests
 
-if calls:
-    call = random.choice(calls)
-    whale_trades.append({
-        "symbol": symbol,
-        "type": "CALL",
-        "strike": call["strike"],
-        "expiration": datetime.utcfromtimestamp(call["expirationDate"]).isoformat(),
-        "premium": call.get("ask", 0) * 100  # estimate per contract
-    })
+      - name: Run whale tracker script
+        run: python whale_tracker.py
 
-if puts:
-    put = random.choice(puts)
-    whale_trades.append({
-        "symbol": symbol,
-        "type": "PUT",
-        "strike": put["strike"],
-        "expiration": datetime.utcfromtimestamp(put["expirationDate"]).isoformat(),
-        "premium": put.get("ask", 0) * 100
-    })
-
-whale_data = {
-    "timestamp": datetime.utcnow().isoformat(),
-    "build_time": datetime.utcnow().isoformat(),
-    "whale_trades": whale_trades
-}
-
-# ✅ Ensure writing to repo root in GitHub Actions
-repo_dir = os.environ.get("GITHUB_WORKSPACE", os.getcwd())
-output_path = os.path.join(repo_dir, "whales.json")
-
-with open(output_path, "w") as f:
-    json.dump(whale_data, f, indent=2)
-
-print(f"✅ Whale data saved to {output_path}")
-print(json.dumps(whale_data, indent=2))
+      - name: Commit updated whales.json
+        run: |
+          git config user.name "github-actions"
+          git config user.email "github-actions@github.com"
+          git add whales.json
+          git commit -m "Update whales.json with live data" || echo "No changes to commit"
+          git push
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # ✅ use GitHub-provided token
