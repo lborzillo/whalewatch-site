@@ -5,40 +5,51 @@ import random
 import os
 
 symbol = "AAPL"
-url = f"https://query2.finance.yahoo.com/v7/finance/options/{symbol}"
+api_key = os.environ.get("ALPHA_VANTAGE_API_KEY")  # get API key from environment
 
-headers = {"User-Agent": "Mozilla/5.0"}  # ✅ add User-Agent header
-response = requests.get(url, headers=headers)
-response.raise_for_status()  # ✅ fail fast if HTTP error
+if not api_key:
+    raise ValueError("ALPHA_VANTAGE_API_KEY not found in environment variables")
+
+url = f"https://www.alphavantage.co/query?function=OPTION_CHAIN&symbol={symbol}&apikey={api_key}"
+
+response = requests.get(url)
+response.raise_for_status()
+
 data = response.json()
 
-options = data.get("optionChain", {}).get("result", [{}])[0]
-calls = options.get("options", [{}])[0].get("calls", [])
-puts = options.get("options", [{}])[0].get("puts", [])
+if "optionChain" not in data or "options" not in data["optionChain"]:
+    print("❌ Unexpected API response:")
+    print(json.dumps(data, indent=2))
+    raise ValueError("Invalid response from Alpha Vantage API")
+
+options = data["optionChain"]["options"]
 
 whale_trades = []
 
-# Pick a random call (if available)
-if calls:
-    call = random.choice(calls)
-    whale_trades.append({
-        "symbol": symbol,
-        "type": "CALL",
-        "strike": call["strike"],
-        "expiration": call["expirationDate"],
-        "premium": call.get("ask", 0) * 100  # simple estimate
-    })
+# Example: Pick a random call/put from the first expiry
+if options:
+    calls = options[0].get("calls", [])
+    puts = options[0].get("puts", [])
 
-# Pick a random put (if available)
-if puts:
-    put = random.choice(puts)
-    whale_trades.append({
-        "symbol": symbol,
-        "type": "PUT",
-        "strike": put["strike"],
-        "expiration": put["expirationDate"],
-        "premium": put.get("ask", 0) * 100
-    })
+    if calls:
+        call = random.choice(calls)
+        whale_trades.append({
+            "symbol": symbol,
+            "type": "CALL",
+            "strike": call.get("strikePrice"),
+            "expiration": call.get("expirationDate"),
+            "premium": call.get("askPrice", 0) * 100
+        })
+
+    if puts:
+        put = random.choice(puts)
+        whale_trades.append({
+            "symbol": symbol,
+            "type": "PUT",
+            "strike": put.get("strikePrice"),
+            "expiration": put.get("expirationDate"),
+            "premium": put.get("askPrice", 0) * 100
+        })
 
 whale_data = {
     "timestamp": datetime.utcnow().isoformat(),
@@ -51,5 +62,5 @@ output_path = os.path.join(repo_dir, "whales.json")
 with open(output_path, "w") as f:
     json.dump(whale_data, f, indent=2)
 
-print(f"✅ Live whale data saved to {output_path}")
+print(f"✅ Whale data saved to {output_path}")
 print(json.dumps(whale_data, indent=2))
