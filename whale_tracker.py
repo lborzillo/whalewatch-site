@@ -7,7 +7,9 @@ import os
 symbol = "AAPL"
 url = f"https://query2.finance.yahoo.com/v7/finance/options/{symbol}"
 
-response = requests.get(url)
+headers = {"User-Agent": "Mozilla/5.0"}  # ✅ add User-Agent header
+response = requests.get(url, headers=headers)
+response.raise_for_status()  # ✅ fail fast if HTTP error
 data = response.json()
 
 options = data.get("optionChain", {}).get("result", [{}])[0]
@@ -43,7 +45,6 @@ whale_data = {
     "whale_trades": whale_trades
 }
 
-# ✅ Write to GitHub Actions workspace directory (repo root)
 repo_dir = os.environ.get("GITHUB_WORKSPACE", os.getcwd())
 output_path = os.path.join(repo_dir, "whales.json")
 
