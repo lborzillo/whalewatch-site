@@ -2,6 +2,7 @@ import json
 import requests
 from datetime import datetime
 import random
+import os
 
 symbol = "AAPL"
 url = f"https://query2.finance.yahoo.com/v7/finance/options/{symbol}"
@@ -42,7 +43,9 @@ whale_data = {
     "whale_trades": whale_trades
 }
 
-with open("whales.json", "w") as f:
+# ✅ Write output explicitly inside the repo folder GitHub Action checks out
+output_path = os.path.join(os.getcwd(), "whales.json")
+with open(output_path, "w") as f:
     json.dump(whale_data, f, indent=2)
 
-print("✅ Live whale data saved to whales.json")
+print(f"✅ Live whale data saved to {output_path}")
