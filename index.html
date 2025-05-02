@@ -72,6 +72,17 @@
     tr:last-child td {
       border-bottom: none;
     }
+    #insight-box {
+      margin-top: 2em;
+      max-width: 700px;
+      background: #002b3f;
+      padding: 1em;
+      border-radius: 5px;
+      text-align: left;
+    }
+    #insight-box h2 {
+      margin-top: 0;
+    }
   </style>
 </head>
 <body>
@@ -123,12 +134,20 @@
     </table>
   </section>
 
+  <section id="insight-box">
+    <h2>AI Insight</h2>
+    <p id="insight-text">Generating insight...</p>
+  </section>
+
   <script>
     fetch("whales.json")
       .then(response => response.json())
       .then(data => {
         const tbody = document.getElementById("whale-rows");
+        const insightText = document.getElementById("insight-text");
         const trades = Array.isArray(data.whale_trades) ? data.whale_trades : [];
+
+        // Fill table
         tbody.innerHTML = trades.map(trade => `
           <tr>
             <td>${trade.symbol}</td>
@@ -138,10 +157,21 @@
             <td>$${trade.premium.toLocaleString()}</td>
           </tr>
         `).join('');
+
+        // Generate AI Insight
+        if (trades.length > 0) {
+          const trade = trades[0]; // use first trade for now
+          const sentiment = trade.type === "CALL" ? "bullish" : "bearish";
+          insightText.textContent = `🧠 $${trade.premium.toLocaleString()} ${sentiment} bet on ${trade.symbol} placed on ${data.timestamp.substring(0,10)} for $${trade.strike} strike expiring ${trade.expiration}.`;
+        } else {
+          insightText.textContent = "No recent whale trades to analyze.";
+        }
       })
       .catch(err => {
         const tbody = document.getElementById("whale-rows");
+        const insightText = document.getElementById("insight-text");
         tbody.innerHTML = '<tr><td colspan="5">Could not load whale data.</td></tr>';
+        insightText.textContent = "Could not generate AI insight.";
         console.error(err);
       });
   </script>
