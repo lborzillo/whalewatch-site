@@ -13,7 +13,7 @@ jobs:
       - name: Checkout repo
         uses: actions/checkout@v3
         with:
-          persist-credentials: true  # ✅ key line to keep push permissions
+          persist-credentials: true  # ✅ needed for push permissions
 
       - name: Set up Python
         uses: actions/setup-python@v4
@@ -23,10 +23,13 @@ jobs:
       - name: Run whale tracker script
         run: python whale_tracker.py
 
+      - name: Debug git status
+        run: git status  # ✅ optional debug log
+
       - name: Commit updated whales.json
         run: |
           git config user.name "github-actions"
           git config user.email "github-actions@github.com"
           git add whales.json
-          git commit -m "Update whales.json with live data" || echo "No changes to commit"
+          git commit --allow-empty -m "Update whales.json with live data"
           git push
