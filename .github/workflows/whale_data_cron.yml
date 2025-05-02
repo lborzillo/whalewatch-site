@@ -1,50 +1,33 @@
-name: Daily Whale Tracker
+name: Update Whale Data
 
 on:
   schedule:
-    - cron: '0 12 * * *'  # Runs daily at 12:00 UTC
+    - cron: '0 * * * *'  # every hour
   workflow_dispatch:
 
 jobs:
-  run-whale-tracker:
+  build:
     runs-on: ubuntu-latest
+
     steps:
-      - name: Checkout repo
-        uses: actions/checkout@v3
+    - name: Checkout repo
+      uses: actions/checkout@v3
 
-      - name: Set up Python
-        uses: actions/setup-python@v4
-        with:
-          python-version: '3.11'
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.x'
 
-      - name: Run whale tracker script
-        run: python whale_tracker.py
+    - name: Install dependencies
+      run: pip install requests
 
-      - name: Debug: list files in repo
-        run: |
-          echo "Files in repo:"
-          ls -al
+    - name: Run whale tracker script
+      run: python whale_tracker.py
 
-      - name: Ensure public folder exists
-        run: mkdir -p public
-
-      - name: Debug: list files in public folder
-        run: |
-          echo "Files in public before copy:"
-          ls -al public
-
-      - name: Copy static files into public
-        run: |
-          cp index.html public/
-          cp favicon.ico public/ || true
-
-      - name: Debug: list files in public after copy
-        run: |
-          echo "Files in public after copy:"
-          ls -al public
-
-      - name: Deploy to GitHub Pages
-        uses: peaceiris/actions-gh-pages@v3
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ./public
+    - name: Commit updated whales.json
+      run: |
+        git config user.name github-actions
+        git config user.email github-actions@github.com
+        git add whales.json
+        git commit -m "Update whales.json with live data" || echo "No changes to commit"
+        git push
