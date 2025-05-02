@@ -1,0 +1,6 @@
+{
+  "timestamp": "2025-05-02T00:00:00Z",
+  "whale_trades": [
+    { "symbol": "MSFT", "type": "CALL", "strike": 300, "expiration": "2025-06-21", "premium": 2000000 }
+  ]
+}
