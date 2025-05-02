@@ -43,9 +43,12 @@ whale_data = {
     "whale_trades": whale_trades
 }
 
-# ✅ Write output explicitly inside the repo folder GitHub Action checks out
-output_path = os.path.join(os.getcwd(), "whales.json")
+# ✅ Write to the GitHub Actions workspace directory (repo root)
+repo_dir = os.environ.get("GITHUB_WORKSPACE", os.getcwd())
+output_path = os.path.join(repo_dir, "whales.json")
+
 with open(output_path, "w") as f:
     json.dump(whale_data, f, indent=2)
 
 print(f"✅ Live whale data saved to {output_path}")
+print(json.dumps(whale_data, indent=2))  # Debug print to see content in workflow logs
