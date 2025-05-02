@@ -20,7 +20,6 @@ jobs:
 
     - name: Run whale tracker script
       run: python whale_tracker.py
-
     - name: Commit updated whales.json
       run: |
         git config user.name github-actions
