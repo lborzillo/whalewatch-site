@@ -64,6 +64,18 @@
       border-radius: 5px;
       margin-top: 0.5em;
     }
+    ul.darkpool-list {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+    }
+    ul.darkpool-list li {
+      padding: 0.4em 0;
+      border-bottom: 1px solid #004060;
+    }
+    ul.darkpool-list li:last-child {
+      border-bottom: none;
+    }
   </style>
 </head>
 <body>
@@ -113,6 +125,13 @@
     <div id="risk-bar"></div>
   </section>
 
+  <section id="darkpool-box" class="panel">
+    <h2>Dark Pool Tape</h2>
+    <ul id="darkpool-list" class="darkpool-list">
+      <li>Loading dark pool prints...</li>
+    </ul>
+  </section>
+
   <script>
     fetch("whales.json")
       .then(response => response.json())
@@ -121,9 +140,10 @@
         const insightText = document.getElementById("insight-text");
         const riskText = document.getElementById("risk-text");
         const riskBar = document.getElementById("risk-bar");
+        const darkpoolList = document.getElementById("darkpool-list");
         const trades = Array.isArray(data.whale_trades) ? data.whale_trades : [];
 
-        // Fill table
+        // Table
         tbody.innerHTML = trades.map(trade => `
           <tr>
             <td>${trade.symbol}</td>
@@ -149,14 +169,24 @@
         const total = bullish + bearish;
         const percentBullish = total > 0 ? Math.round((bullish / total) * 100) : 0;
         const percentBearish = 100 - percentBullish;
-
         riskText.textContent = `Smart money is ${percentBullish}% bullish / ${percentBearish}% bearish today.`;
         riskBar.style.background = `linear-gradient(to right, #00ff88 0%, #00ff88 ${percentBullish}%, #ff0044 ${percentBullish}%, #ff0044 100%)`;
+
+        // Dark Pool Tape (show all PUT trades for demo)
+        const darkpoolTrades = trades.filter(t => t.type === "PUT");
+        if (darkpoolTrades.length > 0) {
+          darkpoolList.innerHTML = darkpoolTrades.map(t => `
+            <li>🐋 ${t.symbol} PUT @ $${t.strike} exp ${t.expiration} – $${t.premium.toLocaleString()}</li>
+          `).join('');
+        } else {
+          darkpoolList.innerHTML = "<li>No recent dark pool prints over $1M.</li>";
+        }
       })
       .catch(err => {
         document.getElementById("whale-rows").innerHTML = '<tr><td colspan="5">Could not load whale data.</td></tr>';
         document.getElementById("insight-text").textContent = "Could not generate AI insight.";
         document.getElementById("risk-text").textContent = "Could not calculate risk meter.";
+        document.getElementById("darkpool-list").innerHTML = "<li>Could not load dark pool tape.</li>";
         console.error(err);
       });
   </script>
