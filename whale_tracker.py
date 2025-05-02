@@ -43,6 +43,9 @@ whale_data = {
     "whale_trades": whale_trades
 }
 
+# ✅ Inject a unique timestamp to guarantee JSON changes every run
+whale_data["_build_time"] = datetime.utcnow().isoformat()
+
 # ✅ Write to the GitHub Actions workspace directory (repo root)
 repo_dir = os.environ.get("GITHUB_WORKSPACE", os.getcwd())
 output_path = os.path.join(repo_dir, "whales.json")
