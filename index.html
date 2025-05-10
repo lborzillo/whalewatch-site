@@ -38,7 +38,7 @@
     p.subtext { font-size: 1.1rem; max-width: 750px; margin-top: 1.2em; line-height: 1.5; }
     table {
       width: 100%;
-      max-width: 700px;
+      max-width: 800px;
       border-collapse: collapse;
       margin-top: 2em;
       background-color: #002b3f;
@@ -50,7 +50,7 @@
     tr:last-child td { border-bottom: none; }
     section.panel {
       margin-top: 2em;
-      max-width: 700px;
+      max-width: 800px;
       background: #002b3f;
       padding: 1em;
       border-radius: 5px;
@@ -106,10 +106,18 @@
     <h2>Latest Whale Trades</h2>
     <table>
       <thead>
-        <tr><th>Symbol</th><th>Type</th><th>Strike</th><th>Expiration</th><th>Premium</th></tr>
+        <tr>
+          <th>Symbol</th>
+          <th>Type</th>
+          <th>Strike</th>
+          <th>Expiration</th>
+          <th>Premium</th>
+          <th>OI</th>
+          <th>Last Price</th>
+        </tr>
       </thead>
       <tbody id="whale-rows">
-        <tr><td colspan="5">Loading whale data...</td></tr>
+        <tr><td colspan="7">Loading whale data...</td></tr>
       </tbody>
     </table>
   </section>
@@ -154,6 +162,8 @@
             <td>$${trade.strike}</td>
             <td>${trade.expiration}</td>
             <td>$${trade.premium.toLocaleString()}</td>
+            <td>${trade.open_interest.toLocaleString()}</td>
+            <td>$${trade.last_price}</td>
           </tr>
         `).join('');
 
@@ -179,14 +189,14 @@
         const megaWhaleTrades = trades.filter(t => t.premium >= 1000000);
         if (megaWhaleTrades.length > 0) {
           whaleflowList.innerHTML = megaWhaleTrades.map(t => `
-            <li>🐋 ${t.symbol} ${t.type} @ $${t.strike} exp ${t.expiration} – $${t.premium.toLocaleString()}</li>
+            <li>🐋 ${t.symbol} ${t.type} @ $${t.strike} exp ${t.expiration} – $${t.premium.toLocaleString()} (OI: ${t.open_interest.toLocaleString()}, Last: $${t.last_price})</li>
           `).join('');
         } else {
           whaleflowList.innerHTML = "<li>No mega whale flow ($1M+) yet today.</li>";
         }
       })
       .catch(err => {
-        document.getElementById("whale-rows").innerHTML = '<tr><td colspan="5">Could not load whale data.</td></tr>';
+        document.getElementById("whale-rows").innerHTML = '<tr><td colspan="7">Could not load whale data.</td></tr>';
         document.getElementById("insight-text").textContent = "Could not generate AI insight.";
         document.getElementById("risk-text").textContent = "Could not calculate risk meter.";
         document.getElementById("whaleflow-list").innerHTML = "<li>Could not load whale flow tape.</li>";
