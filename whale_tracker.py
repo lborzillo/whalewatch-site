@@ -58,9 +58,11 @@ output = {
     "whale_trades": whale_trades
 }
 
-# Ensure the public directory exists before writing
-if not os.path.isdir('public'):
+# Check for public directory
+if not os.path.exists('public'):
     os.mkdir('public')
+elif not os.path.isdir('public'):
+    raise NotADirectoryError("'public' exists but is not a directory!")
 
 with open("public/whales.json", "w") as f:
     json.dump(output, f, indent=2)
