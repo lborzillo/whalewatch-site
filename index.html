@@ -78,5 +78,137 @@
     }
   </style>
 </head>
+
 <body>
+  <img src="https://em-content.zobj.net/thumbs/120/apple/354/whale_1f40b.png" alt="Whale logo" class="logo" />
+  <h1>WhaleWatch</h1>
+  <p class="tagline">Your sonar for smart money in the options market.</p>
+  <p class="subtext">
+    WhaleWatch tracks giant trades from institutional investors—so you can learn, follow, and profit without guessing.
+  </p>
+
+  <form action="https://formspree.io/f/mqaqedwa" method="POST">
+    <input type="email" name="email" placeholder="Enter your email" required
+      style="padding: 0.7em; font-size: 1rem; width: 250px; border-radius: 5px; border: none; margin-top: 1.5em;" />
+    <br />
+    <p style="font-size: 0.9rem; color: #cccccc; max-width: 300px; margin: 0.8em auto 0;">
+      We’ll notify you when we launch—and occasionally share tips from the whales.
+    </p>
+    <button type="submit"
+      style="margin-top: 1em; padding: 0.7em 1.5em; font-size: 1rem; background-color: #00ffee; border: none; border-radius: 5px; cursor: pointer; color: #001d2d;">
+      Notify Me
+    </button>
+  </form>
+
+  <section class="panel" style="margin-top: 3em;">
+    <h2>💡 How This Strategy Works (Plain English)</h2>
+    <p><strong>Step 1:</strong> We track whales—big investors making million-dollar bets.</p>
+    <p><strong>Step 2:</strong> You pick a stock you'd be happy to own.</p>
+    <p><strong>Step 3:</strong> You get paid to wait for the price to drop.<br />If it does, you buy it at a discount.</p>
+    <p><strong>Step 4:</strong> Once you own it, you get paid again by agreeing to sell it at a profit later.</p>
+    <p>This repeatable income method is called "premium harvesting." We just made it human.</p>
+  </section>
+
+  <section id="whale-data">
+    <h2>Latest Whale Trades</h2>
+    <table>
+      <thead>
+        <tr>
+          <th>Symbol</th>
+          <th>Type</th>
+          <th>Strike</th>
+          <th>Expiration</th>
+          <th>Premium</th>
+          <th>OI</th>
+          <th>Last Price</th>
+        </tr>
+      </thead>
+      <tbody id="whale-rows">
+        <tr><td colspan="7">Loading whale data...</td></tr>
+      </tbody>
+    </table>
+  </section>
+
+  <section id="insight-box" class="panel">
+    <h2>AI Insight</h2>
+    <p id="insight-text">Generating insight...</p>
+  </section>
+
+  <section id="risk-box" class="panel">
+    <h2>Risk Meter</h2>
+    <p id="risk-text">Calculating sentiment...</p>
+    <div id="risk-bar"></div>
+  </section>
+
+  <section id="whaleflow-box" class="panel">
+    <h2>
+      Whale Flow Tape 
+      <span title="This shows institutional options flow (calls & puts) – not equity dark pool trades.">ℹ️</span>
+    </h2>
+    <ul id="whaleflow-list" class="whaleflow-list">
+      <li>Loading whale flow...</li>
+    </ul>
+  </section>
+
+  <script>
+    fetch("whales.json")
+      .then(response => response.json())
+      .then(data => {
+        const tbody = document.getElementById("whale-rows");
+        const insightText = document.getElementById("insight-text");
+        const riskText = document.getElementById("risk-text");
+        const riskBar = document.getElementById("risk-bar");
+        const whaleflowList = document.getElementById("whaleflow-list");
+        const trades = Array.isArray(data.whale_trades) ? data.whale_trades : [];
+
+        // 🐳 Table
+        tbody.innerHTML = trades.map(trade => `
+          <tr>
+            <td>${trade.symbol}</td>
+            <td>${trade.type}</td>
+            <td>$${trade.strike}</td>
+            <td>${trade.expiration}</td>
+            <td>$${trade.premium.toLocaleString()}</td>
+            <td>${trade.open_interest.toLocaleString()}</td>
+            <td>$${trade.last_price}</td>
+          </tr>
+        `).join('');
+
+        // 🤖 Insight
+        if (trades.length > 0) {
+          const trade = trades[0];
+          const sentiment = trade.type === "CALL" ? "bullish" : "bearish";
+          insightText.textContent = `🧠 $${trade.premium.toLocaleString()} ${sentiment} bet on ${trade.symbol} placed on ${data.timestamp.substring(0,10)} for $${trade.strike} strike expiring ${trade.expiration}.`;
+        } else {
+          insightText.textContent = "No recent whale trades to analyze.";
+        }
+
+        // 📊 Risk Meter
+        const bullish = trades.filter(t => t.type === "CALL").length;
+        const bearish = trades.filter(t => t.type === "PUT").length;
+        const total = bullish + bearish;
+        const percentBullish = total > 0 ? Math.round((bullish / total) * 100) : 0;
+        const percentBearish = 100 - percentBullish;
+        riskText.textContent = `Smart money is ${percentBullish}% bullish / ${percentBearish}% bearish today.`;
+        riskBar.style.background = `linear-gradient(to right, #00ff88 0%, #00ff88 ${percentBullish}%, #ff0044 ${percentBullish}%, #ff0044 100%)`;
+
+        // 🐋 Whale Flow Tape (over $1M)
+        const megaWhaleTrades = trades.filter(t => t.premium >= 1000000);
+        if (megaWhaleTrades.length > 0) {
+          whaleflowList.innerHTML = megaWhaleTrades.map(t => `
+            <li>🐋 ${t.symbol} ${t.type} @ $${t.strike} exp ${t.expiration} – $${t.premium.toLocaleString()} (OI: ${t.open_interest.toLocaleString()}, Last: $${t.last_price})</li>
+          `).join('');
+        } else {
+          whaleflowList.innerHTML = "<li>No mega whale flow ($1M+) yet today.</li>";
+        }
+      })
+      .catch(err => {
+        document.getElementById("whale-rows").innerHTML = '<tr><td colspan="7">Could not load whale data.</td></tr>';
+        document.getElementById("insight-text").textContent = "Could not generate AI insight.";
+        document.getElementById("risk-text").textContent = "Could not calculate risk meter.";
+        document.getElementById("whaleflow-list").innerHTML = "<li>Could not load whale flow tape.</li>";
+        console.error(err);
+      });
+  </script>
+</body>
 </html>
