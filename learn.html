@@ -1,17 +1,154 @@
-<section class="panel">
-  <h2>🌾 Our Strategy: Premium Harvesting</h2>
-  <p>
-    This strategy is formally known as the <strong>cash-secured put and covered call cycle</strong>.
-    But around here, we call it <strong>premium harvesting</strong> — because you're collecting income every step of the way.
-  </p>
-  <p>Here’s how it works, step by step:</p>
-  <ol>
-    <li><strong>Step 1:</strong> Choose a stock you'd be happy to own (especially if whales are trading it).</li>
-    <li><strong>Step 2:</strong> Sell a put option. You get paid to wait — and only buy the stock if it drops to your target price.</li>
-    <li><strong>Step 3:</strong> If you get the shares, sell a call option above your cost. That’s more cash in your pocket.</li>
-    <li><strong>Step 4:</strong> Repeat the process. You earn premiums while reducing your risk over time.</li>
-  </ol>
-  <p>
-    You’re not chasing stocks. You’re harvesting income — on your terms.
-  </p>
-</section>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>WhaleWatch | Learn</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #001d2d;
+      color: white;
+      margin: 0;
+      padding: 20px;
+    }
+    nav {
+      background-color: #002b3f;
+      padding: 1em;
+      text-align: center;
+      position: sticky;
+      top: 0;
+      z-index: 10;
+    }
+    nav a {
+      color: #00ffee;
+      margin: 0 15px;
+      text-decoration: none;
+      font-weight: bold;
+    }
+    img.logo {
+      width: 80px;
+      display: block;
+      margin: 1em auto 0.5em;
+    }
+    h1 {
+      text-align: center;
+      margin-top: 0;
+    }
+    section.panel {
+      background-color: #002b3f;
+      padding: 1.5em;
+      border-radius: 8px;
+      margin-top: 2em;
+      max-width: 800px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+    h2 {
+      color: #00ffee;
+      margin-top: 0;
+    }
+    ol li, ul li {
+      margin-bottom: 0.8em;
+    }
+    strong {
+      color: #ffffff;
+    }
+    form label {
+      font-weight: bold;
+    }
+    input, button {
+      width: 100%;
+      padding: 0.5em;
+      margin-bottom: 1em;
+      border-radius: 5px;
+      border: none;
+      font-size: 1rem;
+    }
+    input {
+      background-color: #ffffff;
+      color: #001d2d;
+    }
+    button {
+      background-color: #00ffee;
+      color: #001d2d;
+      cursor: pointer;
+      font-weight: bold;
+    }
+    #mock-result ul {
+      margin-top: 0.5em;
+      padding-left: 1em;
+    }
+  </style>
+</head>
+<body>
+  <nav>
+    <a href="index.html">Home</a>
+    <a href="learn.html">Learn</a>
+    <a href="index.html#whale-data">Live Data</a>
+  </nav>
+
+  <img src="https://em-content.zobj.net/thumbs/120/apple/354/whale_1f40b.png" alt="Whale Logo" class="logo" />
+  <h1>Our Strategy: Premium Harvesting</h1>
+
+  <section class="panel">
+    <p>This strategy is formally known as the <strong>cash-secured put and covered call cycle</strong>. But around here, we call it <strong>premium harvesting</strong> — because you're collecting income every step of the way.</p>
+
+    <p>Here’s how it works, step by step:</p>
+    <ol>
+      <li><strong>Step 1:</strong> Choose a stock you'd be happy to own (especially if whales are trading it).</li>
+      <li><strong>Step 2:</strong> Sell a put option. You get paid to wait — and only buy the stock if it drops to your target price.</li>
+      <li><strong>Step 3:</strong> If you get the shares, sell a call option above your cost. That’s more cash in your pocket.</li>
+      <li><strong>Step 4:</strong> Repeat the process. You earn premiums while reducing your risk over time.</li>
+    </ol>
+
+    <p>You’re not chasing stocks. You’re harvesting income — on your terms.</p>
+  </section>
+
+  <section class="panel">
+    <h2>🎯 Try It: Premium Harvesting Mockup</h2>
+    <p>This demo lets you see what a sample trade would look like—without risking a cent.</p>
+
+    <form id="mock-trade-form">
+      <label for="stock">Stock Symbol:</label>
+      <input type="text" id="stock" name="stock" placeholder="e.g. NVDA" required>
+
+      <label for="strike">Strike Price ($):</label>
+      <input type="number" id="strike" name="strike" required>
+
+      <label for="premium">Premium Collected ($):</label>
+      <input type="number" id="premium" name="premium" required>
+
+      <label for="expiration">Expiration Date:</label>
+      <input type="date" id="expiration" name="expiration" required>
+
+      <button type="submit">Simulate Trade</button>
+    </form>
+
+    <div id="mock-result"></div>
+  </section>
+
+  <script>
+    document.getElementById('mock-trade-form').addEventListener('submit', function(e) {
+      e.preventDefault();
+      const stock = document.getElementById('stock').value.toUpperCase();
+      const strike = parseFloat(document.getElementById('strike').value);
+      const premium = parseFloat(document.getElementById('premium').value);
+      const expiration = document.getElementById('expiration').value;
+
+      const resultHTML = `
+        <p>✅ You just simulated a <strong>put trade</strong> on <strong>${stock}</strong>.</p>
+        <ul>
+          <li>You agreed to buy at <strong>$${strike.toFixed(2)}</strong> by <strong>${expiration}</strong>.</li>
+          <li>You were paid <strong>$${premium.toFixed(2)}</strong> up front.</li>
+          <li>If the stock stays above $${strike}, you keep the premium.</li>
+          <li>If it drops, you buy the stock at your target discount price—still keeping the premium.</li>
+        </ul>
+        <p><em>This is premium harvesting in action.</em></p>
+      `;
+
+      document.getElementById('mock-result').innerHTML = resultHTML;
+    });
+  </script>
+</body>
+</html>
