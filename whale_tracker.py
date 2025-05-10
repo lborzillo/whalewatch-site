@@ -59,7 +59,8 @@ output = {
 }
 
 # Ensure the public directory exists before writing
-os.makedirs('public', exist_ok=True)
+if not os.path.isdir('public'):
+    os.mkdir('public')
 
 with open("public/whales.json", "w") as f:
     json.dump(output, f, indent=2)
