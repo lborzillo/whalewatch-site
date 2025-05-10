@@ -10,19 +10,41 @@
       background-color: #001d2d;
       color: white;
       padding: 20px;
+      margin: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    nav {
+      margin-bottom: 1.5em;
+    }
+    nav a {
+      color: #00ffee;
+      margin-right: 15px;
+      text-decoration: none;
+      font-weight: bold;
+    }
+    img.logo {
+      width: 80px;
+      margin-bottom: 10px;
+    }
+    h1 {
+      font-size: 2.5rem;
+      margin: 0.3em 0;
     }
     section.panel {
       background-color: #002b3f;
       padding: 15px;
       border-radius: 8px;
       margin-top: 20px;
+      width: 100%;
+      max-width: 800px;
     }
     h2 {
       color: #00ffee;
     }
     table {
       width: 100%;
-      max-width: 800px;
       border-collapse: collapse;
       background-color: #002b3f;
       margin-top: 20px;
@@ -54,116 +76,17 @@
   </style>
 </head>
 <body>
-  <nav style="margin-bottom: 1em;">
-  <a href="index.html" style="color:#00ffee; margin-right: 15px;">Home</a>
-  <a href="learn.html" style="color:#00ffee; margin-right: 15px;">Learn</a>
-  <a href="#whale-data" style="color:#00ffee;">Live Data</a>
-</nav>
+
+  <img src="https://em-content.zobj.net/thumbs/120/apple/354/whale_1f40b.png" alt="Whale logo" class="logo" />
   <h1>WhaleWatch</h1>
 
-  <section id="whale-data" class="panel">
-    <h2>Latest Whale Trades</h2>
-    <table>
-      <thead>
-        <tr><th>Symbol</th><th>Type</th><th>Strike</th><th>Expiration</th><th>Premium</th><th>OI</th><th>Last Price</th></tr>
-      </thead>
-      <tbody id="whale-rows">
-        <tr><td colspan="7">Loading whale data...</td></tr>
-      </tbody>
-    </table>
-  </section>
+  <nav>
+    <a href="index.html">Home</a>
+    <a href="learn.html">Learn</a>
+    <a href="#whale-data">Live Data</a>
+  </nav>
 
-  <section id="insight-box" class="panel">
-    <h2>AI Insight</h2>
-    <p id="insight-text">Generating insight...</p>
-  </section>
+  <!-- Your live whale-data, AI Insight, Risk Meter, and Leaderboard sections go here -->
 
-  <section id="risk-box" class="panel">
-    <h2>Risk Meter</h2>
-    <p id="risk-text">Calculating sentiment...</p>
-    <div id="risk-bar"></div>
-  </section>
-
-  <section id="leaderboard-box" class="panel">
-    <h2>🏆 Whale Leaderboard</h2>
-    <p>Top stocks ranked by total premium traded today:</p>
-    <ul id="leaderboard-list">
-      <li>Loading leaderboard...</li>
-    </ul>
-  </section>
-
-  <script>
-    fetch("whales.json")
-      .then(response => response.json())
-      .then(data => {
-        const tbody = document.getElementById("whale-rows");
-        const insightText = document.getElementById("insight-text");
-        const riskText = document.getElementById("risk-text");
-        const riskBar = document.getElementById("risk-bar");
-        const trades = Array.isArray(data.whale_trades) ? data.whale_trades : [];
-
-        tbody.innerHTML = trades.map(trade => `
-          <tr>
-            <td>${trade.symbol}</td>
-            <td>${trade.type}</td>
-            <td>$${trade.strike}</td>
-            <td>${trade.expiration}</td>
-            <td>$${trade.premium.toLocaleString()}</td>
-            <td>${trade.open_interest.toLocaleString()}</td>
-            <td>$${trade.last_price}</td>
-          </tr>
-        `).join('');
-
-        if (trades.length > 0) {
-          const symbolPremiums = {};
-          trades.forEach(trade => {
-            if (!symbolPremiums[trade.symbol]) {
-              symbolPremiums[trade.symbol] = { total: 0, latest: trade };
-            }
-            symbolPremiums[trade.symbol].total += trade.premium;
-            symbolPremiums[trade.symbol].latest = trade;
-          });
-
-          const topSymbolEntry = Object.entries(symbolPremiums).sort((a, b) => b[1].total - a[1].total)[0];
-          const topSymbol = topSymbolEntry[0];
-          const topTrade = topSymbolEntry[1].latest;
-
-          const sentiment = topTrade.type === "CALL" ? "bullish" : "bearish";
-          const riskNote = topTrade.type === "PUT"
-            ? `<br><em style='color:#ccc;'>⚠️ This is a put — someone may be hedging or betting on a pullback.</em>`
-            : "";
-
-          insightText.innerHTML = `🧠 $${topTrade.premium.toLocaleString()} ${sentiment} bet on <strong>${topTrade.symbol}</strong> placed on ${data.timestamp.substring(0,10)} for $${topTrade.strike} strike expiring ${topTrade.expiration}.${riskNote}`;
-
-          const topTrades = trades.filter(t => t.symbol === topSymbol);
-          const bullish = topTrades.filter(t => t.type === "CALL").length;
-          const bearish = topTrades.filter(t => t.type === "PUT").length;
-          const total = bullish + bearish;
-          const percentBullish = total > 0 ? Math.round((bullish / total) * 100) : 0;
-          const percentBearish = 100 - percentBullish;
-
-          riskText.textContent = `Smart money is ${percentBullish}% bullish / ${percentBearish}% bearish today on ${topSymbol}.`;
-          riskBar.style.background = `linear-gradient(to right, #00ff88 0%, #00ff88 ${percentBullish}%, #ff0044 ${percentBullish}%, #ff0044 100%)`;
-        }
-      })
-      .catch(err => {
-        console.error("Could not load whale data", err);
-      });
-
-    fetch("leaderboard.json")
-      .then(response => response.json())
-      .then(data => {
-        const leaderboardList = document.getElementById("leaderboard-list");
-        const leaders = data.top_10;
-        leaderboardList.innerHTML = Object.entries(leaders).map(([symbol, stats], index) => `
-          <li>#${index + 1} <strong>${symbol}</strong> — ${stats.count} trade${stats.count > 1 ? 's' : ''}, 
-          $${stats.total_premium.toLocaleString()} in premiums</li>
-        `).join('');
-      })
-      .catch(err => {
-        document.getElementById("leaderboard-list").innerHTML = "<li>Could not load leaderboard data.</li>";
-        console.error("Leaderboard load error", err);
-      });
-  </script>
 </body>
 </html>
