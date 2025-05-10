@@ -64,16 +64,16 @@
       border-radius: 5px;
       margin-top: 0.5em;
     }
-    ul.darkpool-list {
+    ul.whaleflow-list {
       list-style: none;
       padding: 0;
       margin: 0;
     }
-    ul.darkpool-list li {
+    ul.whaleflow-list li {
       padding: 0.4em 0;
       border-bottom: 1px solid #004060;
     }
-    ul.darkpool-list li:last-child {
+    ul.whaleflow-list li:last-child {
       border-bottom: none;
     }
   </style>
@@ -125,10 +125,12 @@
     <div id="risk-bar"></div>
   </section>
 
-  <section id="darkpool-box" class="panel">
-    <h2>Dark Pool Tape</h2>
-    <ul id="darkpool-list" class="darkpool-list">
-      <li>Loading dark pool prints...</li>
+  <section id="whaleflow-box" class="panel">
+    <h2>Whale Flow Tape 
+      <span title="This shows institutional options flow (calls & puts) – not equity dark pool trades.">🛈</span>
+    </h2>
+    <ul id="whaleflow-list" class="whaleflow-list">
+      <li>Loading whale flow...</li>
     </ul>
   </section>
 
@@ -140,7 +142,7 @@
         const insightText = document.getElementById("insight-text");
         const riskText = document.getElementById("risk-text");
         const riskBar = document.getElementById("risk-bar");
-        const darkpoolList = document.getElementById("darkpool-list");
+        const whaleflowList = document.getElementById("whaleflow-list");
         const trades = Array.isArray(data.whale_trades) ? data.whale_trades : [];
 
         // Table
@@ -172,24 +174,23 @@
         riskText.textContent = `Smart money is ${percentBullish}% bullish / ${percentBearish}% bearish today.`;
         riskBar.style.background = `linear-gradient(to right, #00ff88 0%, #00ff88 ${percentBullish}%, #ff0044 ${percentBullish}%, #ff0044 100%)`;
 
-        // Dark Pool Tape (show all PUT trades for demo)
-        const darkpoolTrades = trades.filter(t => t.type === "PUT");
-        if (darkpoolTrades.length > 0) {
-          darkpoolList.innerHTML = darkpoolTrades.map(t => `
+        // Whale Flow Tape (show all PUT trades for now)
+        const whaleFlowTrades = trades.filter(t => t.type === "PUT");
+        if (whaleFlowTrades.length > 0) {
+          whaleflowList.innerHTML = whaleFlowTrades.map(t => `
             <li>🐋 ${t.symbol} PUT @ $${t.strike} exp ${t.expiration} – $${t.premium.toLocaleString()}</li>
           `).join('');
         } else {
-          darkpoolList.innerHTML = "<li>No recent dark pool prints over $1M.</li>";
+          whaleflowList.innerHTML = "<li>No recent whale flow over $1M.</li>";
         }
       })
       .catch(err => {
         document.getElementById("whale-rows").innerHTML = '<tr><td colspan="5">Could not load whale data.</td></tr>';
         document.getElementById("insight-text").textContent = "Could not generate AI insight.";
         document.getElementById("risk-text").textContent = "Could not calculate risk meter.";
-        document.getElementById("darkpool-list").innerHTML = "<li>Could not load dark pool tape.</li>";
+        document.getElementById("whaleflow-list").innerHTML = "<li>Could not load whale flow tape.</li>";
         console.error(err);
       });
   </script>
 </body>
 </html>
-<!-- dummy commit to trigger workflow -->
