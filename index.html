@@ -1,5 +1,3 @@
-# Rewriting the full index.html file to include the leaderboard section
-index_html_content = """
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -8,17 +6,6 @@ index_html_content = """
   <title>WhaleWatch | Unusual Options Tracking</title>
   <link rel="icon" type="image/png" href="favicon.ico" />
   <meta name="description" content="WhaleWatch tracks big money moves in the options market. Stay ahead of the whales." />
-
-  <!-- Open Graph -->
-  <meta property="og:title" content="WhaleWatch | Unusual Options Tracking" />
-  <meta property="og:description" content="Track institutional options flow. Stay ahead of the whales." />
-  <meta property="og:url" content="https://whalewatch.trade" />
-  <meta property="og:type" content="website" />
-
-  <!-- Twitter Card -->
-  <meta name="twitter:card" content="summary" />
-  <meta name="twitter:title" content="WhaleWatch | Unusual Options Tracking" />
-  <meta name="twitter:description" content="Track institutional options flow. Stay ahead of the whales." />
 
   <style>
     body {
@@ -29,21 +16,11 @@ index_html_content = """
       display: flex;
       flex-direction: column;
       align-items: center;
-      text-align: center;
       padding: 20px;
     }
-    nav {
-      margin-bottom: 20px;
-    }
-    nav a {
+    h1, h2 {
       color: #00ffee;
-      text-decoration: none;
-      margin: 0 10px;
     }
-    img.logo { width: 80px; margin-bottom: 10px; }
-    h1 { font-size: 2.8rem; margin: 0.2em 0; }
-    p.tagline { font-size: 1.3rem; font-weight: 300; max-width: 600px; margin: 0.5em auto 0; }
-    p.subtext { font-size: 1.1rem; max-width: 750px; margin-top: 1.2em; line-height: 1.5; }
     table {
       width: 100%;
       max-width: 800px;
@@ -53,7 +30,7 @@ index_html_content = """
       border-radius: 5px;
       overflow: hidden;
     }
-    th, td { padding: 0.8em; border-bottom: 1px solid #004060; }
+    th, td { padding: 0.8em; border-bottom: 1px solid #004060; text-align: left; }
     th { background-color: #003550; font-weight: bold; }
     tr:last-child td { border-bottom: none; }
     section.panel {
@@ -62,85 +39,68 @@ index_html_content = """
       background: #002b3f;
       padding: 1em;
       border-radius: 5px;
-      text-align: left;
     }
-    section.panel h2 { margin-top: 0; }
     #risk-bar {
       width: 100%;
       height: 20px;
-      background: linear-gradient(to right, #00ff88 0%, #00ff88 50%, #ff0044 50%, #ff0044 100%);
+      background: linear-gradient(to right, #00ff88 50%, #ff0044 50%);
       border-radius: 5px;
       margin-top: 0.5em;
     }
-    ul.whaleflow-list {
+    ul {
       list-style: none;
       padding: 0;
-      margin: 0;
+      margin: 0.5em 0 0 0;
     }
-    ul.whaleflow-list li {
+    ul li {
       padding: 0.4em 0;
       border-bottom: 1px solid #004060;
     }
-    ul.whaleflow-list li:last-child {
+    ul li:last-child {
       border-bottom: none;
     }
   </style>
 </head>
-<body>
-  <nav>
-    <a href="index.html">Home</a> |
-    <a href="learn.html">Learn</a> |
-    <a href="#whale-data">Live Data</a>
-  </nav>
 
-  <img src="https://em-content.zobj.net/thumbs/120/apple/354/whale_1f40b.png" alt="Whale logo" class="logo" />
+<body>
   <h1>WhaleWatch</h1>
-  <p class="tagline">Your sonar for smart money in the options market.</p>
-  <p class="subtext">
-    WhaleWatch tracks giant trades from institutional investors—so you can learn, follow, and profit without guessing.
-  </p>
 
   <section id="whale-data">
     <h2>Latest Whale Trades</h2>
     <table>
       <thead>
         <tr>
-          <th>Symbol</th><th>Type</th><th>Strike</th><th>Expiration</th><th>Premium</th><th>OI</th><th>Last Price</th>
+          <th>Symbol</th><th>Type</th><th>Strike</th><th>Expiration</th>
+          <th>Premium</th><th>OI</th><th>Last Price</th>
         </tr>
       </thead>
       <tbody id="whale-rows">
-        <tr><td colspan="7">Loading whale data...</td></tr>
+        <tr><td colspan="7">Could not load whale data.</td></tr>
       </tbody>
     </table>
   </section>
 
   <section id="insight-box" class="panel">
     <h2>AI Insight</h2>
-    <p id="insight-text">Generating insight...</p>
+    <p id="insight-text">Could not generate AI insight.</p>
   </section>
 
   <section id="risk-box" class="panel">
     <h2>Risk Meter</h2>
-    <p id="risk-text">Calculating sentiment...</p>
+    <p id="risk-text">Could not calculate risk meter.</p>
     <div id="risk-bar"></div>
-  </section>
-
-  <section id="whaleflow-box" class="panel">
-    <h2>Whale Flow Tape <span title="This shows institutional options flow (calls & puts) – not equity dark pool trades.">ℹ️</span></h2>
-    <ul id="whaleflow-list" class="whaleflow-list">
-      <li>Loading whale flow...</li>
-    </ul>
   </section>
 
   <section id="leaderboard-box" class="panel">
     <h2>🏆 Whale Leaderboard</h2>
-    <p>Top stocks by total whale activity today (ranked by premium volume):</p>
-    <ul id="leaderboard-list" class="whaleflow-list">
-      <li>Loading leaderboard...</li>
+    <p>Top stocks ranked by total premium traded today:</p>
+    <ul id="leaderboard-list">
+      <li>Could not load leaderboard data.</li>
     </ul>
   </section>
 
   <script>
+    // Whale trades
     fetch("whales.json")
       .then(response => response.json())
       .then(data => {
@@ -148,24 +108,29 @@ index_html_content = """
         const insightText = document.getElementById("insight-text");
         const riskText = document.getElementById("risk-text");
         const riskBar = document.getElementById("risk-bar");
-        const whaleflowList = document.getElementById("whaleflow-list");
         const trades = Array.isArray(data.whale_trades) ? data.whale_trades : [];
 
+        // Table
         tbody.innerHTML = trades.map(trade => `
           <tr>
-            <td>${trade.symbol}</td><td>${trade.type}</td><td>$${trade.strike}</td><td>${trade.expiration}</td>
-            <td>$${trade.premium.toLocaleString()}</td><td>${trade.open_interest.toLocaleString()}</td><td>$${trade.last_price}</td>
+            <td>${trade.symbol}</td>
+            <td>${trade.type}</td>
+            <td>$${trade.strike}</td>
+            <td>${trade.expiration}</td>
+            <td>$${trade.premium.toLocaleString()}</td>
+            <td>${trade.open_interest.toLocaleString()}</td>
+            <td>$${trade.last_price}</td>
           </tr>
         `).join('');
 
+        // AI Insight
         if (trades.length > 0) {
           const trade = trades[0];
           const sentiment = trade.type === "CALL" ? "bullish" : "bearish";
           insightText.textContent = `🧠 $${trade.premium.toLocaleString()} ${sentiment} bet on ${trade.symbol} placed on ${data.timestamp.substring(0,10)} for $${trade.strike} strike expiring ${trade.expiration}.`;
-        } else {
-          insightText.textContent = "No recent whale trades to analyze.";
         }
 
+        // Risk Meter
         const bullish = trades.filter(t => t.type === "CALL").length;
         const bearish = trades.filter(t => t.type === "PUT").length;
         const total = bullish + bearish;
@@ -173,37 +138,28 @@ index_html_content = """
         const percentBearish = 100 - percentBullish;
         riskText.textContent = `Smart money is ${percentBullish}% bullish / ${percentBearish}% bearish today.`;
         riskBar.style.background = `linear-gradient(to right, #00ff88 0%, #00ff88 ${percentBullish}%, #ff0044 ${percentBullish}%, #ff0044 100%)`;
-
-        const megaWhaleTrades = trades.filter(t => t.premium >= 1000000);
-        whaleflowList.innerHTML = megaWhaleTrades.length > 0
-          ? megaWhaleTrades.map(t => `<li>🐋 ${t.symbol} ${t.type} @ $${t.strike} exp ${t.expiration} – $${t.premium.toLocaleString()} (OI: ${t.open_interest.toLocaleString()}, Last: $${t.last_price})</li>`).join('')
-          : "<li>No mega whale flow ($1M+) yet today.</li>";
       })
       .catch(err => {
-        document.getElementById("whale-rows").innerHTML = '<tr><td colspan="7">Could not load whale data.</td></tr>';
-        document.getElementById("insight-text").textContent = "Could not generate AI insight.";
-        document.getElementById("risk-text").textContent = "Could not calculate risk meter.";
-        document.getElementById("whaleflow-list").innerHTML = "<li>Could not load whale flow tape.</li>";
-        console.error(err);
+        console.error("Whale JSON load error:", err);
       });
 
+    // Leaderboard
     fetch("leaderboard.json")
       .then(response => response.json())
       .then(data => {
         const leaderboardList = document.getElementById("leaderboard-list");
         const leaders = data.top_10;
+
         leaderboardList.innerHTML = Object.entries(leaders).map(([symbol, stats], index) => `
-          <li>#${index + 1} <strong>${symbol}</strong> — ${stats.count} trade${stats.count > 1 ? 's' : ''}, 
-          $${stats.total_premium.toLocaleString()} in premiums</li>
+          <li>
+            #${index + 1} <strong>${symbol}</strong> — ${stats.count} trade${stats.count > 1 ? 's' : ''}, 
+            $${stats.total_premium.toLocaleString()} in premiums
+          </li>
         `).join('');
       })
       .catch(err => {
-        document.getElementById("leaderboard-list").innerHTML = "<li>Could not load leaderboard data.</li>";
-        console.error(err);
+        console.error("Leaderboard JSON load error:", err);
       });
   </script>
 </body>
 </html>
-"""
-
-index_html_content
