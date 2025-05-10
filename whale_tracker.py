@@ -55,4 +55,13 @@ for _, row in biggest_whales.iterrows():
 # Save to whales.json
 output = {
     "timestamp": datetime.utcnow().isoformat(),
-    "whale_trades": whale_tr
+    "whale_trades": whale_trades
+}
+
+# Ensure the public directory exists before writing
+os.makedirs('public', exist_ok=True)
+
+with open("public/whales.json", "w") as f:
+    json.dump(output, f, indent=2)
+
+print("✅ Whale data saved to public/whales.json")
