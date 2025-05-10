@@ -1,0 +1,17 @@
+{
+  "timestamp": "2025-05-10T19:09:49.264463",
+  "top_10": {
+    "NVDA": {
+      "count": 5,
+      "total_premium": 3907191.87
+    },
+    "AAPL": {
+      "count": 2,
+      "total_premium": 1095555.0
+    },
+    "TSLA": {
+      "count": 1,
+      "total_premium": 772345.0
+    }
+  }
+}
