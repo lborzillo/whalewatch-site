@@ -2,7 +2,6 @@ import yfinance as yf
 import json
 import pandas as pd
 from datetime import datetime
-import os
 
 # Choose your stock symbol
 symbol = "NVDA"
@@ -52,19 +51,13 @@ for _, row in biggest_whales.iterrows():
         "last_price": float(row['lastPrice'])
     })
 
-# Save to whales.json
+# Save to whales.json in the repo root
 output = {
     "timestamp": datetime.utcnow().isoformat(),
     "whale_trades": whale_trades
 }
 
-# Check for public directory
-if not os.path.exists('public'):
-    os.mkdir('public')
-elif not os.path.isdir('public'):
-    raise NotADirectoryError("'public' exists but is not a directory!")
-
-with open("public/whales.json", "w") as f:
+with open("whales.json", "w") as f:
     json.dump(output, f, indent=2)
 
-print("✅ Whale data saved to public/whales.json")
+print("✅ Whale data saved to whales.json")
