@@ -43,4 +43,29 @@ whale_trades = []
 for _, row in biggest_whales.iterrows():
     whale_trades.append({
         "symbol": symbol,
+        "type": row['type'],
+        "strike": float(row['strike']),
+        "expiration": nearest_exp,
+        "premium": float(row['premium']),
+        "open_interest": int(row['openInterest']),
+        "last_price": float(row['lastPrice'])
+    })
+
+# Save to whales.json
+output = {
+    "timestamp": datetime.utcnow().isoformat(),
+    "whale_trades": whale_trades
+}
+
+# Ensure the public directory exists before writing
+import os
+os.makedirs('public', exist_ok=True)
+
+with open("public/whales.json", "w") as f:
+    json.dump(output, f, indent=2)
+
+print("✅ Whale data saved to public/whales.json")
+
+    whale_trades.append({
+        "symbol": symbol,
         "type": row[']()
