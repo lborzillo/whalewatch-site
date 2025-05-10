@@ -1,58 +1,188 @@
-<section id="simulator-box" class="panel">
-  <h2>📊 Options Trade Simulator</h2>
-  <p>Practice selling puts and calls like a pro — using real whale data.</p>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>WhaleWatch | Options Simulator</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background-color: #001d2d;
+      color: #ffffff;
+      margin: 0;
+      padding: 0;
+    }
 
-  <form id="simulator-form">
-    <label><strong>Symbol:</strong></label><br />
-    <select id="symbol" required>
-      <option value="NVDA">NVDA</option>
-      <option value="AAPL">AAPL</option>
-      <option value="TSLA">TSLA</option>
-    </select><br /><br />
+    nav {
+      background-color: #001520;
+      padding: 1em;
+      text-align: center;
+      position: sticky;
+      top: 0;
+    }
 
-    <label><strong>Type:</strong></label><br />
-    <select id="type" required>
-      <option value="Put">Put</option>
-      <option value="Call">Call</option>
-    </select><br /><br />
+    nav a {
+      color: #00ffee;
+      margin: 0 15px;
+      text-decoration: none;
+      font-weight: bold;
+    }
 
-    <label><strong>Strike Price ($):</strong></label><br />
-    <input type="number" id="strike" placeholder="e.g. 105" required /><br /><br />
+    .container {
+      max-width: 700px;
+      margin: 3em auto;
+      padding: 2em;
+      background-color: #002b3f;
+      border-radius: 8px;
+    }
 
-    <label><strong>Expiration Date:</strong></label><br />
-    <input type="date" id="expiration" required /><br /><br />
+    h1 {
+      text-align: center;
+      color: #00ffee;
+    }
 
-    <label><strong>Premium Collected ($ per share):</strong></label><br />
-    <input type="number" id="premium" placeholder="e.g. 1.50" step="0.01" required /><br /><br />
+    label {
+      font-weight: bold;
+      display: block;
+      margin-top: 1.2em;
+    }
 
-    <button type="submit" style="background:#4ff; padding:10px 20px; font-weight:bold; border:none; border-radius:5px; cursor:pointer;">💥 Simulate Trade</button>
-  </form>
+    select, input {
+      width: 100%;
+      padding: 0.7em;
+      margin-top: 0.5em;
+      border-radius: 5px;
+      border: none;
+      font-size: 1em;
+    }
 
-  <div id="simulation-result" style="margin-top:20px;"></div>
+    button {
+      background-color: #00ffee;
+      color: #001d2d;
+      padding: 0.8em;
+      margin-top: 1.5em;
+      width: 100%;
+      font-size: 1em;
+      font-weight: bold;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+
+    .result {
+      background-color: #003850;
+      padding: 1em;
+      border-radius: 6px;
+      margin-top: 1.5em;
+    }
+
+    .result strong {
+      display: block;
+      margin-bottom: 0.5em;
+    }
+  </style>
+</head>
+<body>
+  <nav>
+    <a href="index.html">Home</a>
+    <a href="learn.html">Learn</a>
+    <a href="#simulator">Live Data</a>
+  </nav>
+
+  <div class="container">
+    <h1>📊 Options Trade Simulator</h1>
+    <p>Practice selling puts and calls like a pro — using real whale data.</p>
+
+    <form id="simForm">
+      <label for="symbol">Symbol:</label>
+      <select id="symbol"></select>
+
+      <label for="type">Type:</label>
+      <select id="type">
+        <option value="PUT">Put</option>
+        <option value="CALL">Call</option>
+      </select>
+
+      <label for="strike">Strike Price ($):</label>
+      <select id="strike"></select>
+
+      <label for="expiration">Expiration Date:</label>
+      <select id="expiration"></select>
+
+      <label for="premium">Premium Collected ($ per share):</label>
+      <select id="premium"></select>
+
+      <button type="submit">💥 Simulate Trade</button>
+    </form>
+
+    <div id="output" class="result" style="display:none;"></div>
+  </div>
 
   <script>
-    const form = document.getElementById("simulator-form");
-    const result = document.getElementById("simulation-result");
+    let whaleData = [];
 
-    form.addEventListener("submit", function (e) {
-      e.preventDefault();
+    fetch("whales.json")
+      .then(res => res.json())
+      .then(data => {
+        whaleData = data.whale_trades;
+        const symbols = [...new Set(whaleData.map(t => t.symbol))];
+        const symbolSelect = document.getElementById("symbol");
+        symbols.forEach(s => {
+          const opt = document.createElement("option");
+          opt.value = s;
+          opt.textContent = s;
+          symbolSelect.appendChild(opt);
+        });
+        updateDropdowns(); // Initialize defaults
+      });
 
+    document.getElementById("symbol").addEventListener("change", updateDropdowns);
+    document.getElementById("type").addEventListener("change", updateDropdowns);
+
+    function updateDropdowns() {
       const symbol = document.getElementById("symbol").value;
       const type = document.getElementById("type").value;
-      const strike = parseFloat(document.getElementById("strike").value);
-      const expiration = document.getElementById("expiration").value;
-      const premium = parseFloat(document.getElementById("premium").value);
-      const totalPremium = (premium * 100).toFixed(2);
 
-      result.innerHTML = `
-        <p style="color:limegreen; font-weight:bold;">✅ You simulated selling a ${type.toUpperCase()} on ${symbol}.</p>
+      const filtered = whaleData.filter(t => t.symbol === symbol && t.type === type);
+
+      populateDropdown("strike", [...new Set(filtered.map(t => t.strike))]);
+      populateDropdown("expiration", [...new Set(filtered.map(t => t.expiration))]);
+      populateDropdown("premium", [...new Set(filtered.map(t => t.premium.toFixed(2)))]);
+    }
+
+    function populateDropdown(id, values) {
+      const el = document.getElementById(id);
+      el.innerHTML = "";
+      values.sort((a, b) => a - b).forEach(v => {
+        const opt = document.createElement("option");
+        opt.value = v;
+        opt.textContent = v;
+        el.appendChild(opt);
+      });
+    }
+
+    document.getElementById("simForm").addEventListener("submit", function(e) {
+      e.preventDefault();
+      const symbol = document.getElementById("symbol").value;
+      const type = document.getElementById("type").value;
+      const strike = document.getElementById("strike").value;
+      const expiration = document.getElementById("expiration").value;
+      const premium = document.getElementById("premium").value;
+
+      const totalPremium = (parseFloat(premium) * 100).toFixed(2);
+      const output = document.getElementById("output");
+
+      output.innerHTML = `
+        <strong>✅ You simulated selling a ${type} on ${symbol}.</strong>
         <ul>
-          <li><strong>Strike:</strong> $${strike.toFixed(2)}</li>
-          <li><strong>Premium Collected:</strong> $${premium.toFixed(2)} × 100 = $${totalPremium}</li>
+          <li><strong>Strike:</strong> $${strike}</li>
+          <li><strong>Premium Collected:</strong> $${totalPremium} (for 1 contract)</li>
           <li><strong>Expiration Date:</strong> ${expiration}</li>
         </ul>
-        <p><em>This is premium harvesting in action — income now, stock later (maybe).</em></p>
+        <em>This is premium harvesting in action — income now, stock later (maybe).</em>
       `;
+      output.style.display = "block";
     });
   </script>
-</section>
+</body>
+</html>
