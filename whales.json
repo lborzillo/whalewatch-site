@@ -4,15 +4,6 @@
     {
       "symbol": "NVDA",
       "type": "CALL",
-      "strike": 5.0,
-      "expiration": "2025-05-16",
-      "premium": 1085673.4,
-      "open_interest": 9730,
-      "last_price": 111.58
-    },
-    {
-      "symbol": "NVDA",
-      "type": "CALL",
       "strike": 110.0,
       "expiration": "2025-05-16",
       "premium": 981742.96,
@@ -20,31 +11,40 @@
       "last_price": 7.37
     },
     {
-      "symbol": "NVDA",
-      "type": "CALL",
-      "strike": 95.0,
-      "expiration": "2025-05-16",
-      "premium": 941757.52,
-      "open_interest": 43439,
-      "last_price": 21.68
-    },
-    {
-      "symbol": "NVDA",
+      "symbol": "AAPL",
       "type": "PUT",
-      "strike": 130.0,
+      "strike": 180.0,
       "expiration": "2025-05-16",
-      "premium": 469260.99,
-      "open_interest": 34683,
-      "last_price": 13.53
+      "premium": 240000.0,
+      "open_interest": 65000,
+      "last_price": 179.20
     },
     {
-      "symbol": "NVDA",
-      "type": "CALL",
-      "strike": 105.0,
+      "symbol": "TSLA",
+      "type": "PUT",
+      "strike": 290.0,
       "expiration": "2025-05-16",
-      "premium": 428757.0,
-      "open_interest": 36030,
-      "last_price": 11.9
+      "premium": 150.0,
+      "open_interest": 32100,
+      "last_price": 298.26
+    },
+    {
+      "symbol": "MSFT",
+      "type": "CALL",
+      "strike": 400.0,
+      "expiration": "2025-05-16",
+      "premium": 500.0,
+      "open_interest": 22000,
+      "last_price": 389.00
+    },
+    {
+      "symbol": "AMD",
+      "type": "CALL",
+      "strike": 150.0,
+      "expiration": "2025-05-16",
+      "premium": 330.0,
+      "open_interest": 18000,
+      "last_price": 146.50
     }
   ]
 }
