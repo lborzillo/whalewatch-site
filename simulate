@@ -3,175 +3,172 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Simulate a Trade | WhaleWatch</title>
-  <link rel="icon" href="favicon.ico" />
+  <title>Options Trade Simulator | WhaleWatch</title>
   <style>
     body {
-      font-family: 'Segoe UI', sans-serif;
+      font-family: Arial, sans-serif;
       background-color: #001d2d;
-      color: white;
-      margin: 0;
+      color: #ffffff;
+      padding: 30px;
+    }
+    h1 {
+      text-align: center;
+      color: #00ffee;
+    }
+    form {
+      max-width: 600px;
+      margin: 0 auto;
+      background: #002b3f;
       padding: 20px;
-    }
-    nav {
-      background-color: #002b3f;
-      padding: 1em;
-      text-align: center;
-      position: sticky;
-      top: 0;
-      z-index: 10;
-    }
-    nav a {
-      color: #00ffee;
-      margin: 0 15px;
-      text-decoration: none;
-      font-weight: bold;
-    }
-    h1, h2 {
-      text-align: center;
-      color: #00ffee;
-    }
-    section.panel {
-      background-color: #002b3f;
-      padding: 1.5em;
       border-radius: 8px;
-      max-width: 800px;
-      margin: 2em auto;
     }
     label {
       display: block;
       margin-top: 1em;
       font-weight: bold;
     }
-    select, input, button {
+    select, input[type="text"] {
       width: 100%;
-      padding: 0.5em;
-      margin-top: 0.3em;
-      border-radius: 5px;
+      padding: 10px;
+      margin-top: 5px;
+      border-radius: 4px;
       border: none;
       font-size: 1rem;
     }
-    input, select {
-      background-color: white;
-      color: #001d2d;
+    input[readonly] {
+      background-color: #ccc;
+      color: #333;
     }
     button {
-      margin-top: 1em;
+      width: 100%;
+      padding: 12px;
+      font-size: 1.1rem;
       background-color: #00ffee;
       color: #001d2d;
-      font-weight: bold;
+      border: none;
+      border-radius: 5px;
+      margin-top: 1.5em;
       cursor: pointer;
     }
     #result {
       margin-top: 2em;
+      background: #003550;
+      padding: 15px;
+      border-radius: 8px;
+      text-align: center;
+      font-size: 1.1rem;
     }
   </style>
 </head>
 <body>
 
-  <nav>
-    <a href="index.html">Home</a>
-    <a href="learn.html">Learn</a>
-    <a href="simulate.html">Simulate</a>
-  </nav>
+  <h1>📊 Options Trade Simulator</h1>
+  <form id="sim-form">
+    <label for="symbol">Symbol:</label>
+    <select id="symbol"></select>
 
-  <h1>🧪 Options Trade Simulator</h1>
+    <label for="type">Type:</label>
+    <select id="type">
+      <option value="CALL">Call</option>
+      <option value="PUT">Put</option>
+    </select>
 
-  <section class="panel">
-    <form id="sim-form">
-      <label for="symbol">Symbol:</label>
-      <select id="symbol"></select>
+    <label for="strike">Strike Price ($):</label>
+    <select id="strike"></select>
 
-      <label for="type">Type:</label>
-      <select id="type">
-        <option value="CALL">Call</option>
-        <option value="PUT">Put</option>
-      </select>
+    <label for="expiration">Expiration Date:</label>
+    <input type="text" id="expiration" readonly />
 
-      <label for="strike">Strike Price ($):</label>
-      <select id="strike"></select>
+    <label for="premium">Premium Collected ($):</label>
+    <input type="text" id="premium" readonly />
 
-      <label for="expiration">Expiration Date:</label>
-      <input type="text" id="expiration" readonly />
+    <button type="submit">💥 Simulate Trade</button>
+  </form>
 
-      <label for="premium">Premium Collected ($):</label>
-      <input type="text" id="premium" readonly />
-
-      <button type="submit">Simulate Trade</button>
-    </form>
-
-    <div id="result"></div>
-  </section>
+  <div id="result"></div>
 
   <script>
-    let whaleData = {};
-    fetch("whales.json")
-      .then(res => res.json())
-      .then(data => {
-        whaleData = data.whale_trades;
-        const symbols = [...new Set(whaleData.map(t => t.symbol))];
-        const symbolSelect = document.getElementById("symbol");
-        symbols.forEach(sym => {
-          const opt = document.createElement("option");
-          opt.value = sym;
-          opt.textContent = sym;
-          symbolSelect.appendChild(opt);
-        });
-        populateStrikes();
-      });
+    let whaleData = [];
 
-    document.getElementById("symbol").addEventListener("change", populateStrikes);
-    document.getElementById("type").addEventListener("change", populateStrikes);
-    document.getElementById("strike").addEventListener("change", updateFields);
-
-    function populateStrikes() {
-      const sym = document.getElementById("symbol").value;
-      const type = document.getElementById("type").value;
-      const strikeSelect = document.getElementById("strike");
-      strikeSelect.innerHTML = "";
-
-      const matches = whaleData.filter(t => t.symbol === sym && t.type === type);
-      const uniqueStrikes = [...new Set(matches.map(t => t.strike))].sort((a, b) => a - b);
-      uniqueStrikes.forEach(strike => {
-        const opt = document.createElement("option");
-        opt.value = strike;
-        opt.textContent = `$${strike}`;
-        strikeSelect.appendChild(opt);
-      });
-      updateFields();
+    async function loadWhaleData() {
+      const res = await fetch("whales.json");
+      const json = await res.json();
+      whaleData = json.whale_trades;
+      populateSymbols();
     }
 
-    function updateFields() {
-      const sym = document.getElementById("symbol").value;
-      const type = document.getElementById("type").value;
-      const strike = parseFloat(document.getElementById("strike").value);
+    function populateSymbols() {
+      const symbolSet = new Set(whaleData.map(t => t.symbol));
+      const symbolDropdown = document.getElementById("symbol");
+      symbolDropdown.innerHTML = "";
+      symbolSet.forEach(symbol => {
+        const option = document.createElement("option");
+        option.value = symbol;
+        option.textContent = symbol;
+        symbolDropdown.appendChild(option);
+      });
+      populateStrikes();
+    }
 
-      const match = whaleData.find(t => t.symbol === sym && t.type === type && t.strike === strike);
-      if (match) {
-        document.getElementById("expiration").value = match.expiration;
-        document.getElementById("premium").value = match.premium.toFixed(2);
+    function populateStrikes() {
+      const symbol = document.getElementById("symbol").value;
+      const type = document.getElementById("type").value;
+      const strikeDropdown = document.getElementById("strike");
+
+      const relevant = whaleData.filter(t => t.symbol === symbol && t.type === type);
+      const strikes = [...new Set(relevant.map(t => t.strike))].sort((a,b) => a - b);
+
+      strikeDropdown.innerHTML = "";
+      strikes.forEach(strike => {
+        const option = document.createElement("option");
+        option.value = strike;
+        option.textContent = `$${strike}`;
+        strikeDropdown.appendChild(option);
+      });
+
+      if (strikes.length > 0) {
+        strikeDropdown.value = strikes[0];
+        updateDetails();
       } else {
         document.getElementById("expiration").value = "";
         document.getElementById("premium").value = "";
       }
     }
 
+    function updateDetails() {
+      const symbol = document.getElementById("symbol").value;
+      const type = document.getElementById("type").value;
+      const strike = parseFloat(document.getElementById("strike").value);
+      const match = whaleData.find(t =>
+        t.symbol === symbol && t.type === type && t.strike === strike
+      );
+      if (match) {
+        document.getElementById("expiration").value = match.expiration;
+        document.getElementById("premium").value = match.premium.toFixed(2);
+      }
+    }
+
+    document.getElementById("symbol").addEventListener("change", populateStrikes);
+    document.getElementById("type").addEventListener("change", populateStrikes);
+    document.getElementById("strike").addEventListener("change", updateDetails);
+
     document.getElementById("sim-form").addEventListener("submit", function(e) {
       e.preventDefault();
       const symbol = document.getElementById("symbol").value;
       const type = document.getElementById("type").value;
       const strike = document.getElementById("strike").value;
-      const expiration = document.getElementById("expiration").value;
       const premium = document.getElementById("premium").value;
+      const expiration = document.getElementById("expiration").value;
 
       document.getElementById("result").innerHTML = `
-        <h3>✅ Simulated Trade</h3>
-        <p>You sold a <strong>${type}</strong> option on <strong>${symbol}</strong> at <strong>$${strike}</strong>,</p>
-        <p>expiring on <strong>${expiration}</strong>, collecting <strong>$${premium}</strong> in premium.</p>
-        <p><em>This is premium harvesting in action.</em></p>
+        You simulated a <strong>${type}</strong> on <strong>${symbol}</strong>.<br>
+        Strike Price: <strong>$${strike}</strong><br>
+        Premium Collected: <strong>$${premium}</strong><br>
+        Expiration: <strong>${expiration}</strong>
       `;
     });
-  </script>
 
+    loadWhaleData();
+  </script>
 </body>
 </html>
