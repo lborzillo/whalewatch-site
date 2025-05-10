@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Simulate a Trade | WhaleWatch</title>
+  <link rel="icon" href="favicon.ico" />
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background-color: #001d2d;
+      color: white;
+      margin: 0;
+      padding: 20px;
+    }
+    nav {
+      background-color: #002b3f;
+      padding: 1em;
+      text-align: center;
+      position: sticky;
+      top: 0;
+      z-index: 10;
+    }
+    nav a {
+      color: #00ffee;
+      margin: 0 15px;
+      text-decoration: none;
+      font-weight: bold;
+    }
+    h1, h2 {
+      text-align: center;
+      color: #00ffee;
+    }
+    section.panel {
+      background-color: #002b3f;
+      padding: 1.5em;
+      border-radius: 8px;
+      max-width: 800px;
+      margin: 2em auto;
+    }
+    label {
+      display: block;
+      margin-top: 1em;
+      font-weight: bold;
+    }
+    select, input, button {
+      width: 100%;
+      padding: 0.5em;
+      margin-top: 0.3em;
+      border-radius: 5px;
+      border: none;
+      font-size: 1rem;
+    }
+    input, select {
+      background-color: white;
+      color: #001d2d;
+    }
+    button {
+      margin-top: 1em;
+      background-color: #00ffee;
+      color: #001d2d;
+      font-weight: bold;
+      cursor: pointer;
+    }
+    #result {
+      margin-top: 2em;
+    }
+  </style>
+</head>
+<body>
+
+  <nav>
+    <a href="index.html">Home</a>
+    <a href="learn.html">Learn</a>
+    <a href="simulate.html">Simulate</a>
+  </nav>
+
+  <h1>🧪 Options Trade Simulator</h1>
+
+  <section class="panel">
+    <form id="sim-form">
+      <label for="symbol">Symbol:</label>
+      <select id="symbol"></select>
+
+      <label for="type">Type:</label>
+      <select id="type">
+        <option value="CALL">Call</option>
+        <option value="PUT">Put</option>
+      </select>
+
+      <label for="strike">Strike Price ($):</label>
+      <select id="strike"></select>
+
+      <label for="expiration">Expiration Date:</label>
+      <input type="text" id="expiration" readonly />
+
+      <label for="premium">Premium Collected ($):</label>
+      <input type="text" id="premium" readonly />
+
+      <button type="submit">Simulate Trade</button>
+    </form>
+
+    <div id="result"></div>
+  </section>
+
+  <script>
+    let whaleData = {};
+    fetch("whales.json")
+      .then(res => res.json())
+      .then(data => {
+        whaleData = data.whale_trades;
+        const symbols = [...new Set(whaleData.map(t => t.symbol))];
+        const symbolSelect = document.getElementById("symbol");
+        symbols.forEach(sym => {
+          const opt = document.createElement("option");
+          opt.value = sym;
+          opt.textContent = sym;
+          symbolSelect.appendChild(opt);
+        });
+        populateStrikes();
+      });
+
+    document.getElementById("symbol").addEventListener("change", populateStrikes);
+    document.getElementById("type").addEventListener("change", populateStrikes);
+    document.getElementById("strike").addEventListener("change", updateFields);
+
+    function populateStrikes() {
+      const sym = document.getElementById("symbol").value;
+      const type = document.getElementById("type").value;
+      const strikeSelect = document.getElementById("strike");
+      strikeSelect.innerHTML = "";
+
+      const matches = whaleData.filter(t => t.symbol === sym && t.type === type);
+      const uniqueStrikes = [...new Set(matches.map(t => t.strike))].sort((a, b) => a - b);
+      uniqueStrikes.forEach(strike => {
+        const opt = document.createElement("option");
+        opt.value = strike;
+        opt.textContent = `$${strike}`;
+        strikeSelect.appendChild(opt);
+      });
+      updateFields();
+    }
+
+    function updateFields() {
+      const sym = document.getElementById("symbol").value;
+      const type = document.getElementById("type").value;
+      const strike = parseFloat(document.getElementById("strike").value);
+
+      const match = whaleData.find(t => t.symbol === sym && t.type === type && t.strike === strike);
+      if (match) {
+        document.getElementById("expiration").value = match.expiration;
+        document.getElementById("premium").value = match.premium.toFixed(2);
+      } else {
+        document.getElementById("expiration").value = "";
+        document.getElementById("premium").value = "";
+      }
+    }
+
+    document.getElementById("sim-form").addEventListener("submit", function(e) {
+      e.preventDefault();
+      const symbol = document.getElementById("symbol").value;
+      const type = document.getElementById("type").value;
+      const strike = document.getElementById("strike").value;
+      const expiration = document.getElementById("expiration").value;
+      const premium = document.getElementById("premium").value;
+
+      document.getElementById("result").innerHTML = `
+        <h3>✅ Simulated Trade</h3>
+        <p>You sold a <strong>${type}</strong> option on <strong>${symbol}</strong> at <strong>$${strike}</strong>,</p>
+        <p>expiring on <strong>${expiration}</strong>, collecting <strong>$${premium}</strong> in premium.</p>
+        <p><em>This is premium harvesting in action.</em></p>
+      `;
+    });
+  </script>
+
+</body>
+</html>
