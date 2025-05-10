@@ -2,69 +2,90 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Options Trade Simulator | WhaleWatch</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Options Trade Simulator</title>
   <style>
     body {
       font-family: 'Segoe UI', sans-serif;
       background-color: #001d2d;
-      color: #ffffff;
-      margin: 0;
+      color: white;
       padding: 20px;
+      margin: 0;
     }
+
     nav {
-      background-color: #002b3f;
-      padding: 1em;
-      position: sticky;
-      top: 0;
-      z-index: 1000;
       text-align: center;
+      margin-bottom: 1.5em;
     }
+
     nav a {
       color: #00ffee;
-      margin: 0 15px;
       text-decoration: none;
+      margin: 0 1em;
       font-weight: bold;
     }
-    h1 {
+
+    nav a:hover {
+      text-decoration: underline;
+    }
+
+    section.panel {
+      background-color: #002b3f;
+      padding: 20px;
+      border-radius: 10px;
+      max-width: 700px;
+      margin: 0 auto 30px;
+    }
+
+    h2 {
+      color: #00ffee;
+      margin-bottom: 1em;
       text-align: center;
-      color: #5fffe0;
     }
-    .form-group {
-      margin: 15px auto;
-      max-width: 500px;
-    }
+
     label {
       display: block;
-      margin-bottom: 5px;
       font-weight: bold;
+      margin-bottom: 0.2em;
+      margin-top: 1em;
     }
-    select, input[type="text"], input[type="date"] {
+
+    select, input[type="number"], input[type="text"] {
       width: 100%;
-      padding: 10px;
+      padding: 0.6em;
       font-size: 1rem;
       border: none;
       border-radius: 5px;
+      margin-bottom: 0.8em;
     }
+
     button {
       width: 100%;
-      padding: 12px;
-      font-size: 1rem;
-      background-color: #5fffe0;
+      background-color: #00ffee;
       color: #001d2d;
+      font-size: 1.1rem;
+      padding: 0.8em;
       border: none;
       border-radius: 5px;
-      margin-top: 10px;
       cursor: pointer;
       font-weight: bold;
     }
-    #result {
-      margin: 25px auto;
-      max-width: 600px;
-      background: #002b3f;
-      padding: 15px;
-      border-radius: 5px;
+
+    button:hover {
+      background-color: #00e0cc;
+    }
+
+    #simulation-result {
+      margin-top: 1.5em;
+      font-size: 1rem;
       line-height: 1.6;
+      text-align: center;
+    }
+
+    #simulation-result div {
+      background-color: #003550;
+      padding: 1em;
+      border-radius: 6px;
     }
   </style>
 </head>
@@ -72,81 +93,72 @@
   <nav>
     <a href="index.html">Home</a>
     <a href="learn.html">Learn</a>
-    <a href="simulate.html">Simulator</a>
+    <a href="#simulator">Simulate</a>
   </nav>
 
-  <h1>📊 Options Trade Simulator</h1>
-  <p style="text-align:center;">Practice selling puts and calls like a pro — using real whale data.</p>
+  <section class="panel" id="simulator">
+    <h2>📊 Options Trade Simulator</h2>
+    <p style="text-align: center; max-width: 600px; margin: 0 auto 1em;">
+      Practice selling puts and calls like a pro — using real whale data.
+    </p>
 
-  <section id="simulator">
-    <div class="form-group">
-      <label for="symbol">Symbol:</label>
-      <select id="symbol">
-        <option value="NVDA">NVDA</option>
-        <option value="AAPL">AAPL</option>
-        <option value="TSLA">TSLA</option>
-      </select>
-    </div>
+    <label for="symbol">Symbol:</label>
+    <select id="symbol">
+      <option value="NVDA">NVDA</option>
+      <option value="AAPL">AAPL</option>
+      <option value="TSLA">TSLA</option>
+    </select>
 
-    <div class="form-group">
-      <label for="type">Type:</label>
-      <select id="type">
-        <option value="PUT">Put</option>
-        <option value="CALL">Call</option>
-      </select>
-    </div>
+    <label for="type">Type:</label>
+    <select id="type">
+      <option value="Put">Put</option>
+      <option value="Call">Call</option>
+    </select>
 
-    <div class="form-group">
-      <label for="strike">Strike Price ($):</label>
-      <input type="text" id="strike" placeholder="e.g. 105">
-    </div>
+    <label for="strike">Strike Price ($):</label>
+    <input type="number" id="strike" placeholder="e.g. 105" />
 
-    <div class="form-group">
-      <label for="expiration">Expiration Date:</label>
-      <input type="date" id="expiration">
-    </div>
+    <label for="expiration">Expiration Date:</label>
+    <input type="text" id="expiration" placeholder="e.g. 05/17/2025" />
 
-    <div class="form-group">
-      <label for="premium">Premium Collected ($):</label>
-      <input type="text" id="premium" placeholder="e.g. 1.50">
-    </div>
+    <label for="premium">Premium Collected ($):</label>
+    <input type="number" id="premium" placeholder="e.g. 1.50" step="0.01" />
 
-    <div class="form-group">
-      <button onclick="simulateTrade()">💥 Simulate Trade</button>
-      <button onclick="resetForm()">🔁 Reset</button>
-    </div>
+    <button onclick="simulateTrade()">💥 Simulate Trade</button>
 
-    <div id="result"></div>
+    <div id="simulation-result"></div>
   </section>
 
   <script>
     function simulateTrade() {
       const symbol = document.getElementById("symbol").value;
-      const typeRaw = document.getElementById("type").value;
-      const type = typeRaw.charAt(0) + typeRaw.slice(1).toLowerCase();
-      const strike = document.getElementById("strike").value;
+      const type = document.getElementById("type").value;
+      const strike = parseFloat(document.getElementById("strike").value);
       const expiration = document.getElementById("expiration").value;
-      const premium = document.getElementById("premium").value;
+      const premium = parseFloat(document.getElementById("premium").value);
 
-      if (!strike || !expiration || !premium) {
-        document.getElementById("result").innerHTML = "<strong>Please fill out all fields.</strong>";
+      if (isNaN(strike) || isNaN(premium) || !expiration) {
+        document.getElementById("simulation-result").innerHTML =
+          "<div>Please fill out all fields correctly.</div>";
         return;
       }
 
-      const formatted = `
-        📝 You simulated a <strong>${type}</strong> on <strong>${symbol}</strong> at 
-        <strong>$${strike}</strong>, collecting <strong>$${premium}</strong> in premium.<br>
-        ⏳ It expires on <strong>${expiration}</strong>.<br><br>
-        💡 If the stock stays above (Call) or below (Put) the strike — you keep the cash!
-      `;
-      document.getElementById("result").innerHTML = formatted;
-    }
+      const contractSize = 100;
+      const totalPremium = (premium * contractSize).toFixed(2);
 
-    function resetForm() {
-      document.getElementById("strike").value = "";
-      document.getElementById("expiration").value = "";
-      document.getElementById("premium").value = "";
-      document.getElementById("result").innerHTML = "";
+      let result = `<div>You simulated selling a <strong>${type}</strong> on <strong>${symbol}</strong> with a $${strike} strike price expiring on ${expiration}.<br><br>`;
+      result += `You would collect <strong>$${totalPremium}</strong> in premium upfront.`;
+
+      if (type === "Put") {
+        result += `<br><br>If ${symbol} stays above $${strike}, you keep the cash ✅.<br>`;
+        result += `If it drops below, you'll be assigned the stock at $${strike}.`;
+      } else {
+        result += `<br><br>If ${symbol} rises above $${strike}, you may be forced to sell it at the strike price.<br>`;
+        result += `If not, you just keep the premium ✅.`;
+      }
+
+      result += `</div>`;
+      document.getElementById("simulation-result").innerHTML = result;
     }
   </script>
 </body>
