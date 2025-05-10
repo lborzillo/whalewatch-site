@@ -2,6 +2,7 @@ import yfinance as yf
 import json
 import pandas as pd
 from datetime import datetime
+import os
 
 # Choose your stock symbol
 symbol = "NVDA"
@@ -54,18 +55,4 @@ for _, row in biggest_whales.iterrows():
 # Save to whales.json
 output = {
     "timestamp": datetime.utcnow().isoformat(),
-    "whale_trades": whale_trades
-}
-
-# Ensure the public directory exists before writing
-import os
-os.makedirs('public', exist_ok=True)
-
-with open("public/whales.json", "w") as f:
-    json.dump(output, f, indent=2)
-
-print("✅ Whale data saved to public/whales.json")
-
-    whale_trades.append({
-        "symbol": symbol,
-        "type": row[']()
+    "whale_trades": whale_tr
