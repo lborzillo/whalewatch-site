@@ -4,90 +4,78 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>WhaleWatch | Unusual Options Tracking</title>
-  <link rel="icon" type="image/png" href="favicon.ico" />
-  <meta name="description" content="WhaleWatch tracks big money moves in the options market. Stay ahead of the whales." />
-
   <style>
     body {
-      margin: 0;
-      font-family: 'Segoe UI', sans-serif;
+      font-family: Arial, sans-serif;
       background-color: #001d2d;
-      color: #ffffff;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
+      color: white;
       padding: 20px;
     }
-    h1, h2 {
+    section.panel {
+      background-color: #002b3f;
+      padding: 15px;
+      border-radius: 8px;
+      margin-top: 20px;
+    }
+    h2 {
       color: #00ffee;
     }
     table {
       width: 100%;
       max-width: 800px;
       border-collapse: collapse;
-      margin-top: 2em;
       background-color: #002b3f;
-      border-radius: 5px;
-      overflow: hidden;
+      margin-top: 20px;
     }
-    th, td { padding: 0.8em; border-bottom: 1px solid #004060; text-align: left; }
-    th { background-color: #003550; font-weight: bold; }
-    tr:last-child td { border-bottom: none; }
-    section.panel {
-      margin-top: 2em;
-      max-width: 800px;
-      background: #002b3f;
-      padding: 1em;
-      border-radius: 5px;
+    th, td {
+      padding: 10px;
+      border: 1px solid #004060;
+    }
+    th {
+      background-color: #003550;
+      font-weight: bold;
     }
     #risk-bar {
       width: 100%;
       height: 20px;
       background: linear-gradient(to right, #00ff88 50%, #ff0044 50%);
       border-radius: 5px;
-      margin-top: 0.5em;
+      margin-top: 10px;
     }
     ul {
-      list-style: none;
-      padding: 0;
-      margin: 0.5em 0 0 0;
+      list-style-type: none;
+      padding-left: 0;
     }
     ul li {
-      padding: 0.4em 0;
+      margin: 8px 0;
       border-bottom: 1px solid #004060;
-    }
-    ul li:last-child {
-      border-bottom: none;
+      padding: 6px 0;
     }
   </style>
 </head>
-
 <body>
   <h1>WhaleWatch</h1>
 
-  <section id="whale-data">
+  <section id="whale-data" class="panel">
     <h2>Latest Whale Trades</h2>
     <table>
       <thead>
-        <tr>
-          <th>Symbol</th><th>Type</th><th>Strike</th><th>Expiration</th>
-          <th>Premium</th><th>OI</th><th>Last Price</th>
-        </tr>
+        <tr><th>Symbol</th><th>Type</th><th>Strike</th><th>Expiration</th><th>Premium</th><th>OI</th><th>Last Price</th></tr>
       </thead>
       <tbody id="whale-rows">
-        <tr><td colspan="7">Could not load whale data.</td></tr>
+        <tr><td colspan="7">Loading whale data...</td></tr>
       </tbody>
     </table>
   </section>
 
   <section id="insight-box" class="panel">
     <h2>AI Insight</h2>
-    <p id="insight-text">Could not generate AI insight.</p>
+    <p id="insight-text">Generating insight...</p>
   </section>
 
   <section id="risk-box" class="panel">
     <h2>Risk Meter</h2>
-    <p id="risk-text">Could not calculate risk meter.</p>
+    <p id="risk-text">Calculating sentiment...</p>
     <div id="risk-bar"></div>
   </section>
 
@@ -95,12 +83,11 @@
     <h2>🏆 Whale Leaderboard</h2>
     <p>Top stocks ranked by total premium traded today:</p>
     <ul id="leaderboard-list">
-      <li>Could not load leaderboard data.</li>
+      <li>Loading leaderboard...</li>
     </ul>
   </section>
 
   <script>
-    // Whale trades
     fetch("whales.json")
       .then(response => response.json())
       .then(data => {
@@ -110,7 +97,6 @@
         const riskBar = document.getElementById("risk-bar");
         const trades = Array.isArray(data.whale_trades) ? data.whale_trades : [];
 
-        // Table
         tbody.innerHTML = trades.map(trade => `
           <tr>
             <td>${trade.symbol}</td>
@@ -123,42 +109,55 @@
           </tr>
         `).join('');
 
-        // AI Insight
         if (trades.length > 0) {
-          const trade = trades[0];
-          const sentiment = trade.type === "CALL" ? "bullish" : "bearish";
-          insightText.textContent = `🧠 $${trade.premium.toLocaleString()} ${sentiment} bet on ${trade.symbol} placed on ${data.timestamp.substring(0,10)} for $${trade.strike} strike expiring ${trade.expiration}.`;
-        }
+          const symbolPremiums = {};
+          trades.forEach(trade => {
+            if (!symbolPremiums[trade.symbol]) {
+              symbolPremiums[trade.symbol] = { total: 0, latest: trade };
+            }
+            symbolPremiums[trade.symbol].total += trade.premium;
+            symbolPremiums[trade.symbol].latest = trade;
+          });
 
-        // Risk Meter
-        const bullish = trades.filter(t => t.type === "CALL").length;
-        const bearish = trades.filter(t => t.type === "PUT").length;
-        const total = bullish + bearish;
-        const percentBullish = total > 0 ? Math.round((bullish / total) * 100) : 0;
-        const percentBearish = 100 - percentBullish;
-        riskText.textContent = `Smart money is ${percentBullish}% bullish / ${percentBearish}% bearish today.`;
-        riskBar.style.background = `linear-gradient(to right, #00ff88 0%, #00ff88 ${percentBullish}%, #ff0044 ${percentBullish}%, #ff0044 100%)`;
+          const topSymbolEntry = Object.entries(symbolPremiums).sort((a, b) => b[1].total - a[1].total)[0];
+          const topSymbol = topSymbolEntry[0];
+          const topTrade = topSymbolEntry[1].latest;
+
+          const sentiment = topTrade.type === "CALL" ? "bullish" : "bearish";
+          const riskNote = topTrade.type === "PUT"
+            ? `<br><em style='color:#ccc;'>⚠️ This is a put — someone may be hedging or betting on a pullback.</em>`
+            : "";
+
+          insightText.innerHTML = `🧠 $${topTrade.premium.toLocaleString()} ${sentiment} bet on <strong>${topTrade.symbol}</strong> placed on ${data.timestamp.substring(0,10)} for $${topTrade.strike} strike expiring ${topTrade.expiration}.${riskNote}`;
+
+          const topTrades = trades.filter(t => t.symbol === topSymbol);
+          const bullish = topTrades.filter(t => t.type === "CALL").length;
+          const bearish = topTrades.filter(t => t.type === "PUT").length;
+          const total = bullish + bearish;
+          const percentBullish = total > 0 ? Math.round((bullish / total) * 100) : 0;
+          const percentBearish = 100 - percentBullish;
+
+          riskText.textContent = `Smart money is ${percentBullish}% bullish / ${percentBearish}% bearish today on ${topSymbol}.`;
+          riskBar.style.background = `linear-gradient(to right, #00ff88 0%, #00ff88 ${percentBullish}%, #ff0044 ${percentBullish}%, #ff0044 100%)`;
+        }
       })
       .catch(err => {
-        console.error("Whale JSON load error:", err);
+        console.error("Could not load whale data", err);
       });
 
-    // Leaderboard
     fetch("leaderboard.json")
       .then(response => response.json())
       .then(data => {
         const leaderboardList = document.getElementById("leaderboard-list");
         const leaders = data.top_10;
-
         leaderboardList.innerHTML = Object.entries(leaders).map(([symbol, stats], index) => `
-          <li>
-            #${index + 1} <strong>${symbol}</strong> — ${stats.count} trade${stats.count > 1 ? 's' : ''}, 
-            $${stats.total_premium.toLocaleString()} in premiums
-          </li>
+          <li>#${index + 1} <strong>${symbol}</strong> — ${stats.count} trade${stats.count > 1 ? 's' : ''}, 
+          $${stats.total_premium.toLocaleString()} in premiums</li>
         `).join('');
       })
       .catch(err => {
-        console.error("Leaderboard JSON load error:", err);
+        document.getElementById("leaderboard-list").innerHTML = "<li>Could not load leaderboard data.</li>";
+        console.error("Leaderboard load error", err);
       });
   </script>
 </body>
