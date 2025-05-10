@@ -30,6 +30,6 @@ jobs:
         run: |
           git config user.name "github-actions"
           git config user.email "github-actions@github.com"
-          git add public/whales.json
+          git add whales.json
           git commit -m "Update whales.json with live data" || echo "No changes to commit"
           git push
