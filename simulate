@@ -2,173 +2,152 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Options Trade Simulator | WhaleWatch</title>
   <style>
     body {
-      font-family: Arial, sans-serif;
+      font-family: 'Segoe UI', sans-serif;
       background-color: #001d2d;
       color: #ffffff;
-      padding: 30px;
+      margin: 0;
+      padding: 20px;
+    }
+    nav {
+      background-color: #002b3f;
+      padding: 1em;
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+      text-align: center;
+    }
+    nav a {
+      color: #00ffee;
+      margin: 0 15px;
+      text-decoration: none;
+      font-weight: bold;
     }
     h1 {
       text-align: center;
-      color: #00ffee;
+      color: #5fffe0;
     }
-    form {
-      max-width: 600px;
-      margin: 0 auto;
-      background: #002b3f;
-      padding: 20px;
-      border-radius: 8px;
+    .form-group {
+      margin: 15px auto;
+      max-width: 500px;
     }
     label {
       display: block;
-      margin-top: 1em;
+      margin-bottom: 5px;
       font-weight: bold;
     }
-    select, input[type="text"] {
+    select, input[type="text"], input[type="date"] {
       width: 100%;
       padding: 10px;
-      margin-top: 5px;
-      border-radius: 4px;
-      border: none;
       font-size: 1rem;
-    }
-    input[readonly] {
-      background-color: #ccc;
-      color: #333;
+      border: none;
+      border-radius: 5px;
     }
     button {
       width: 100%;
       padding: 12px;
-      font-size: 1.1rem;
-      background-color: #00ffee;
+      font-size: 1rem;
+      background-color: #5fffe0;
       color: #001d2d;
       border: none;
       border-radius: 5px;
-      margin-top: 1.5em;
+      margin-top: 10px;
       cursor: pointer;
+      font-weight: bold;
     }
     #result {
-      margin-top: 2em;
-      background: #003550;
+      margin: 25px auto;
+      max-width: 600px;
+      background: #002b3f;
       padding: 15px;
-      border-radius: 8px;
-      text-align: center;
-      font-size: 1.1rem;
+      border-radius: 5px;
+      line-height: 1.6;
     }
   </style>
 </head>
 <body>
+  <nav>
+    <a href="index.html">Home</a>
+    <a href="learn.html">Learn</a>
+    <a href="simulate.html">Simulator</a>
+  </nav>
 
   <h1>📊 Options Trade Simulator</h1>
-  <form id="sim-form">
-    <label for="symbol">Symbol:</label>
-    <select id="symbol"></select>
+  <p style="text-align:center;">Practice selling puts and calls like a pro — using real whale data.</p>
 
-    <label for="type">Type:</label>
-    <select id="type">
-      <option value="CALL">Call</option>
-      <option value="PUT">Put</option>
-    </select>
+  <section id="simulator">
+    <div class="form-group">
+      <label for="symbol">Symbol:</label>
+      <select id="symbol">
+        <option value="NVDA">NVDA</option>
+        <option value="AAPL">AAPL</option>
+        <option value="TSLA">TSLA</option>
+      </select>
+    </div>
 
-    <label for="strike">Strike Price ($):</label>
-    <select id="strike"></select>
+    <div class="form-group">
+      <label for="type">Type:</label>
+      <select id="type">
+        <option value="PUT">Put</option>
+        <option value="CALL">Call</option>
+      </select>
+    </div>
 
-    <label for="expiration">Expiration Date:</label>
-    <input type="text" id="expiration" readonly />
+    <div class="form-group">
+      <label for="strike">Strike Price ($):</label>
+      <input type="text" id="strike" placeholder="e.g. 105">
+    </div>
 
-    <label for="premium">Premium Collected ($):</label>
-    <input type="text" id="premium" readonly />
+    <div class="form-group">
+      <label for="expiration">Expiration Date:</label>
+      <input type="date" id="expiration">
+    </div>
 
-    <button type="submit">💥 Simulate Trade</button>
-  </form>
+    <div class="form-group">
+      <label for="premium">Premium Collected ($):</label>
+      <input type="text" id="premium" placeholder="e.g. 1.50">
+    </div>
 
-  <div id="result"></div>
+    <div class="form-group">
+      <button onclick="simulateTrade()">💥 Simulate Trade</button>
+      <button onclick="resetForm()">🔁 Reset</button>
+    </div>
+
+    <div id="result"></div>
+  </section>
 
   <script>
-    let whaleData = [];
-
-    async function loadWhaleData() {
-      const res = await fetch("whales.json");
-      const json = await res.json();
-      whaleData = json.whale_trades;
-      populateSymbols();
-    }
-
-    function populateSymbols() {
-      const symbolSet = new Set(whaleData.map(t => t.symbol));
-      const symbolDropdown = document.getElementById("symbol");
-      symbolDropdown.innerHTML = "";
-      symbolSet.forEach(symbol => {
-        const option = document.createElement("option");
-        option.value = symbol;
-        option.textContent = symbol;
-        symbolDropdown.appendChild(option);
-      });
-      populateStrikes();
-    }
-
-    function populateStrikes() {
+    function simulateTrade() {
       const symbol = document.getElementById("symbol").value;
-      const type = document.getElementById("type").value;
-      const strikeDropdown = document.getElementById("strike");
-
-      const relevant = whaleData.filter(t => t.symbol === symbol && t.type === type);
-      const strikes = [...new Set(relevant.map(t => t.strike))].sort((a,b) => a - b);
-
-      strikeDropdown.innerHTML = "";
-      strikes.forEach(strike => {
-        const option = document.createElement("option");
-        option.value = strike;
-        option.textContent = `$${strike}`;
-        strikeDropdown.appendChild(option);
-      });
-
-      if (strikes.length > 0) {
-        strikeDropdown.value = strikes[0];
-        updateDetails();
-      } else {
-        document.getElementById("expiration").value = "";
-        document.getElementById("premium").value = "";
-      }
-    }
-
-    function updateDetails() {
-      const symbol = document.getElementById("symbol").value;
-      const type = document.getElementById("type").value;
-      const strike = parseFloat(document.getElementById("strike").value);
-      const match = whaleData.find(t =>
-        t.symbol === symbol && t.type === type && t.strike === strike
-      );
-      if (match) {
-        document.getElementById("expiration").value = match.expiration;
-        document.getElementById("premium").value = match.premium.toFixed(2);
-      }
-    }
-
-    document.getElementById("symbol").addEventListener("change", populateStrikes);
-    document.getElementById("type").addEventListener("change", populateStrikes);
-    document.getElementById("strike").addEventListener("change", updateDetails);
-
-    document.getElementById("sim-form").addEventListener("submit", function(e) {
-      e.preventDefault();
-      const symbol = document.getElementById("symbol").value;
-      const type = document.getElementById("type").value;
+      const typeRaw = document.getElementById("type").value;
+      const type = typeRaw.charAt(0) + typeRaw.slice(1).toLowerCase();
       const strike = document.getElementById("strike").value;
-      const premium = document.getElementById("premium").value;
       const expiration = document.getElementById("expiration").value;
+      const premium = document.getElementById("premium").value;
 
-      document.getElementById("result").innerHTML = `
-        You simulated a <strong>${type}</strong> on <strong>${symbol}</strong>.<br>
-        Strike Price: <strong>$${strike}</strong><br>
-        Premium Collected: <strong>$${premium}</strong><br>
-        Expiration: <strong>${expiration}</strong>
+      if (!strike || !expiration || !premium) {
+        document.getElementById("result").innerHTML = "<strong>Please fill out all fields.</strong>";
+        return;
+      }
+
+      const formatted = `
+        📝 You simulated a <strong>${type}</strong> on <strong>${symbol}</strong> at 
+        <strong>$${strike}</strong>, collecting <strong>$${premium}</strong> in premium.<br>
+        ⏳ It expires on <strong>${expiration}</strong>.<br><br>
+        💡 If the stock stays above (Call) or below (Put) the strike — you keep the cash!
       `;
-    });
+      document.getElementById("result").innerHTML = formatted;
+    }
 
-    loadWhaleData();
+    function resetForm() {
+      document.getElementById("strike").value = "";
+      document.getElementById("expiration").value = "";
+      document.getElementById("premium").value = "";
+      document.getElementById("result").innerHTML = "";
+    }
   </script>
 </body>
 </html>
