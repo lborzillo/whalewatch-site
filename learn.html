@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>WhaleWatch | Options Simulator</title>
   <style>
     body {
@@ -12,20 +12,22 @@
       margin: 0;
       padding: 0;
     }
+
     nav {
       background-color: #001520;
       padding: 1em;
       text-align: center;
       position: sticky;
       top: 0;
-      z-index: 1000;
     }
+
     nav a {
       color: #00ffee;
       margin: 0 15px;
       text-decoration: none;
       font-weight: bold;
     }
+
     .container {
       max-width: 700px;
       margin: 3em auto;
@@ -33,15 +35,18 @@
       background-color: #002b3f;
       border-radius: 8px;
     }
+
     h1 {
       text-align: center;
       color: #00ffee;
     }
+
     label {
       font-weight: bold;
       display: block;
       margin-top: 1.2em;
     }
+
     select, input {
       width: 100%;
       padding: 0.7em;
@@ -50,6 +55,7 @@
       border: none;
       font-size: 1em;
     }
+
     button {
       background-color: #00ffee;
       color: #001d2d;
@@ -62,12 +68,14 @@
       border-radius: 5px;
       cursor: pointer;
     }
+
     .result {
       background-color: #003850;
       padding: 1em;
       border-radius: 6px;
       margin-top: 1.5em;
     }
+
     .result strong {
       display: block;
       margin-bottom: 0.5em;
@@ -81,7 +89,7 @@
     <a href="#simulator">Live Data</a>
   </nav>
 
-  <div class="container" id="simulator">
+  <div class="container">
     <h1>📊 Options Trade Simulator</h1>
     <p>Practice selling puts and calls like a pro — using real whale data.</p>
 
@@ -91,8 +99,8 @@
 
       <label for="type">Type:</label>
       <select id="type">
-        <option value="CALL">Call</option>
         <option value="PUT">Put</option>
+        <option value="CALL">Call</option>
       </select>
 
       <label for="strike">Strike Price ($):</label>
@@ -125,7 +133,7 @@
           opt.textContent = s;
           symbolSelect.appendChild(opt);
         });
-        updateDropdowns();
+        updateDropdowns(); // Initialize
       });
 
     document.getElementById("symbol").addEventListener("change", updateDropdowns);
@@ -133,7 +141,7 @@
 
     function updateDropdowns() {
       const symbol = document.getElementById("symbol").value;
-      const type = document.getElementById("type").value;
+      const type = document.getElementById("type").value.toUpperCase(); // Normalize
 
       const filtered = whaleData.filter(t => t.symbol === symbol && t.type === type);
 
@@ -156,7 +164,7 @@
     document.getElementById("simForm").addEventListener("submit", function(e) {
       e.preventDefault();
       const symbol = document.getElementById("symbol").value;
-      const type = document.getElementById("type").value;
+      const type = document.getElementById("type").value.toUpperCase();
       const strike = document.getElementById("strike").value;
       const expiration = document.getElementById("expiration").value;
       const premium = document.getElementById("premium").value;
