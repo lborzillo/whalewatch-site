@@ -67,10 +67,6 @@
       border-radius: 6px;
       margin-top: 1.5em;
     }
-    .result strong {
-      display: block;
-      margin-bottom: 0.5em;
-    }
     .note {
       margin-top: 1em;
       padding: 1em;
@@ -105,10 +101,10 @@
       <select id="strike"></select>
 
       <label for="expiration">Expiration Date:</label>
-      <select id="expiration"></select>
+      <input id="expiration" readonly />
 
       <label for="premium">Premium Collected ($ per share):</label>
-      <select id="premium"></select>
+      <input id="premium" readonly />
 
       <button type="submit">💥 Simulate Trade</button>
     </form>
@@ -119,6 +115,7 @@
 
   <script>
     let whaleData = [];
+    let currentFiltered = [];
 
     fetch("whales.json")
       .then(res => res.json())
@@ -137,38 +134,39 @@
 
     document.getElementById("symbol").addEventListener("change", updateDropdowns);
     document.getElementById("type").addEventListener("change", updateDropdowns);
+    document.getElementById("strike").addEventListener("change", syncFields);
 
     function updateDropdowns() {
       const symbol = document.getElementById("symbol").value;
       let type = document.getElementById("type").value.toUpperCase();
       const typeNote = document.getElementById("typeNote");
 
-      let filtered = whaleData.filter(t => t.symbol === symbol && t.type === type);
+      currentFiltered = whaleData.filter(t => t.symbol === symbol && t.type === type);
 
-      if (filtered.length === 0) {
+      if (currentFiltered.length === 0) {
         const fallback = type === "CALL" ? "PUT" : "CALL";
         const fallbackData = whaleData.filter(t => t.symbol === symbol && t.type === fallback);
         if (fallbackData.length > 0) {
           type = fallback;
           document.getElementById("type").value = fallback;
-          filtered = fallbackData;
+          currentFiltered = fallbackData;
           typeNote.innerHTML = `⚠️ Only <strong>${fallback}</strong> trades are available for <strong>${symbol}</strong>. We switched it for you.`;
           typeNote.style.display = "block";
         } else {
           typeNote.innerHTML = `⚠️ No whale data available yet for <strong>${symbol}</strong>. Try another.`;
           typeNote.style.display = "block";
           populateDropdown("strike", []);
-          populateDropdown("expiration", []);
-          populateDropdown("premium", []);
+          document.getElementById("expiration").value = "";
+          document.getElementById("premium").value = "";
           return;
         }
       } else {
         typeNote.style.display = "none";
       }
 
-      populateDropdown("strike", [...new Set(filtered.map(t => t.strike))]);
-      populateDropdown("expiration", [...new Set(filtered.map(t => t.expiration))]);
-      populateDropdown("premium", [...new Set(filtered.map(t => (t.premium / 100).toFixed(2)))]);
+      const strikes = [...new Set(currentFiltered.map(t => t.strike))];
+      populateDropdown("strike", strikes);
+      syncFields(); // Auto-fill expiration/premium
     }
 
     function populateDropdown(id, values) {
@@ -180,6 +178,15 @@
         opt.textContent = v;
         el.appendChild(opt);
       });
+    }
+
+    function syncFields() {
+      const selectedStrike = parseFloat(document.getElementById("strike").value);
+      const match = currentFiltered.find(t => t.strike === selectedStrike);
+      if (match) {
+        document.getElementById("expiration").value = match.expiration;
+        document.getElementById("premium").value = (match.premium / 100).toFixed(2);
+      }
     }
 
     document.getElementById("simForm").addEventListener("submit", function(e) {
