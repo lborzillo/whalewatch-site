@@ -12,7 +12,6 @@
       margin: 0;
       padding: 0;
     }
-
     nav {
       background-color: #001520;
       padding: 1em;
@@ -20,14 +19,12 @@
       position: sticky;
       top: 0;
     }
-
     nav a {
       color: #00ffee;
       margin: 0 15px;
       text-decoration: none;
       font-weight: bold;
     }
-
     .container {
       max-width: 700px;
       margin: 3em auto;
@@ -35,18 +32,15 @@
       background-color: #002b3f;
       border-radius: 8px;
     }
-
     h1 {
       text-align: center;
       color: #00ffee;
     }
-
     label {
       font-weight: bold;
       display: block;
       margin-top: 1.2em;
     }
-
     select, input {
       width: 100%;
       padding: 0.7em;
@@ -55,7 +49,6 @@
       border: none;
       font-size: 1em;
     }
-
     button {
       background-color: #00ffee;
       color: #001d2d;
@@ -68,19 +61,16 @@
       border-radius: 5px;
       cursor: pointer;
     }
-
     .result {
       background-color: #003850;
       padding: 1em;
       border-radius: 6px;
       margin-top: 1.5em;
     }
-
     .result strong {
       display: block;
       margin-bottom: 0.5em;
     }
-
     .note {
       margin-top: 1em;
       padding: 1em;
@@ -177,12 +167,6 @@
 
       populateDropdown("strike", [...new Set(filtered.map(t => t.strike))]);
       populateDropdown("expiration", [...new Set(filtered.map(t => t.expiration))]);
-
-      // Set the placeholder for premium from first whale record
-      const premiumInput = document.getElementById("premium");
-      if (filtered.length > 0) {
-        premiumInput.placeholder = `e.g. ${(filtered[0].premium / 100).toFixed(2)} (whale paid)`;
-      }
     }
 
     function populateDropdown(id, values) {
@@ -207,7 +191,7 @@
       const output = document.getElementById("output");
 
       if (!strike || !expiration || !premium) {
-        output.innerHTML = `<strong>⚠️ Please fill in all fields to simulate the trade.</strong>`;
+        output.innerHTML = `<strong>⚠️ Teachable moment: This trade can't be simulated until you complete all fields.</strong>`;
         output.style.display = "block";
         return;
       }
