@@ -6,90 +6,70 @@
       "type": "CALL",
       "strike": 110.0,
       "expiration": "2025-05-16",
-      "premium": 981742.96,
-      "open_interest": 133208,
-      "last_price": 7.37
+      "premium": 981742.96
     },
     {
       "symbol": "NVDA",
       "type": "PUT",
       "strike": 130.0,
       "expiration": "2025-05-16",
-      "premium": 469260.99,
-      "open_interest": 34683,
-      "last_price": 13.53
+      "premium": 469260.99
     },
     {
       "symbol": "AAPL",
       "type": "PUT",
       "strike": 180.0,
       "expiration": "2025-05-16",
-      "premium": 240000.0,
-      "open_interest": 65000,
-      "last_price": 179.20
+      "premium": 240000.0
     },
     {
       "symbol": "AAPL",
       "type": "CALL",
       "strike": 190.0,
       "expiration": "2025-05-16",
-      "premium": 150000.0,
-      "open_interest": 48000,
-      "last_price": 5.25
+      "premium": 150000.0
     },
     {
       "symbol": "TSLA",
       "type": "PUT",
       "strike": 290.0,
       "expiration": "2025-05-16",
-      "premium": 150000.0,
-      "open_interest": 32100,
-      "last_price": 298.26
+      "premium": 150.0
     },
     {
       "symbol": "TSLA",
       "type": "CALL",
       "strike": 310.0,
       "expiration": "2025-05-16",
-      "premium": 210000.0,
-      "open_interest": 31000,
-      "last_price": 12.10
+      "premium": 210.0
     },
     {
       "symbol": "MSFT",
       "type": "CALL",
       "strike": 400.0,
       "expiration": "2025-05-16",
-      "premium": 500000.0,
-      "open_interest": 22000,
-      "last_price": 389.00
+      "premium": 500.0
     },
     {
       "symbol": "MSFT",
       "type": "PUT",
       "strike": 375.0,
       "expiration": "2025-05-16",
-      "premium": 420000.0,
-      "open_interest": 20000,
-      "last_price": 6.40
+      "premium": 420.0
     },
     {
       "symbol": "AMD",
       "type": "CALL",
       "strike": 150.0,
       "expiration": "2025-05-16",
-      "premium": 330000.0,
-      "open_interest": 18000,
-      "last_price": 146.50
+      "premium": 330.0
     },
     {
       "symbol": "AMD",
       "type": "PUT",
       "strike": 140.0,
       "expiration": "2025-05-16",
-      "premium": 275000.0,
-      "open_interest": 17000,
-      "last_price": 3.80
+      "premium": 275.0
     }
   ]
 }
