@@ -81,6 +81,16 @@
       display: block;
       margin-bottom: 0.5em;
     }
+
+    .note {
+      margin-top: 1em;
+      background: #004050;
+      color: #dddddd;
+      padding: 0.8em;
+      border-left: 5px solid #00ffee;
+      border-radius: 5px;
+      font-size: 0.95em;
+    }
   </style>
 </head>
 <body>
@@ -116,6 +126,8 @@
       <button type="submit">💥 Simulate Trade</button>
     </form>
 
+    <div id="type-note" class="note" style="display:none;"></div>
+
     <div id="output" class="result" style="display:none;"></div>
   </div>
 
@@ -142,15 +154,21 @@
 
     function updateDropdowns() {
       const symbol = document.getElementById("symbol").value;
-      const type = document.getElementById("type").value.toUpperCase();
+      let type = document.getElementById("type").value.toUpperCase();
+      const typeNote = document.getElementById("type-note");
 
-      const filtered = whaleData.filter(t => t.symbol === symbol && t.type === type);
+      let filtered = whaleData.filter(t => t.symbol === symbol && t.type === type);
 
+      // Auto-switch if no data for selected type
       if (filtered.length === 0) {
-        populateDropdown("strike", []);
-        populateDropdown("expiration", []);
-        populateDropdown("premium", []);
-        return;
+        type = type === "CALL" ? "PUT" : "CALL";
+        document.getElementById("type").value = type;
+        filtered = whaleData.filter(t => t.symbol === symbol && t.type === type);
+
+        typeNote.innerHTML = `⚠️ Only <strong>${type}</strong> trades are available for <strong>${symbol}</strong>. We switched it for you.`;
+        typeNote.style.display = "block";
+      } else {
+        typeNote.style.display = "none";
       }
 
       populateDropdown("strike", [...new Set(filtered.map(t => t.strike))]);
