@@ -12,6 +12,7 @@
       margin: 0;
       padding: 0;
     }
+
     nav {
       background-color: #001520;
       padding: 1em;
@@ -19,12 +20,14 @@
       position: sticky;
       top: 0;
     }
+
     nav a {
       color: #00ffee;
       margin: 0 15px;
       text-decoration: none;
       font-weight: bold;
     }
+
     .container {
       max-width: 700px;
       margin: 3em auto;
@@ -32,15 +35,18 @@
       background-color: #002b3f;
       border-radius: 8px;
     }
+
     h1 {
       text-align: center;
       color: #00ffee;
     }
+
     label {
       font-weight: bold;
       display: block;
       margin-top: 1.2em;
     }
+
     select, input {
       width: 100%;
       padding: 0.7em;
@@ -49,11 +55,7 @@
       border: none;
       font-size: 1em;
     }
-    #type-note {
-      color: #ffcc00;
-      margin-top: 0.5em;
-      display: none;
-    }
+
     button {
       background-color: #00ffee;
       color: #001d2d;
@@ -66,15 +68,26 @@
       border-radius: 5px;
       cursor: pointer;
     }
+
     .result {
       background-color: #003850;
       padding: 1em;
       border-radius: 6px;
       margin-top: 1.5em;
     }
+
     .result strong {
       display: block;
       margin-bottom: 0.5em;
+    }
+
+    .notice {
+      background-color: #004861;
+      padding: 0.7em;
+      border-radius: 5px;
+      margin-top: 1em;
+      display: none;
+      font-size: 0.95em;
     }
   </style>
 </head>
@@ -99,7 +112,7 @@
         <option value="CALL">Call</option>
       </select>
 
-      <p id="type-note"></p>
+      <div class="notice" id="type-note"></div>
 
       <label for="strike">Strike Price ($):</label>
       <select id="strike"></select>
@@ -131,7 +144,7 @@
           opt.textContent = s;
           symbolSelect.appendChild(opt);
         });
-        updateDropdowns(); // trigger initial load
+        updateDropdowns(); // Initialize dropdowns
       });
 
     document.getElementById("symbol").addEventListener("change", updateDropdowns);
@@ -155,11 +168,9 @@
           typeNote.innerHTML = `⚠️ Only <strong>${fallback}</strong> trades are available for <strong>${symbol}</strong>. We switched it for you.`;
           typeNote.style.display = "block";
         } else {
-          typeNote.innerHTML = `⚠️ No available whale trades found for <strong>${symbol}</strong>.`;
+          typeNote.innerHTML = `⚠️ No whale data available for <strong>${symbol}</strong>. Try another stock.`;
           typeNote.style.display = "block";
-          populateDropdown("strike", []);
-          populateDropdown("expiration", []);
-          populateDropdown("premium", []);
+          clearDropdowns();
           return;
         }
       } else {
@@ -169,6 +180,12 @@
       populateDropdown("strike", [...new Set(filtered.map(t => t.strike))]);
       populateDropdown("expiration", [...new Set(filtered.map(t => t.expiration))]);
       populateDropdown("premium", [...new Set(filtered.map(t => (t.premium / 100).toFixed(2)))]);
+    }
+
+    function clearDropdowns() {
+      ["strike", "expiration", "premium"].forEach(id => {
+        document.getElementById(id).innerHTML = "";
+      });
     }
 
     function populateDropdown(id, values) {
@@ -190,7 +207,10 @@
       const expiration = document.getElementById("expiration").value;
       const premium = document.getElementById("premium").value;
 
-      if (!strike || !expiration || !premium) return;
+      if (!strike || !expiration || !premium) {
+        alert("Please select a strike, expiration, and premium before simulating.");
+        return;
+      }
 
       const totalPremium = (parseFloat(premium) * 100).toFixed(2);
       const output = document.getElementById("output");
