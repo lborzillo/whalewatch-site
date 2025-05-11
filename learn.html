@@ -12,6 +12,7 @@
       margin: 0;
       padding: 0;
     }
+
     nav {
       background-color: #001520;
       padding: 1em;
@@ -19,12 +20,14 @@
       position: sticky;
       top: 0;
     }
+
     nav a {
       color: #00ffee;
       margin: 0 15px;
       text-decoration: none;
       font-weight: bold;
     }
+
     .container {
       max-width: 700px;
       margin: 3em auto;
@@ -32,16 +35,19 @@
       background-color: #002b3f;
       border-radius: 8px;
     }
+
     h1 {
       text-align: center;
       color: #00ffee;
     }
+
     label {
       font-weight: bold;
       display: block;
       margin-top: 1.2em;
     }
-    select, input {
+
+    select {
       width: 100%;
       padding: 0.7em;
       margin-top: 0.5em;
@@ -49,6 +55,7 @@
       border: none;
       font-size: 1em;
     }
+
     button {
       background-color: #00ffee;
       color: #001d2d;
@@ -61,23 +68,31 @@
       border-radius: 5px;
       cursor: pointer;
     }
+
+    button:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
     .result {
       background-color: #003850;
       padding: 1em;
       border-radius: 6px;
       margin-top: 1.5em;
     }
+
     .result strong {
       display: block;
       margin-bottom: 0.5em;
     }
-    .insight {
-      background-color: #003850;
-      padding: 1em;
-      margin-top: 1em;
+
+    #type-note {
+      background-color: #004760;
+      color: #ffeeaa;
+      padding: 0.6em;
       border-radius: 6px;
-      font-size: 0.95em;
-      line-height: 1.4;
+      margin-top: 1em;
+      display: none;
     }
   </style>
 </head>
@@ -102,6 +117,8 @@
         <option value="CALL">Call</option>
       </select>
 
+      <div id="type-note"></div>
+
       <label for="strike">Strike Price ($):</label>
       <select id="strike"></select>
 
@@ -111,9 +128,7 @@
       <label for="premium">Premium Collected ($ per share):</label>
       <select id="premium"></select>
 
-      <div id="type-note" class="insight" style="display:none;"></div>
-
-      <button type="submit">💥 Simulate Trade</button>
+      <button type="submit" disabled>💥 Simulate Trade</button>
     </form>
 
     <div id="output" class="result" style="display:none;"></div>
@@ -134,11 +149,15 @@
           opt.textContent = s;
           symbolSelect.appendChild(opt);
         });
-        updateDropdowns(); // initialize on load
+        updateDropdowns(); // Initial
       });
 
     document.getElementById("symbol").addEventListener("change", updateDropdowns);
     document.getElementById("type").addEventListener("change", updateDropdowns);
+
+    document.getElementById("strike").addEventListener("change", validateForm);
+    document.getElementById("expiration").addEventListener("change", validateForm);
+    document.getElementById("premium").addEventListener("change", validateForm);
 
     function updateDropdowns() {
       const symbol = document.getElementById("symbol").value;
@@ -147,7 +166,6 @@
 
       let filtered = whaleData.filter(t => t.symbol === symbol && t.type === type);
 
-      // Handle no data cases
       if (filtered.length === 0) {
         const fallback = type === "CALL" ? "PUT" : "CALL";
         const fallbackData = whaleData.filter(t => t.symbol === symbol && t.type === fallback);
@@ -156,16 +174,16 @@
           type = fallback;
           document.getElementById("type").value = fallback;
           filtered = fallbackData;
-          typeNote.innerHTML = `📉 No <strong>${type === "CALL" ? "PUT" : "CALL"}</strong> trades found for <strong>${symbol}</strong> today.<br>
-            Whales may be hedging or playing defense. This might be a wait-and-see moment.`;
+
+          typeNote.innerHTML = `⚠️ No whale trades found for <strong>${symbol}</strong> <em>${type === "CALL" ? "calls" : "puts"}</em>. Switched to available <strong>${fallback}</strong> data.`;
           typeNote.style.display = "block";
         } else {
-          typeNote.innerHTML = `⚠️ No whale trades found for <strong>${symbol}</strong> at this time.<br>
-            Whales might be on the sidelines — which is a signal too.`;
+          typeNote.innerHTML = `⚠️ No whale trades found for <strong>${symbol}</strong>. Try another stock.`;
           typeNote.style.display = "block";
           populateDropdown("strike", []);
           populateDropdown("expiration", []);
           populateDropdown("premium", []);
+          validateForm();
           return;
         }
       } else {
@@ -175,6 +193,7 @@
       populateDropdown("strike", [...new Set(filtered.map(t => t.strike))]);
       populateDropdown("expiration", [...new Set(filtered.map(t => t.expiration))]);
       populateDropdown("premium", [...new Set(filtered.map(t => (t.premium / 100).toFixed(2)))]);
+      validateForm();
     }
 
     function populateDropdown(id, values) {
@@ -188,6 +207,14 @@
       });
     }
 
+    function validateForm() {
+      const strike = document.getElementById("strike").value;
+      const expiration = document.getElementById("expiration").value;
+      const premium = document.getElementById("premium").value;
+      const simulateBtn = document.querySelector("button[type='submit']");
+      simulateBtn.disabled = !(strike && expiration && premium);
+    }
+
     document.getElementById("simForm").addEventListener("submit", function(e) {
       e.preventDefault();
       const symbol = document.getElementById("symbol").value;
@@ -196,8 +223,15 @@
       const expiration = document.getElementById("expiration").value;
       const premium = document.getElementById("premium").value;
 
-      const totalPremium = (parseFloat(premium) * 100).toFixed(2);
       const output = document.getElementById("output");
+
+      if (!strike || !expiration || !premium) {
+        output.innerHTML = `<strong>⚠️ Please complete all fields with valid trade data.</strong>`;
+        output.style.display = "block";
+        return;
+      }
+
+      const totalPremium = (parseFloat(premium) * 100).toFixed(2);
 
       output.innerHTML = `
         <strong>✅ You simulated selling a ${type} on ${symbol}.</strong>
