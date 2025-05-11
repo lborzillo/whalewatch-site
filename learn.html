@@ -12,6 +12,7 @@
       margin: 0;
       padding: 0;
     }
+
     nav {
       background-color: #001520;
       padding: 1em;
@@ -19,12 +20,14 @@
       position: sticky;
       top: 0;
     }
+
     nav a {
       color: #00ffee;
       margin: 0 15px;
       text-decoration: none;
       font-weight: bold;
     }
+
     .container {
       max-width: 700px;
       margin: 3em auto;
@@ -32,15 +35,18 @@
       background-color: #002b3f;
       border-radius: 8px;
     }
+
     h1 {
       text-align: center;
       color: #00ffee;
     }
+
     label {
       font-weight: bold;
       display: block;
       margin-top: 1.2em;
     }
+
     select, input {
       width: 100%;
       padding: 0.7em;
@@ -49,6 +55,7 @@
       border: none;
       font-size: 1em;
     }
+
     button {
       background-color: #00ffee;
       color: #001d2d;
@@ -61,12 +68,19 @@
       border-radius: 5px;
       cursor: pointer;
     }
+
     .result {
       background-color: #003850;
       padding: 1em;
       border-radius: 6px;
       margin-top: 1.5em;
     }
+
+    .result strong {
+      display: block;
+      margin-bottom: 0.5em;
+    }
+
     .note {
       margin-top: 1em;
       padding: 1em;
@@ -101,10 +115,10 @@
       <select id="strike"></select>
 
       <label for="expiration">Expiration Date:</label>
-      <input id="expiration" readonly />
+      <select id="expiration"></select>
 
       <label for="premium">Premium Collected ($ per share):</label>
-      <input id="premium" readonly />
+      <input type="number" id="premium" placeholder="Enter your premium" step="0.01" min="0" />
 
       <button type="submit">💥 Simulate Trade</button>
     </form>
@@ -115,7 +129,6 @@
 
   <script>
     let whaleData = [];
-    let currentFiltered = [];
 
     fetch("whales.json")
       .then(res => res.json())
@@ -134,39 +147,42 @@
 
     document.getElementById("symbol").addEventListener("change", updateDropdowns);
     document.getElementById("type").addEventListener("change", updateDropdowns);
-    document.getElementById("strike").addEventListener("change", syncFields);
 
     function updateDropdowns() {
       const symbol = document.getElementById("symbol").value;
       let type = document.getElementById("type").value.toUpperCase();
       const typeNote = document.getElementById("typeNote");
 
-      currentFiltered = whaleData.filter(t => t.symbol === symbol && t.type === type);
+      let filtered = whaleData.filter(t => t.symbol === symbol && t.type === type);
 
-      if (currentFiltered.length === 0) {
+      if (filtered.length === 0) {
         const fallback = type === "CALL" ? "PUT" : "CALL";
         const fallbackData = whaleData.filter(t => t.symbol === symbol && t.type === fallback);
         if (fallbackData.length > 0) {
           type = fallback;
           document.getElementById("type").value = fallback;
-          currentFiltered = fallbackData;
+          filtered = fallbackData;
           typeNote.innerHTML = `⚠️ Only <strong>${fallback}</strong> trades are available for <strong>${symbol}</strong>. We switched it for you.`;
           typeNote.style.display = "block";
         } else {
           typeNote.innerHTML = `⚠️ No whale data available yet for <strong>${symbol}</strong>. Try another.`;
           typeNote.style.display = "block";
           populateDropdown("strike", []);
-          document.getElementById("expiration").value = "";
-          document.getElementById("premium").value = "";
+          populateDropdown("expiration", []);
           return;
         }
       } else {
         typeNote.style.display = "none";
       }
 
-      const strikes = [...new Set(currentFiltered.map(t => t.strike))];
-      populateDropdown("strike", strikes);
-      syncFields(); // Auto-fill expiration/premium
+      populateDropdown("strike", [...new Set(filtered.map(t => t.strike))]);
+      populateDropdown("expiration", [...new Set(filtered.map(t => t.expiration))]);
+
+      // Set the placeholder for premium from first whale record
+      const premiumInput = document.getElementById("premium");
+      if (filtered.length > 0) {
+        premiumInput.placeholder = `e.g. ${(filtered[0].premium / 100).toFixed(2)} (whale paid)`;
+      }
     }
 
     function populateDropdown(id, values) {
@@ -180,15 +196,6 @@
       });
     }
 
-    function syncFields() {
-      const selectedStrike = parseFloat(document.getElementById("strike").value);
-      const match = currentFiltered.find(t => t.strike === selectedStrike);
-      if (match) {
-        document.getElementById("expiration").value = match.expiration;
-        document.getElementById("premium").value = (match.premium / 100).toFixed(2);
-      }
-    }
-
     document.getElementById("simForm").addEventListener("submit", function(e) {
       e.preventDefault();
       const symbol = document.getElementById("symbol").value;
@@ -200,7 +207,7 @@
       const output = document.getElementById("output");
 
       if (!strike || !expiration || !premium) {
-        output.innerHTML = `<strong>⚠️ Unable to simulate trade. No data found for that option type.</strong>`;
+        output.innerHTML = `<strong>⚠️ Please fill in all fields to simulate the trade.</strong>`;
         output.style.display = "block";
         return;
       }
