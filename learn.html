@@ -12,7 +12,6 @@
       margin: 0;
       padding: 0;
     }
-
     nav {
       background-color: #001520;
       padding: 1em;
@@ -20,14 +19,12 @@
       position: sticky;
       top: 0;
     }
-
     nav a {
       color: #00ffee;
       margin: 0 15px;
       text-decoration: none;
       font-weight: bold;
     }
-
     .container {
       max-width: 700px;
       margin: 3em auto;
@@ -35,18 +32,15 @@
       background-color: #002b3f;
       border-radius: 8px;
     }
-
     h1 {
       text-align: center;
       color: #00ffee;
     }
-
     label {
       font-weight: bold;
       display: block;
       margin-top: 1.2em;
     }
-
     select, input {
       width: 100%;
       padding: 0.7em;
@@ -55,7 +49,11 @@
       border: none;
       font-size: 1em;
     }
-
+    #type-note {
+      color: #ffcc00;
+      margin-top: 0.5em;
+      display: none;
+    }
     button {
       background-color: #00ffee;
       color: #001d2d;
@@ -68,26 +66,15 @@
       border-radius: 5px;
       cursor: pointer;
     }
-
     .result {
       background-color: #003850;
       padding: 1em;
       border-radius: 6px;
       margin-top: 1.5em;
     }
-
     .result strong {
       display: block;
       margin-bottom: 0.5em;
-    }
-
-    #type-note {
-      margin-top: 1em;
-      background: #00455b;
-      padding: 0.5em 1em;
-      border-left: 5px solid #ffcc00;
-      border-radius: 4px;
-      display: none;
     }
   </style>
 </head>
@@ -112,7 +99,7 @@
         <option value="CALL">Call</option>
       </select>
 
-      <div id="type-note"></div>
+      <p id="type-note"></p>
 
       <label for="strike">Strike Price ($):</label>
       <select id="strike"></select>
@@ -144,7 +131,7 @@
           opt.textContent = s;
           symbolSelect.appendChild(opt);
         });
-        updateDropdowns(); // Initialize
+        updateDropdowns(); // trigger initial load
       });
 
     document.getElementById("symbol").addEventListener("change", updateDropdowns);
@@ -165,7 +152,6 @@
           type = fallback;
           document.getElementById("type").value = fallback;
           filtered = fallbackData;
-
           typeNote.innerHTML = `⚠️ Only <strong>${fallback}</strong> trades are available for <strong>${symbol}</strong>. We switched it for you.`;
           typeNote.style.display = "block";
         } else {
@@ -198,18 +184,14 @@
 
     document.getElementById("simForm").addEventListener("submit", function(e) {
       e.preventDefault();
-
+      const symbol = document.getElementById("symbol").value;
+      const type = document.getElementById("type").value.toUpperCase();
       const strike = document.getElementById("strike").value;
       const expiration = document.getElementById("expiration").value;
       const premium = document.getElementById("premium").value;
 
-      if (!strike || !expiration || !premium) {
-        alert("⚠️ No whale trade data is available for this selection. Try a different combination.");
-        return;
-      }
+      if (!strike || !expiration || !premium) return;
 
-      const symbol = document.getElementById("symbol").value;
-      const type = document.getElementById("type").value.toUpperCase();
       const totalPremium = (parseFloat(premium) * 100).toFixed(2);
       const output = document.getElementById("output");
 
