@@ -5,61 +5,71 @@
       "symbol": "NVDA",
       "type": "CALL",
       "strike": 110.0,
-      "expiration": "2025-05-16"
+      "expiration": "2025-05-16",
+      "premium": 981742.96
     },
     {
       "symbol": "NVDA",
       "type": "PUT",
       "strike": 130.0,
-      "expiration": "2025-05-16"
-    },
-    {
-      "symbol": "AAPL",
-      "type": "PUT",
-      "strike": 180.0,
-      "expiration": "2025-05-16"
+      "expiration": "2025-05-16",
+      "premium": 469260.99
     },
     {
       "symbol": "AAPL",
       "type": "CALL",
       "strike": 190.0,
-      "expiration": "2025-05-16"
+      "expiration": "2025-05-16",
+      "premium": 150000.0
     },
     {
-      "symbol": "TSLA",
+      "symbol": "AAPL",
       "type": "PUT",
-      "strike": 290.0,
-      "expiration": "2025-05-16"
+      "strike": 180.0,
+      "expiration": "2025-05-16",
+      "premium": 240000.0
     },
     {
       "symbol": "TSLA",
       "type": "CALL",
       "strike": 310.0,
-      "expiration": "2025-05-16"
+      "expiration": "2025-05-16",
+      "premium": 210000.0
+    },
+    {
+      "symbol": "TSLA",
+      "type": "PUT",
+      "strike": 290.0,
+      "expiration": "2025-05-16",
+      "premium": 150000.0
     },
     {
       "symbol": "MSFT",
       "type": "CALL",
       "strike": 400.0,
-      "expiration": "2025-05-16"
+      "expiration": "2025-05-16",
+      "premium": 500000.0
     },
     {
       "symbol": "MSFT",
       "type": "PUT",
       "strike": 375.0,
-      "expiration": "2025-05-16"
+      "expiration": "2025-05-16",
+      "premium": 420000.0
     },
     {
       "symbol": "AMD",
       "type": "CALL",
       "strike": 150.0,
-      "expiration": "2025-05-16"
+      "expiration": "2025-05-16",
+      "premium": 330000.0
     },
     {
       "symbol": "AMD",
       "type": "PUT",
       "strike": 140.0,
-      "expiration": "2025-05-16"
+      "expiration": "2025-05-16",
+      "premium": 275000.0
     }
   ]
 }
