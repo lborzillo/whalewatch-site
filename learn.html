@@ -81,13 +81,13 @@
       margin-bottom: 0.5em;
     }
 
-    .notice {
-      background-color: #004861;
-      padding: 0.7em;
-      border-radius: 5px;
+    #type-note {
       margin-top: 1em;
+      background-color: #ffcc00;
+      color: #001d2d;
+      padding: 0.5em;
+      border-radius: 5px;
       display: none;
-      font-size: 0.95em;
     }
   </style>
 </head>
@@ -102,6 +102,8 @@
     <h1>📊 Options Trade Simulator</h1>
     <p>Practice selling puts and calls like a pro — using real whale data.</p>
 
+    <div id="type-note"></div>
+
     <form id="simForm">
       <label for="symbol">Symbol:</label>
       <select id="symbol"></select>
@@ -111,8 +113,6 @@
         <option value="PUT">Put</option>
         <option value="CALL">Call</option>
       </select>
-
-      <div class="notice" id="type-note"></div>
 
       <label for="strike">Strike Price ($):</label>
       <select id="strike"></select>
@@ -132,10 +132,11 @@
   <script>
     let whaleData = [];
 
-    fetch("/whales.json")
+    fetch("/whales.json") // make sure this file is in the root!
       .then(res => res.json())
       .then(data => {
         whaleData = data.whale_trades;
+        console.log("✅ Whale data loaded:", whaleData);
         const symbols = [...new Set(whaleData.map(t => t.symbol))];
         const symbolSelect = document.getElementById("symbol");
         symbols.forEach(s => {
@@ -144,7 +145,10 @@
           opt.textContent = s;
           symbolSelect.appendChild(opt);
         });
-        updateDropdowns(); // Initialize dropdowns
+        updateDropdowns(); // initialize with default
+      })
+      .catch(err => {
+        console.error("❌ Failed to load whales.json:", err);
       });
 
     document.getElementById("symbol").addEventListener("change", updateDropdowns);
@@ -168,9 +172,11 @@
           typeNote.innerHTML = `⚠️ Only <strong>${fallback}</strong> trades are available for <strong>${symbol}</strong>. We switched it for you.`;
           typeNote.style.display = "block";
         } else {
-          typeNote.innerHTML = `⚠️ No whale data available for <strong>${symbol}</strong>. Try another stock.`;
+          typeNote.innerHTML = `⚠️ No trades available for ${symbol}.`;
           typeNote.style.display = "block";
-          clearDropdowns();
+          populateDropdown("strike", []);
+          populateDropdown("expiration", []);
+          populateDropdown("premium", []);
           return;
         }
       } else {
@@ -182,16 +188,10 @@
       populateDropdown("premium", [...new Set(filtered.map(t => (t.premium / 100).toFixed(2)))]);
     }
 
-    function clearDropdowns() {
-      ["strike", "expiration", "premium"].forEach(id => {
-        document.getElementById(id).innerHTML = "";
-      });
-    }
-
     function populateDropdown(id, values) {
       const el = document.getElementById(id);
       el.innerHTML = "";
-      values.sort((a, b) => a - b).forEach(v => {
+      values.forEach(v => {
         const opt = document.createElement("option");
         opt.value = v;
         opt.textContent = v;
@@ -208,7 +208,7 @@
       const premium = document.getElementById("premium").value;
 
       if (!strike || !expiration || !premium) {
-        alert("Please select a strike, expiration, and premium before simulating.");
+        alert("Please make sure all dropdowns are populated before simulating.");
         return;
       }
 
