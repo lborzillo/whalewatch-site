@@ -142,6 +142,10 @@
       const symbol = document.getElementById("symbol").value;
       let type = document.getElementById("type").value.toUpperCase();
       const typeNote = document.getElementById("typeNote");
+      const premiumInput = document.getElementById("premium");
+
+      // Clear premium input each time dropdown changes
+      premiumInput.value = "";
 
       let filtered = whaleData.filter(t => t.symbol === symbol && t.type === type);
 
@@ -159,7 +163,6 @@
           typeNote.style.display = "block";
           populateDropdown("strike", []);
           populateDropdown("expiration", []);
-          document.getElementById("premium").placeholder = "Enter your premium";
           return;
         }
       } else {
@@ -168,9 +171,6 @@
 
       populateDropdown("strike", [...new Set(filtered.map(t => t.strike))]);
       populateDropdown("expiration", [...new Set(filtered.map(t => t.expiration))]);
-
-      const avgPremium = (filtered.reduce((sum, t) => sum + t.premium, 0) / filtered.length / 100).toFixed(2);
-      document.getElementById("premium").placeholder = `Suggested: $${avgPremium}`;
     }
 
     function populateDropdown(id, values) {
