@@ -1,222 +1,37 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>WhaleWatch | Options Simulator</title>
-  <style>
-    body {
-      font-family: 'Segoe UI', sans-serif;
-      background-color: #001d2d;
-      color: #ffffff;
-      margin: 0;
-      padding: 0;
+function updateDropdowns() {
+  const symbol = document.getElementById("symbol").value;
+  let type = document.getElementById("type").value.toUpperCase();
+  const typeNote = document.getElementById("type-note");
+
+  let filtered = whaleData.filter(t => t.symbol === symbol && t.type === type);
+
+  // If no data for the selected type, fallback to the other type
+  if (filtered.length === 0) {
+    const fallback = type === "CALL" ? "PUT" : "CALL";
+    const fallbackData = whaleData.filter(t => t.symbol === symbol && t.type === fallback);
+
+    if (fallbackData.length > 0) {
+      type = fallback;
+      document.getElementById("type").value = fallback;
+      filtered = fallbackData;
+
+      typeNote.innerHTML = `⚠️ Only <strong>${fallback}</strong> trades are available for <strong>${symbol}</strong>. We switched it for you.`;
+      typeNote.style.display = "block";
+    } else {
+      // No data at all for this symbol
+      typeNote.innerHTML = `⚠️ No available whale trades found for <strong>${symbol}</strong>.`;
+      typeNote.style.display = "block";
+      populateDropdown("strike", []);
+      populateDropdown("expiration", []);
+      populateDropdown("premium", []);
+      return;
     }
+  } else {
+    typeNote.style.display = "none";
+  }
 
-    nav {
-      background-color: #001520;
-      padding: 1em;
-      text-align: center;
-      position: sticky;
-      top: 0;
-      z-index: 1000;
-    }
-
-    nav a {
-      color: #00ffee;
-      margin: 0 15px;
-      text-decoration: none;
-      font-weight: bold;
-    }
-
-    .container {
-      max-width: 700px;
-      margin: 3em auto;
-      padding: 2em;
-      background-color: #002b3f;
-      border-radius: 8px;
-    }
-
-    h1 {
-      text-align: center;
-      color: #00ffee;
-    }
-
-    label {
-      font-weight: bold;
-      display: block;
-      margin-top: 1.2em;
-    }
-
-    select, input {
-      width: 100%;
-      padding: 0.7em;
-      margin-top: 0.5em;
-      border-radius: 5px;
-      border: none;
-      font-size: 1em;
-    }
-
-    button {
-      background-color: #00ffee;
-      color: #001d2d;
-      padding: 0.8em;
-      margin-top: 1.5em;
-      width: 100%;
-      font-size: 1em;
-      font-weight: bold;
-      border: none;
-      border-radius: 5px;
-      cursor: pointer;
-    }
-
-    .result {
-      background-color: #003850;
-      padding: 1em;
-      border-radius: 6px;
-      margin-top: 1.5em;
-    }
-
-    .result strong {
-      display: block;
-      margin-bottom: 0.5em;
-    }
-
-    .note {
-      margin-top: 1em;
-      background: #004050;
-      color: #dddddd;
-      padding: 0.8em;
-      border-left: 5px solid #00ffee;
-      border-radius: 5px;
-      font-size: 0.95em;
-    }
-  </style>
-</head>
-<body>
-  <nav>
-    <a href="index.html">Home</a>
-    <a href="learn.html">Learn</a>
-    <a href="#simulator">Live Data</a>
-  </nav>
-
-  <div class="container">
-    <h1>📊 Options Trade Simulator</h1>
-    <p>Practice selling puts and calls like a pro — using real whale data.</p>
-
-    <form id="simForm">
-      <label for="symbol">Symbol:</label>
-      <select id="symbol"></select>
-
-      <label for="type">Type:</label>
-      <select id="type">
-        <option value="PUT">Put</option>
-        <option value="CALL">Call</option>
-      </select>
-
-      <label for="strike">Strike Price ($):</label>
-      <select id="strike"></select>
-
-      <label for="expiration">Expiration Date:</label>
-      <select id="expiration"></select>
-
-      <label for="premium">Premium Collected ($ per share):</label>
-      <select id="premium"></select>
-
-      <button type="submit">💥 Simulate Trade</button>
-    </form>
-
-    <div id="type-note" class="note" style="display:none;"></div>
-
-    <div id="output" class="result" style="display:none;"></div>
-  </div>
-
-  <script>
-    let whaleData = [];
-
-    fetch("whales.json")
-      .then(res => res.json())
-      .then(data => {
-        whaleData = data.whale_trades;
-        const symbols = [...new Set(whaleData.map(t => t.symbol))].sort();
-        const symbolSelect = document.getElementById("symbol");
-        symbols.forEach(s => {
-          const opt = document.createElement("option");
-          opt.value = s;
-          opt.textContent = s;
-          symbolSelect.appendChild(opt);
-        });
-        updateDropdowns();
-      });
-
-    document.getElementById("symbol").addEventListener("change", updateDropdowns);
-    document.getElementById("type").addEventListener("change", updateDropdowns);
-
-    function updateDropdowns() {
-      const symbol = document.getElementById("symbol").value;
-      let type = document.getElementById("type").value.toUpperCase();
-      const typeNote = document.getElementById("type-note");
-
-      let filtered = whaleData.filter(t => t.symbol === symbol && t.type === type);
-
-      // Auto-switch if no data for selected type
-      if (filtered.length === 0) {
-        type = type === "CALL" ? "PUT" : "CALL";
-        document.getElementById("type").value = type;
-        filtered = whaleData.filter(t => t.symbol === symbol && t.type === type);
-
-        typeNote.innerHTML = `⚠️ Only <strong>${type}</strong> trades are available for <strong>${symbol}</strong>. We switched it for you.`;
-        typeNote.style.display = "block";
-      } else {
-        typeNote.style.display = "none";
-      }
-
-      populateDropdown("strike", [...new Set(filtered.map(t => t.strike))]);
-      populateDropdown("expiration", [...new Set(filtered.map(t => t.expiration))]);
-      populateDropdown("premium", [...new Set(filtered.map(t => (t.premium / 100).toFixed(2)))]);
-    }
-
-    function populateDropdown(id, values) {
-      const el = document.getElementById(id);
-      el.innerHTML = "";
-      if (values.length === 0) {
-        const opt = document.createElement("option");
-        opt.textContent = "No data";
-        opt.disabled = true;
-        opt.selected = true;
-        el.appendChild(opt);
-        return;
-      }
-      values.sort((a, b) => a - b).forEach(v => {
-        const opt = document.createElement("option");
-        opt.value = v;
-        opt.textContent = v;
-        el.appendChild(opt);
-      });
-    }
-
-    document.getElementById("simForm").addEventListener("submit", function(e) {
-      e.preventDefault();
-      const symbol = document.getElementById("symbol").value;
-      const type = document.getElementById("type").value.toUpperCase();
-      const strike = document.getElementById("strike").value;
-      const expiration = document.getElementById("expiration").value;
-      const premium = document.getElementById("premium").value;
-
-      const totalPremium = (parseFloat(premium) * 100).toFixed(2);
-      const output = document.getElementById("output");
-
-      output.innerHTML = `
-        <strong>✅ You simulated selling a ${type} on ${symbol}.</strong>
-        <ul>
-          <li><strong>Strike:</strong> $${strike}</li>
-          <li><strong>Premium Collected:</strong> $${totalPremium} (for 1 contract)</li>
-          <li><strong>Expiration Date:</strong> ${expiration}</li>
-        </ul>
-        <em>This is premium harvesting in action — income now, stock later (maybe).</em>
-      `;
-      output.style.display = "block";
-    });
-  </script>
-</body>
-</html>
+  // Populate dropdowns
+  populateDropdown("strike", [...new Set(filtered.map(t => t.strike))]);
+  populateDropdown("expiration", [...new Set(filtered.map(t => t.expiration))]);
+  populateDropdown("premium", [...new Set(filtered.map(t => (t.premium / 100).toFixed(2)))]);
+}
