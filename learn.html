@@ -144,7 +144,7 @@
       const typeNote = document.getElementById("typeNote");
       const premiumInput = document.getElementById("premium");
 
-      // Clear premium input each time dropdown changes
+      // Clear premium input on update
       premiumInput.value = "";
 
       let filtered = whaleData.filter(t => t.symbol === symbol && t.type === type);
@@ -171,6 +171,8 @@
 
       populateDropdown("strike", [...new Set(filtered.map(t => t.strike))]);
       populateDropdown("expiration", [...new Set(filtered.map(t => t.expiration))]);
+
+      // 💥 Do NOT populate premium field automatically
     }
 
     function populateDropdown(id, values) {
