@@ -81,8 +81,13 @@
       margin-bottom: 0.5em;
     }
 
-    #teachable-note {
-      border-left: 4px solid #ffaa00;
+    #type-note {
+      margin-top: 1em;
+      background: #00455b;
+      padding: 0.5em 1em;
+      border-left: 5px solid #ffcc00;
+      border-radius: 4px;
+      display: none;
     }
   </style>
 </head>
@@ -107,6 +112,8 @@
         <option value="CALL">Call</option>
       </select>
 
+      <div id="type-note"></div>
+
       <label for="strike">Strike Price ($):</label>
       <select id="strike"></select>
 
@@ -120,12 +127,6 @@
     </form>
 
     <div id="output" class="result" style="display:none;"></div>
-
-    <div id="teachable-note" class="result" style="display:none;">
-      <strong>💡 Teachable Moment:</strong>
-      <p>Whales aren’t placing any <strong>CALL</strong> trades on <span id="no-call-symbol">[symbol]</span> right now. That could mean they’re not feeling bullish — or they’re hedging for a drop with <strong>PUT</strong> options.</p>
-      <p>It's always smart to watch what big money <em>isn't</em> doing, not just what they are.</p>
-    </div>
   </div>
 
   <script>
@@ -152,28 +153,31 @@
     function updateDropdowns() {
       const symbol = document.getElementById("symbol").value;
       let type = document.getElementById("type").value.toUpperCase();
-      const teachable = document.getElementById("teachable-note");
+      const typeNote = document.getElementById("type-note");
 
       let filtered = whaleData.filter(t => t.symbol === symbol && t.type === type);
 
       if (filtered.length === 0) {
         const fallback = type === "CALL" ? "PUT" : "CALL";
         const fallbackData = whaleData.filter(t => t.symbol === symbol && t.type === fallback);
+
         if (fallbackData.length > 0) {
           type = fallback;
           document.getElementById("type").value = fallback;
           filtered = fallbackData;
-          document.getElementById("no-call-symbol").textContent = symbol;
-          teachable.style.display = "block";
+
+          typeNote.innerHTML = `⚠️ Only <strong>${fallback}</strong> trades are available for <strong>${symbol}</strong>. We switched it for you.`;
+          typeNote.style.display = "block";
         } else {
-          teachable.style.display = "none";
+          typeNote.innerHTML = `⚠️ No available whale trades found for <strong>${symbol}</strong>.`;
+          typeNote.style.display = "block";
           populateDropdown("strike", []);
           populateDropdown("expiration", []);
           populateDropdown("premium", []);
           return;
         }
       } else {
-        teachable.style.display = "none";
+        typeNote.style.display = "none";
       }
 
       populateDropdown("strike", [...new Set(filtered.map(t => t.strike))]);
@@ -194,12 +198,18 @@
 
     document.getElementById("simForm").addEventListener("submit", function(e) {
       e.preventDefault();
-      const symbol = document.getElementById("symbol").value;
-      const type = document.getElementById("type").value.toUpperCase();
+
       const strike = document.getElementById("strike").value;
       const expiration = document.getElementById("expiration").value;
       const premium = document.getElementById("premium").value;
 
+      if (!strike || !expiration || !premium) {
+        alert("⚠️ No whale trade data is available for this selection. Try a different combination.");
+        return;
+      }
+
+      const symbol = document.getElementById("symbol").value;
+      const type = document.getElementById("type").value.toUpperCase();
       const totalPremium = (parseFloat(premium) * 100).toFixed(2);
       const output = document.getElementById("output");
 
