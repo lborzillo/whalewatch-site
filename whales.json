@@ -1,24 +1,95 @@
 {
-  "timestamp": "2025-05-10T15:59:57.279701",
-  "whale_trades": [
-    {
-      "symbol": "TSLA",
-      "type": "CALL",
-      "strike": 310.0,
-      "expiration": "2025-05-16",
-      "premium": 210.0,
-      "open_interest": 31000,
-      "last_price": 12.10
-    },
-    {
-      "symbol": "TSLA",
-      "type": "PUT",
-      "strike": 290.0,
-      "expiration": "2025-05-16",
-      "premium": 150.0,
-      "open_interest": 32100,
-      "last_price": 298.26
-    }
-    // etc.
-  ]
+"timestamp": "2025-05-10T15:59:57.279701",
+"whale\_trades": \[
+{
+"symbol": "NVDA",
+"type": "CALL",
+"strike": 110.0,
+"expiration": "2025-05-16",
+"premium": 981742.96,
+"open\_interest": 133208,
+"last\_price": 7.37
+},
+{
+"symbol": "NVDA",
+"type": "PUT",
+"strike": 130.0,
+"expiration": "2025-05-16",
+"premium": 469260.99,
+"open\_interest": 34683,
+"last\_price": 13.53
+},
+{
+"symbol": "AAPL",
+"type": "PUT",
+"strike": 180.0,
+"expiration": "2025-05-16",
+"premium": 240000.0,
+"open\_interest": 65000,
+"last\_price": 179.20
+},
+{
+"symbol": "AAPL",
+"type": "CALL",
+"strike": 190.0,
+"expiration": "2025-05-16",
+"premium": 150000.0,
+"open\_interest": 48000,
+"last\_price": 5.25
+},
+{
+"symbol": "TSLA",
+"type": "PUT",
+"strike": 290.0,
+"expiration": "2025-05-16",
+"premium": 150.0,
+"open\_interest": 32100,
+"last\_price": 298.26
+},
+{
+"symbol": "TSLA",
+"type": "CALL",
+"strike": 310.0,
+"expiration": "2025-05-16",
+"premium": 210.0,
+"open\_interest": 31000,
+"last\_price": 12.10
+},
+{
+"symbol": "MSFT",
+"type": "CALL",
+"strike": 400.0,
+"expiration": "2025-05-16",
+"premium": 500.0,
+"open\_interest": 22000,
+"last\_price": 389.00
+},
+{
+"symbol": "MSFT",
+"type": "PUT",
+"strike": 375.0,
+"expiration": "2025-05-16",
+"premium": 420.0,
+"open\_interest": 20000,
+"last\_price": 6.40
+},
+{
+"symbol": "AMD",
+"type": "CALL",
+"strike": 150.0,
+"expiration": "2025-05-16",
+"premium": 330.0,
+"open\_interest": 18000,
+"last\_price": 146.50
+},
+{
+"symbol": "AMD",
+"type": "PUT",
+"strike": 140.0,
+"expiration": "2025-05-16",
+"premium": 275.0,
+"open\_interest": 17000,
+"last\_price": 3.80
+}
+]
 }
