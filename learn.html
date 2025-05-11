@@ -12,7 +12,6 @@
       margin: 0;
       padding: 0;
     }
-
     nav {
       background-color: #001520;
       padding: 1em;
@@ -20,14 +19,12 @@
       position: sticky;
       top: 0;
     }
-
     nav a {
       color: #00ffee;
       margin: 0 15px;
       text-decoration: none;
       font-weight: bold;
     }
-
     .container {
       max-width: 700px;
       margin: 3em auto;
@@ -35,18 +32,15 @@
       background-color: #002b3f;
       border-radius: 8px;
     }
-
     h1 {
       text-align: center;
       color: #00ffee;
     }
-
     label {
       font-weight: bold;
       display: block;
       margin-top: 1.2em;
     }
-
     select, input {
       width: 100%;
       padding: 0.7em;
@@ -55,7 +49,6 @@
       border: none;
       font-size: 1em;
     }
-
     button {
       background-color: #00ffee;
       color: #001d2d;
@@ -68,23 +61,23 @@
       border-radius: 5px;
       cursor: pointer;
     }
-
     .result {
       background-color: #003850;
       padding: 1em;
       border-radius: 6px;
       margin-top: 1.5em;
     }
-
     .result strong {
       display: block;
       margin-bottom: 0.5em;
     }
-
-    #type-note {
-      display: none;
-      color: #ffcc00;
+    .insight {
+      background-color: #003850;
+      padding: 1em;
       margin-top: 1em;
+      border-radius: 6px;
+      font-size: 0.95em;
+      line-height: 1.4;
     }
   </style>
 </head>
@@ -109,8 +102,6 @@
         <option value="CALL">Call</option>
       </select>
 
-      <div id="type-note"></div>
-
       <label for="strike">Strike Price ($):</label>
       <select id="strike"></select>
 
@@ -119,6 +110,8 @@
 
       <label for="premium">Premium Collected ($ per share):</label>
       <select id="premium"></select>
+
+      <div id="type-note" class="insight" style="display:none;"></div>
 
       <button type="submit">💥 Simulate Trade</button>
     </form>
@@ -141,7 +134,7 @@
           opt.textContent = s;
           symbolSelect.appendChild(opt);
         });
-        updateDropdowns(); // Initialize
+        updateDropdowns(); // initialize on load
       });
 
     document.getElementById("symbol").addEventListener("change", updateDropdowns);
@@ -154,7 +147,7 @@
 
       let filtered = whaleData.filter(t => t.symbol === symbol && t.type === type);
 
-      // If no data for selected type, try the other
+      // Handle no data cases
       if (filtered.length === 0) {
         const fallback = type === "CALL" ? "PUT" : "CALL";
         const fallbackData = whaleData.filter(t => t.symbol === symbol && t.type === fallback);
@@ -163,12 +156,12 @@
           type = fallback;
           document.getElementById("type").value = fallback;
           filtered = fallbackData;
-
-          typeNote.innerHTML = `⚠️ Only <strong>${fallback}</strong> trades are available for <strong>${symbol}</strong>. We switched it for you.`;
+          typeNote.innerHTML = `📉 No <strong>${type === "CALL" ? "PUT" : "CALL"}</strong> trades found for <strong>${symbol}</strong> today.<br>
+            Whales may be hedging or playing defense. This might be a wait-and-see moment.`;
           typeNote.style.display = "block";
         } else {
-          // No data at all
-          typeNote.innerHTML = `⚠️ No available whale trades found for <strong>${symbol}</strong>.`;
+          typeNote.innerHTML = `⚠️ No whale trades found for <strong>${symbol}</strong> at this time.<br>
+            Whales might be on the sidelines — which is a signal too.`;
           typeNote.style.display = "block";
           populateDropdown("strike", []);
           populateDropdown("expiration", []);
