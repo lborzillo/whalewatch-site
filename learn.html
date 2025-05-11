@@ -159,9 +159,8 @@
           typeNote.style.display = "block";
           populateDropdown("strike", []);
           populateDropdown("expiration", []);
-          // no premium dropdown needed
+          document.getElementById("premium").placeholder = "Enter your premium";
           return;
-
         }
       } else {
         typeNote.style.display = "none";
@@ -169,6 +168,9 @@
 
       populateDropdown("strike", [...new Set(filtered.map(t => t.strike))]);
       populateDropdown("expiration", [...new Set(filtered.map(t => t.expiration))]);
+
+      const avgPremium = (filtered.reduce((sum, t) => sum + t.premium, 0) / filtered.length / 100).toFixed(2);
+      document.getElementById("premium").placeholder = `Suggested: $${avgPremium}`;
     }
 
     function populateDropdown(id, values) {
