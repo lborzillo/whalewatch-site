@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>WhaleWatch | Options Simulator</title>
   <style>
     body {
@@ -12,7 +12,6 @@
       margin: 0;
       padding: 0;
     }
-
     nav {
       background-color: #001520;
       padding: 1em;
@@ -20,14 +19,12 @@
       position: sticky;
       top: 0;
     }
-
     nav a {
       color: #00ffee;
       margin: 0 15px;
       text-decoration: none;
       font-weight: bold;
     }
-
     .container {
       max-width: 700px;
       margin: 3em auto;
@@ -35,18 +32,15 @@
       background-color: #002b3f;
       border-radius: 8px;
     }
-
     h1 {
       text-align: center;
       color: #00ffee;
     }
-
     label {
       font-weight: bold;
       display: block;
       margin-top: 1.2em;
     }
-
     select, input {
       width: 100%;
       padding: 0.7em;
@@ -55,7 +49,6 @@
       border: none;
       font-size: 1em;
     }
-
     button {
       background-color: #00ffee;
       color: #001d2d;
@@ -68,26 +61,22 @@
       border-radius: 5px;
       cursor: pointer;
     }
-
     .result {
       background-color: #003850;
       padding: 1em;
       border-radius: 6px;
       margin-top: 1.5em;
     }
-
     .result strong {
       display: block;
       margin-bottom: 0.5em;
     }
-
     .note {
       margin-top: 1em;
-      background-color: #224d5d;
-      padding: 0.8em;
-      border-radius: 6px;
-      color: #ffcc00;
-      font-size: 0.95em;
+      padding: 1em;
+      background-color: #00425f;
+      border-left: 5px solid #00ffee;
+      display: none;
     }
   </style>
 </head>
@@ -108,8 +97,8 @@
 
       <label for="type">Type:</label>
       <select id="type">
-        <option value="PUT">Put</option>
         <option value="CALL">Call</option>
+        <option value="PUT">Put</option>
       </select>
 
       <label for="strike">Strike Price ($):</label>
@@ -124,8 +113,8 @@
       <button type="submit">💥 Simulate Trade</button>
     </form>
 
-    <div id="type-note" class="note" style="display: none;"></div>
-    <div id="output" class="result" style="display: none;"></div>
+    <div id="typeNote" class="note"></div>
+    <div id="output" class="result" style="display:none;"></div>
   </div>
 
   <script>
@@ -143,7 +132,7 @@
           opt.textContent = s;
           symbolSelect.appendChild(opt);
         });
-        updateDropdowns(); // Initialize
+        updateDropdowns();
       });
 
     document.getElementById("symbol").addEventListener("change", updateDropdowns);
@@ -152,11 +141,10 @@
     function updateDropdowns() {
       const symbol = document.getElementById("symbol").value;
       let type = document.getElementById("type").value.toUpperCase();
-      const typeNote = document.getElementById("type-note");
+      const typeNote = document.getElementById("typeNote");
 
       let filtered = whaleData.filter(t => t.symbol === symbol && t.type === type);
 
-      // If no data for selected type, fallback
       if (filtered.length === 0) {
         const fallback = type === "CALL" ? "PUT" : "CALL";
         const fallbackData = whaleData.filter(t => t.symbol === symbol && t.type === fallback);
@@ -164,11 +152,10 @@
           type = fallback;
           document.getElementById("type").value = fallback;
           filtered = fallbackData;
-          typeNote.innerHTML = `⚠️ No <strong>${type === "CALL" ? "CALLS" : "PUTS"}</strong> for <strong>${symbol}</strong>. Switched to available type <strong>${fallback}</strong>.`;
+          typeNote.innerHTML = `⚠️ Only <strong>${fallback}</strong> trades are available for <strong>${symbol}</strong>. We switched it for you.`;
           typeNote.style.display = "block";
         } else {
-          // Nothing available
-          typeNote.innerHTML = `⚠️ No whale trades found for <strong>${symbol}</strong>. Try another stock.`;
+          typeNote.innerHTML = `⚠️ No whale data available yet for <strong>${symbol}</strong>. Try another.`;
           typeNote.style.display = "block";
           populateDropdown("strike", []);
           populateDropdown("expiration", []);
@@ -203,18 +190,15 @@
       const expiration = document.getElementById("expiration").value;
       const premium = document.getElementById("premium").value;
 
+      const output = document.getElementById("output");
+
       if (!strike || !expiration || !premium) {
-        document.getElementById("output").innerHTML = `
-          <strong>⚠️ Missing data for your selection.</strong>
-          <p>This can happen when whale trades are unavailable for the selected type.</p>
-        `;
-        document.getElementById("output").style.display = "block";
+        output.innerHTML = `<strong>⚠️ Unable to simulate trade. No data found for that option type.</strong>`;
+        output.style.display = "block";
         return;
       }
 
       const totalPremium = (parseFloat(premium) * 100).toFixed(2);
-      const output = document.getElementById("output");
-
       output.innerHTML = `
         <strong>✅ You simulated selling a ${type} on ${symbol}.</strong>
         <ul>
