@@ -59,7 +59,7 @@
     small {
       color: #cccccc;
       display: block;
-      margin-top: 0.3em;
+      margin-top: 0.5em;
     }
 
     button {
@@ -117,7 +117,7 @@
 
       <label for="premium">Premium Collected ($ per share):</label>
       <select id="premium"></select>
-      <small>Select a premium based on recent large trades</small>
+      <small id="premiumInfo">Premium data sourced from real whale trades.</small>
 
       <button type="submit">💥 Simulate Trade</button>
     </form>
@@ -140,7 +140,7 @@
           opt.textContent = s;
           symbolSelect.appendChild(opt);
         });
-        updateDropdowns(); // Initialize defaults
+        updateDropdowns(); // Initialize dropdowns
       });
 
     document.getElementById("symbol").addEventListener("change", updateDropdowns);
@@ -155,6 +155,15 @@
       populateDropdown("strike", [...new Set(filtered.map(t => t.strike))]);
       populateDropdown("expiration", [...new Set(filtered.map(t => t.expiration))]);
       populateDropdown("premium", [...new Set(filtered.map(t => t.premium.toFixed(2)))]);
+
+      // Update whale trade preview for educational tooltip
+      const infoBox = document.getElementById("premiumInfo");
+      if (filtered.length > 0) {
+        const example = filtered[0];
+        infoBox.textContent = `💡 Based on whale trade: ${example.strike} ${example.type} on ${example.symbol} expiring ${example.expiration} with $${example.premium.toFixed(2)} premium (${example.open_interest} open interest)`;
+      } else {
+        infoBox.textContent = 'No matching trades found.';
+      }
     }
 
     function populateDropdown(id, values) {
@@ -181,3 +190,15 @@
 
       output.innerHTML = `
         <strong>✅ You simulated selling a ${type} on ${symbol}.</strong>
+        <ul>
+          <li><strong>Strike:</strong> $${strike}</li>
+          <li><strong>Premium Collected:</strong> $${totalPremium} (for 1 contract)</li>
+          <li><strong>Expiration Date:</strong> ${expiration}</li>
+        </ul>
+        <em>This is premium harvesting in action — income now, stock later (maybe).</em>
+      `;
+      output.style.display = "block";
+    });
+  </script>
+</body>
+</html>
