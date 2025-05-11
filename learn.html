@@ -19,6 +19,7 @@
       text-align: center;
       position: sticky;
       top: 0;
+      z-index: 1000;
     }
 
     nav a {
@@ -125,7 +126,7 @@
       .then(res => res.json())
       .then(data => {
         whaleData = data.whale_trades;
-        const symbols = [...new Set(whaleData.map(t => t.symbol))];
+        const symbols = [...new Set(whaleData.map(t => t.symbol))].sort();
         const symbolSelect = document.getElementById("symbol");
         symbols.forEach(s => {
           const opt = document.createElement("option");
@@ -133,7 +134,7 @@
           opt.textContent = s;
           symbolSelect.appendChild(opt);
         });
-        updateDropdowns(); // Initialize
+        updateDropdowns();
       });
 
     document.getElementById("symbol").addEventListener("change", updateDropdowns);
@@ -141,18 +142,33 @@
 
     function updateDropdowns() {
       const symbol = document.getElementById("symbol").value;
-      const type = document.getElementById("type").value.toUpperCase(); // Normalize
+      const type = document.getElementById("type").value.toUpperCase();
 
       const filtered = whaleData.filter(t => t.symbol === symbol && t.type === type);
 
+      if (filtered.length === 0) {
+        populateDropdown("strike", []);
+        populateDropdown("expiration", []);
+        populateDropdown("premium", []);
+        return;
+      }
+
       populateDropdown("strike", [...new Set(filtered.map(t => t.strike))]);
       populateDropdown("expiration", [...new Set(filtered.map(t => t.expiration))]);
-      populateDropdown("premium", [...new Set(filtered.map(t => t.premium.toFixed(2)))]);
+      populateDropdown("premium", [...new Set(filtered.map(t => (t.premium / 100).toFixed(2)))]);
     }
 
     function populateDropdown(id, values) {
       const el = document.getElementById(id);
       el.innerHTML = "";
+      if (values.length === 0) {
+        const opt = document.createElement("option");
+        opt.textContent = "No data";
+        opt.disabled = true;
+        opt.selected = true;
+        el.appendChild(opt);
+        return;
+      }
       values.sort((a, b) => a - b).forEach(v => {
         const opt = document.createElement("option");
         opt.value = v;
