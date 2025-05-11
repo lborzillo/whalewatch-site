@@ -56,6 +56,12 @@
       font-size: 1em;
     }
 
+    small {
+      color: #cccccc;
+      display: block;
+      margin-top: 0.3em;
+    }
+
     button {
       background-color: #00ffee;
       color: #001d2d;
@@ -111,6 +117,7 @@
 
       <label for="premium">Premium Collected ($ per share):</label>
       <select id="premium"></select>
+      <small>Select a premium based on recent large trades</small>
 
       <button type="submit">💥 Simulate Trade</button>
     </form>
@@ -121,7 +128,7 @@
   <script>
     let whaleData = [];
 
-    fetch("/whales.json")
+    fetch("../whales.json")
       .then(res => res.json())
       .then(data => {
         whaleData = data.whale_trades;
@@ -174,15 +181,3 @@
 
       output.innerHTML = `
         <strong>✅ You simulated selling a ${type} on ${symbol}.</strong>
-        <ul>
-          <li><strong>Strike:</strong> $${strike}</li>
-          <li><strong>Premium Collected:</strong> $${totalPremium} (for 1 contract)</li>
-          <li><strong>Expiration Date:</strong> ${expiration}</li>
-        </ul>
-        <em>This is premium harvesting in action — income now, stock later (maybe).</em>
-      `;
-      output.style.display = "block";
-    });
-  </script>
-</body>
-</html>
