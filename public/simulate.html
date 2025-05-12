@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>WhaleWatch | Simulator</title>
+  <title>WhaleWatch | Learn</title>
   <style>
     body {
       font-family: 'Segoe UI', sans-serif;
@@ -26,7 +26,7 @@
       font-weight: bold;
     }
     .container {
-      max-width: 700px;
+      max-width: 800px;
       margin: 3em auto;
       padding: 2em;
       background-color: #002b3f;
@@ -36,43 +36,15 @@
       text-align: center;
       color: #00ffee;
     }
-    label {
-      font-weight: bold;
-      display: block;
-      margin-top: 1.2em;
+    ul {
+      line-height: 1.7;
+      padding-left: 1.2em;
     }
-    select, input {
-      width: 100%;
-      padding: 0.7em;
-      margin-top: 0.5em;
-      border-radius: 5px;
-      border: none;
-      font-size: 1em;
+    strong {
+      color: #ffffff;
     }
-    button {
-      background-color: #00ffee;
-      color: #001d2d;
-      padding: 0.8em;
-      margin-top: 1.5em;
-      width: 100%;
-      font-size: 1em;
-      font-weight: bold;
-      border: none;
-      border-radius: 5px;
-      cursor: pointer;
-    }
-    .result {
-      background-color: #003850;
-      padding: 1em;
-      border-radius: 6px;
-      margin-top: 1.5em;
-    }
-    .note {
-      margin-top: 1em;
-      padding: 1em;
-      background-color: #00425f;
-      border-left: 5px solid #00ffee;
-      display: none;
+    em {
+      color: #cccccc;
     }
   </style>
 </head>
@@ -84,128 +56,17 @@
   </nav>
 
   <div class="container">
-    <h1>📊 Options Trade Simulator</h1>
-    <p>Practice selling puts and calls like a pro — using real whale data.</p>
+    <h1>📘 How to Read Whale Data</h1>
+    <p>Whale trades are large, high-volume options trades made by institutions or big players. Tracking these trades can give insight into future market moves.</p>
 
-    <form id="simForm">
-      <label for="symbol">Symbol:</label>
-      <select id="symbol"></select>
+    <p>When using the simulator, you may see some fields empty or unavailable. Here's why:</p>
+    <ul>
+      <li><strong>No symbols appear:</strong> The whale feed may be temporarily empty. Try refreshing later.</li>
+      <li><strong>Can't select Call or Put:</strong> Only one type of trade (e.g., Calls) may exist for a symbol. The simulator will switch to the available one and explain.</li>
+      <li><strong>Empty Strike or Expiration fields:</strong> Whale trades for that symbol might be missing matching strike/expiry pairs.</li>
+    </ul>
 
-      <label for="type">Type:</label>
-      <select id="type">
-        <option value="CALL">Call</option>
-        <option value="PUT">Put</option>
-      </select>
-
-      <label for="strike">Strike Price ($):</label>
-      <select id="strike"></select>
-
-      <label for="expiration">Expiration Date:</label>
-      <select id="expiration"></select>
-
-      <label for="premium">Premium Collected ($ per share):</label>
-      <input type="number" id="premium" placeholder="Enter your premium" step="0.01" min="0" />
-
-      <button type="submit">💥 Simulate Trade</button>
-    </form>
-
-    <div id="typeNote" class="note"></div>
-    <div id="output" class="result" style="display:none;"></div>
+    <p>This is part of the learning process &mdash; sometimes the trade just isn't there. We show you how to spot it.</p>
   </div>
-
-  <script>
-    let whaleData = [];
-
-    fetch("whales.json")
-      .then(res => res.json())
-      .then(data => {
-        whaleData = data.whale_trades;
-        const symbols = [...new Set(whaleData.map(t => t.symbol))];
-        const symbolSelect = document.getElementById("symbol");
-        symbols.forEach(s => {
-          const opt = document.createElement("option");
-          opt.value = s;
-          opt.textContent = s;
-          symbolSelect.appendChild(opt);
-        });
-        updateDropdowns();
-      });
-
-    document.getElementById("symbol").addEventListener("change", updateDropdowns);
-    document.getElementById("type").addEventListener("change", updateDropdowns);
-
-    function updateDropdowns() {
-      const symbol = document.getElementById("symbol").value;
-      let type = document.getElementById("type").value.toUpperCase();
-      const typeNote = document.getElementById("typeNote");
-      const premiumInput = document.getElementById("premium");
-
-      premiumInput.value = "";
-      let filtered = whaleData.filter(t => t.symbol === symbol && t.type === type);
-
-      if (filtered.length === 0) {
-        const fallback = type === "CALL" ? "PUT" : "CALL";
-        const fallbackData = whaleData.filter(t => t.symbol === symbol && t.type === fallback);
-        if (fallbackData.length > 0) {
-          type = fallback;
-          document.getElementById("type").value = fallback;
-          filtered = fallbackData;
-          typeNote.innerHTML = `⚠️ Only <strong>${fallback}</strong> trades are available for <strong>${symbol}</strong>. We switched it for you.`;
-          typeNote.style.display = "block";
-        } else {
-          typeNote.innerHTML = `⚠️ No whale data available yet for <strong>${symbol}</strong>. Try another.`;
-          typeNote.style.display = "block";
-          populateDropdown("strike", []);
-          populateDropdown("expiration", []);
-          return;
-        }
-      } else {
-        typeNote.style.display = "none";
-      }
-
-      populateDropdown("strike", [...new Set(filtered.map(t => t.strike))]);
-      populateDropdown("expiration", [...new Set(filtered.map(t => t.expiration))]);
-    }
-
-    function populateDropdown(id, values) {
-      const el = document.getElementById(id);
-      el.innerHTML = "";
-      values.sort((a, b) => a - b).forEach(v => {
-        const opt = document.createElement("option");
-        opt.value = v;
-        opt.textContent = v;
-        el.appendChild(opt);
-      });
-    }
-
-    document.getElementById("simForm").addEventListener("submit", function(e) {
-      e.preventDefault();
-      const symbol = document.getElementById("symbol").value;
-      const type = document.getElementById("type").value.toUpperCase();
-      const strike = document.getElementById("strike").value;
-      const expiration = document.getElementById("expiration").value;
-      const premium = document.getElementById("premium").value;
-
-      const output = document.getElementById("output");
-
-      if (!strike || !expiration || !premium) {
-        output.innerHTML = `<strong>⚠️ Teachable moment: This trade can't be simulated until you complete all fields.</strong>`;
-        output.style.display = "block";
-        return;
-      }
-
-      const totalPremium = (parseFloat(premium) * 100).toFixed(2);
-      output.innerHTML = `
-        <strong>✅ You simulated selling a ${type} on ${symbol}.</strong>
-        <ul>
-          <li><strong>Strike:</strong> $${strike}</li>
-          <li><strong>Premium Collected:</strong> $${totalPremium} (for 1 contract)</li>
-          <li><strong>Expiration Date:</strong> ${expiration}</li>
-        </ul>
-        <em>This is premium harvesting in action — income now, stock later (maybe).</em>
-      `;
-      output.style.display = "block";
-    });
-  </script>
 </body>
 </html>
