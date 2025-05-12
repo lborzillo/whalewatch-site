@@ -2,8 +2,8 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>WhaleWatch | Options Simulator</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>WhaleWatch | Simulator</title>
   <style>
     body {
       font-family: 'Segoe UI', sans-serif;
@@ -12,7 +12,6 @@
       margin: 0;
       padding: 0;
     }
-
     nav {
       background-color: #001520;
       padding: 1em;
@@ -20,14 +19,12 @@
       position: sticky;
       top: 0;
     }
-
     nav a {
       color: #00ffee;
       margin: 0 15px;
       text-decoration: none;
       font-weight: bold;
     }
-
     .container {
       max-width: 700px;
       margin: 3em auto;
@@ -35,19 +32,16 @@
       background-color: #002b3f;
       border-radius: 8px;
     }
-
     h1 {
       text-align: center;
       color: #00ffee;
     }
-
     label {
       font-weight: bold;
       display: block;
       margin-top: 1.2em;
     }
-
-    select {
+    select, input {
       width: 100%;
       padding: 0.7em;
       margin-top: 0.5em;
@@ -55,13 +49,6 @@
       border: none;
       font-size: 1em;
     }
-
-    small {
-      color: #cccccc;
-      display: block;
-      margin-top: 0.5em;
-    }
-
     button {
       background-color: #00ffee;
       color: #001d2d;
@@ -74,17 +61,18 @@
       border-radius: 5px;
       cursor: pointer;
     }
-
     .result {
       background-color: #003850;
       padding: 1em;
       border-radius: 6px;
       margin-top: 1.5em;
     }
-
-    .result strong {
-      display: block;
-      margin-bottom: 0.5em;
+    .note {
+      margin-top: 1em;
+      padding: 1em;
+      background-color: #00425f;
+      border-left: 5px solid #00ffee;
+      display: none;
     }
   </style>
 </head>
@@ -92,7 +80,7 @@
   <nav>
     <a href="index.html">Home</a>
     <a href="learn.html">Learn</a>
-    <a href="#simulator">Live Data</a>
+    <a href="simulate.html">Live Data</a>
   </nav>
 
   <div class="container">
@@ -105,8 +93,8 @@
 
       <label for="type">Type:</label>
       <select id="type">
-        <option value="PUT">Put</option>
         <option value="CALL">Call</option>
+        <option value="PUT">Put</option>
       </select>
 
       <label for="strike">Strike Price ($):</label>
@@ -116,12 +104,12 @@
       <select id="expiration"></select>
 
       <label for="premium">Premium Collected ($ per share):</label>
-      <select id="premium"></select>
-      <small id="premiumInfo">Premium data sourced from real whale trades.</small>
+      <input type="number" id="premium" placeholder="Enter your premium" step="0.01" min="0" />
 
       <button type="submit">💥 Simulate Trade</button>
     </form>
 
+    <div id="typeNote" class="note"></div>
     <div id="output" class="result" style="display:none;"></div>
   </div>
 
@@ -148,52 +136,35 @@
 
     function updateDropdowns() {
       const symbol = document.getElementById("symbol").value;
-      const type = document.getElementById("type").value;
+      let type = document.getElementById("type").value.toUpperCase();
+      const typeNote = document.getElementById("typeNote");
+      const premiumInput = document.getElementById("premium");
 
-      const filtered = whaleData.filter(t => t.symbol === symbol && t.type === type);
+      premiumInput.value = "";
+      let filtered = whaleData.filter(t => t.symbol === symbol && t.type === type);
 
-      const strikes = [...new Set(filtered.map(t => t.strike))];
-      const expirations = [...new Set(filtered.map(t => t.expiration))];
-
-      populateDropdown("strike", strikes);
-      populateDropdown("expiration", expirations);
-
-      // Wire up event handlers for premium lookup
-      document.getElementById("strike").addEventListener("change", updatePremium);
-      document.getElementById("expiration").addEventListener("change", updatePremium);
-
-      // Clear premium field
-      populateDropdown("premium", []);
-      document.getElementById("premiumInfo").textContent = '';
-    }
-
-    function updatePremium() {
-      const symbol = document.getElementById("symbol").value;
-      const type = document.getElementById("type").value;
-      const strike = parseFloat(document.getElementById("strike").value);
-      const expiration = document.getElementById("expiration").value;
-
-      const match = whaleData.find(t =>
-        t.symbol === symbol &&
-        t.type === type &&
-        t.strike === strike &&
-        t.expiration === expiration
-      );
-
-      const premiumDropdown = document.getElementById("premium");
-      premiumDropdown.innerHTML = "";
-
-      if (match) {
-        const opt = document.createElement("option");
-        opt.value = match.last_price.toFixed(2);
-        opt.textContent = match.last_price.toFixed(2);
-        premiumDropdown.appendChild(opt);
-
-        document.getElementById("premiumInfo").textContent =
-          `💡 Based on whale trade: ${strike} ${type} on ${symbol} expiring ${expiration} with $${match.last_price.toFixed(2)} premium (${match.open_interest} open interest)`;
+      if (filtered.length === 0) {
+        const fallback = type === "CALL" ? "PUT" : "CALL";
+        const fallbackData = whaleData.filter(t => t.symbol === symbol && t.type === fallback);
+        if (fallbackData.length > 0) {
+          type = fallback;
+          document.getElementById("type").value = fallback;
+          filtered = fallbackData;
+          typeNote.innerHTML = `⚠️ Only <strong>${fallback}</strong> trades are available for <strong>${symbol}</strong>. We switched it for you.`;
+          typeNote.style.display = "block";
+        } else {
+          typeNote.innerHTML = `⚠️ No whale data available yet for <strong>${symbol}</strong>. Try another.`;
+          typeNote.style.display = "block";
+          populateDropdown("strike", []);
+          populateDropdown("expiration", []);
+          return;
+        }
       } else {
-        document.getElementById("premiumInfo").textContent = "No matching whale trade found.";
+        typeNote.style.display = "none";
       }
+
+      populateDropdown("strike", [...new Set(filtered.map(t => t.strike))]);
+      populateDropdown("expiration", [...new Set(filtered.map(t => t.expiration))]);
     }
 
     function populateDropdown(id, values) {
@@ -210,14 +181,20 @@
     document.getElementById("simForm").addEventListener("submit", function(e) {
       e.preventDefault();
       const symbol = document.getElementById("symbol").value;
-      const type = document.getElementById("type").value;
+      const type = document.getElementById("type").value.toUpperCase();
       const strike = document.getElementById("strike").value;
       const expiration = document.getElementById("expiration").value;
       const premium = document.getElementById("premium").value;
 
-      const totalPremium = (parseFloat(premium) * 100).toFixed(2);
       const output = document.getElementById("output");
 
+      if (!strike || !expiration || !premium) {
+        output.innerHTML = `<strong>⚠️ Teachable moment: This trade can't be simulated until you complete all fields.</strong>`;
+        output.style.display = "block";
+        return;
+      }
+
+      const totalPremium = (parseFloat(premium) * 100).toFixed(2);
       output.innerHTML = `
         <strong>✅ You simulated selling a ${type} on ${symbol}.</strong>
         <ul>
