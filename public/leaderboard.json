@@ -1,45 +1,121 @@
-{
-  "timestamp": "2025-05-10T19:45:00.000Z",
-  "top_10": {
-    "NVDA": {
-      "count": 5,
-      "total_premium": 3907191.87
-    },
-    "AAPL": {
-      "count": 2,
-      "total_premium": 1095555.0
-    },
-    "TSLA": {
-      "count": 1,
-      "total_premium": 772345.0
-    },
-    "MSFT": {
-      "count": 2,
-      "total_premium": 611234.99
-    },
-    "AMZN": {
-      "count": 1,
-      "total_premium": 589000.5
-    },
-    "META": {
-      "count": 3,
-      "total_premium": 455678.32
-    },
-    "GOOG": {
-      "count": 2,
-      "total_premium": 398211.1
-    },
-    "NFLX": {
-      "count": 1,
-      "total_premium": 321000.0
-    },
-    "AMD": {
-      "count": 2,
-      "total_premium": 287410.75
-    },
-    "BABA": {
-      "count": 1,
-      "total_premium": 251900.0
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>WhaleWatch | Home</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background-color: #001d2d;
+      color: #ffffff;
+      margin: 0;
+      padding: 0;
     }
-  }
-}
+    nav {
+      background-color: #001520;
+      padding: 1em;
+      text-align: center;
+      position: sticky;
+      top: 0;
+    }
+    nav a {
+      color: #00ffee;
+      margin: 0 15px;
+      text-decoration: none;
+      font-weight: bold;
+    }
+    .hero {
+      text-align: center;
+      padding: 6em 2em 3em;
+      background-color: #002b3f;
+    }
+    .hero h1 {
+      font-size: 2.8em;
+      color: #00ffee;
+      margin-bottom: 0.3em;
+    }
+    .hero p {
+      font-size: 1.25em;
+      color: #cccccc;
+    }
+    .section {
+      max-width: 800px;
+      margin: 2.5em auto;
+      padding: 1.5em;
+    }
+    .section h2 {
+      color: #00ffee;
+      font-size: 1.5em;
+      margin-bottom: 0.5em;
+    }
+    .section p {
+      color: #dddddd;
+    }
+    .card {
+      background-color: #003850;
+      padding: 1em;
+      border-radius: 6px;
+      margin-bottom: 1em;
+    }
+    .bar-container {
+      background-color: #003850;
+      border-radius: 5px;
+      height: 20px;
+      width: 100%;
+      margin: 0.5em 0;
+    }
+    .bar {
+      height: 100%;
+      background-color: #00ffee;
+      border-radius: 5px;
+    }
+  </style>
+</head>
+<body>
+  <nav>
+    <a href="index.html">Home</a>
+    <a href="learn.html">Learn</a>
+    <a href="simulate.html">Live Data</a>
+  </nav>
+
+  <div class="hero">
+    <h1>🐋 WhaleWatch.ai</h1>
+    <p>Real-time sonar on big money moves.</p>
+  </div>
+
+  <div class="section" id="whaleMeter">
+    <h2>📶 Whale Meter</h2>
+    <p>Total Premium Traded Today:</p>
+    <div class="bar-container">
+      <div class="bar" id="whaleBar" style="width: 0%"></div>
+    </div>
+    <p id="whaleTotal">$0</p>
+  </div>
+
+  <div class="section" id="leaderboardSection">
+    <h2>🏆 Leaderboard (Top 10 by Premium)</h2>
+    <div id="leaderboardList">Loading...</div>
+  </div>
+
+  <div class="section" id="whaleFeed">
+    <h2>🐳 Latest Whale Trades</h2>
+    <div id="whaleList">Loading...</div>
+  </div>
+
+  <script>
+    // Load whale trades
+    fetch("whales.json")
+      .then(res => res.json())
+      .then(data => {
+        const trades = data.whale_trades || [];
+        const container = document.getElementById("whaleList");
+
+        if (!trades.length) {
+          container.innerHTML = "No trades available.";
+          return;
+        }
+
+        const total = trades.reduce((sum, t) => sum + (t.premium || 0), 0);
+        const maxPremium = 10000000; // set your own scale
+        const percent = Math.min(100, (total / maxPremium) * 100);
