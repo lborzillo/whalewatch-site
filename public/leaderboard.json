@@ -119,3 +119,40 @@
         const total = trades.reduce((sum, t) => sum + (t.premium || 0), 0);
         const maxPremium = 10000000; // set your own scale
         const percent = Math.min(100, (total / maxPremium) * 100);
+
+        document.getElementById("whaleBar").style.width = percent + "%";
+        document.getElementById("whaleTotal").textContent = "$" + total.toLocaleString();
+
+        container.innerHTML = trades.slice(0, 5).map(t => `
+          <div class="card">
+            <strong>${t.symbol}</strong> - ${t.type}<br>
+            Strike: $${t.strike}<br>
+            Exp: ${t.expiration}<br>
+            Premium: $${Number(t.premium).toFixed(2)}
+          </div>
+        `).join("");
+      });
+
+    // Load leaderboard
+    fetch("leaderboard.json")
+      .then(res => res.json())
+      .then(data => {
+        const top = data.top_10 || {};
+        const board = document.getElementById("leaderboardList");
+
+        if (!Object.keys(top).length) {
+          board.innerHTML = "No leaderboard data.";
+          return;
+        }
+
+        board.innerHTML = Object.entries(top).map(([symbol, info], i) => `
+          <div class="card">
+            <strong>${i + 1}. ${symbol}</strong><br>
+            Trades: ${info.count}<br>
+            Total Premium: $${Number(info.total_premium).toLocaleString()}
+          </div>
+        `).join("");
+      });
+  </script>
+</body>
+</html>
