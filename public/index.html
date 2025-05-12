@@ -98,14 +98,18 @@
     <p>Climb the leaderboard and track your success against others. Get smarter, faster, and more confident with every simulation.</p>
   </div>
 
-  <!-- 🐳 Whale Feed Section -->
   <div class="section" id="whaleFeed">
     <h2>🐳 Latest Whale Trades</h2>
     <div id="whaleList">Loading...</div>
   </div>
 
+  <div class="section" id="whaleMeter">
+    <h2>📈 Whale Meter</h2>
+    <div id="meterOutput">Loading...</div>
+  </div>
+
   <script>
-    fetch("/whales.json")
+    fetch("whales.json")
       .then(res => res.json())
       .then(data => {
         const trades = data.whale_trades;
@@ -128,6 +132,51 @@
       .catch(err => {
         document.getElementById("whaleList").innerHTML = "Error loading whale data.";
         console.error("Fetch error:", err);
+      });
+  </script>
+
+  <script>
+    fetch("leaderboard.json")
+      .then(res => res.json())
+      .then(data => {
+        const leaderboard = data.top_10;
+        const meterOutput = document.getElementById("meterOutput");
+
+        let totalPremium = 0;
+        for (const symbol in leaderboard) {
+          totalPremium += leaderboard[symbol].total_premium;
+        }
+
+        let level = 0;
+        let label = "🐢 Very Quiet";
+        let color = "#888888";
+
+        if (totalPremium >= 5000000) {
+          level = 10;
+          label = "🐋 Bullish Whales";
+          color = "#00ff88";
+        } else if (totalPremium >= 2000000) {
+          level = 7;
+          label = "🦭 Neutral Activity";
+          color = "#ffaa00";
+        } else {
+          level = 4;
+          label = "🦦 Low Activity";
+          color = "#ff5555";
+        }
+
+        const meterBar = "█".repeat(level) + "░".repeat(10 - level);
+
+        meterOutput.innerHTML = `
+          <pre style="font-size: 1.2em; color: ${color}; background: #003850; padding: 1em; border-radius: 8px;">
+🐋 Whale Meter: ${meterBar}  ${label}
+💰 Total Premium: $${totalPremium.toLocaleString(undefined, { maximumFractionDigits: 2 })}
+          </pre>
+        `;
+      })
+      .catch(err => {
+        document.getElementById("meterOutput").textContent = "Unable to load Whale Meter.";
+        console.error("Whale Meter error:", err);
       });
   </script>
 </body>
