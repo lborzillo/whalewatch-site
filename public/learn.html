@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>WhaleWatch | Learn</title>
   <style>
     body {
@@ -12,7 +12,6 @@
       margin: 0;
       padding: 0;
     }
-
     nav {
       background-color: #001520;
       padding: 1em;
@@ -20,14 +19,12 @@
       position: sticky;
       top: 0;
     }
-
     nav a {
       color: #00ffee;
       margin: 0 15px;
       text-decoration: none;
       font-weight: bold;
     }
-
     .container {
       max-width: 800px;
       margin: 3em auto;
@@ -35,31 +32,25 @@
       background-color: #002b3f;
       border-radius: 8px;
     }
-
     h1 {
       text-align: center;
       color: #00ffee;
+      font-size: 2em;
     }
-
+    p {
+      font-size: 1.1em;
+      color: #dddddd;
+    }
     ul {
       margin-top: 1em;
-      padding-left: 1.5em;
+      padding-left: 1.2em;
     }
-
-    ul li {
+    li {
       margin-bottom: 1em;
-      line-height: 1.4;
+      line-height: 1.5em;
     }
-
     strong {
       color: #ffffff;
-    }
-
-    .icon {
-      font-size: 2em;
-      text-align: center;
-      display: block;
-      margin-bottom: 0.5em;
     }
   </style>
 </head>
@@ -71,31 +62,20 @@
   </nav>
 
   <div class="container">
-    <div class="icon">📘</div>
-    <h1>How to Read Whale Data</h1>
-
+    <h1>📘 How to Read Whale Data</h1>
     <p>
-      Whale trades are large, high-volume options trades made by institutions or big players.
-      Tracking these trades can give insight into future market moves.
+      Whale trades are large, high-volume options trades made by institutions or big players. Tracking these trades can give insight into future market moves.
     </p>
-
-    <p>When using the simulator, you may see some fields empty or unavailable. Here's why:</p>
-
-    <ul>
-      <li>
-        <strong>No symbols appear:</strong> The whale feed may be temporarily empty. Try refreshing later.
-      </li>
-      <li>
-        <strong>Can't select Call or Put:</strong> Only one type of trade (e.g., Calls) may exist for a symbol.
-        The simulator will switch to the available one and explain.
-      </li>
-      <li>
-        <strong>Empty Strike or Expiration fields:</strong> Whale trades for that symbol might be missing matching strike/expiry pairs.
-      </li>
-    </ul>
-
     <p>
-      This is part of the learning process — sometimes the trade just isn't there. We show you how to spot it.
+      When using the simulator, you may see some fields empty or unavailable. Here's why:
+    </p>
+    <ul>
+      <li><strong>No symbols appear:</strong> The whale feed may be temporarily empty. Try refreshing later.</li>
+      <li><strong>Can’t select Call or Put:</strong> Only one type of trade (e.g., Calls) may exist for a symbol. The simulator will switch to the available one and explain.</li>
+      <li><strong>Empty Strike or Expiration fields:</strong> Whale trades for that symbol might be missing matching strike/expiry pairs.</li>
+    </ul>
+    <p>
+      This is part of the learning process — sometimes the trade just isn’t there. We show you how to spot it.
     </p>
   </div>
 </body>
