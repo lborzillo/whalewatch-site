@@ -90,5 +90,37 @@
     <h2>🏆 Compete and Improve</h2>
     <p>Climb the leaderboard and track your success against others. Get smarter, faster, and more confident with every simulation.</p>
   </div>
+  <div class="section" id="whaleFeed">
+  <h2>🐋 Latest Whale Trades</h2>
+  <div id="whaleList">Loading...</div>
+</div>
+
+<script>
+  fetch("/whales.json")
+    .then(res => res.json())
+    .then(data => {
+      const trades = data.whale_trades;
+      const container = document.getElementById("whaleList");
+
+      if (!trades.length) {
+        container.innerHTML = "No trades found.";
+        return;
+      }
+
+      container.innerHTML = trades.slice(0, 5).map(t => `
+        <div style="margin-bottom: 1em; padding: 1em; background: #003850; border-radius: 6px;">
+          <strong>${t.symbol}</strong> - ${t.type}<br>
+          Strike: $${t.strike}<br>
+          Exp: ${t.expiration}<br>
+          Premium: $${Number(t.premium).toFixed(2)}
+        </div>
+      `).join("");
+    })
+    .catch(err => {
+      document.getElementById("whaleList").innerHTML = "Error loading data.";
+      console.error(err);
+    });
+</script>
+
 </body>
 </html>
