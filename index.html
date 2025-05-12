@@ -62,6 +62,13 @@
       color: #dddddd;
       font-size: 1em;
     }
+
+    .trade-card {
+      background-color: #003850;
+      padding: 1em;
+      border-radius: 6px;
+      margin-bottom: 1em;
+    }
   </style>
 </head>
 <body>
@@ -90,5 +97,38 @@
     <h2>🏆 Compete and Improve</h2>
     <p>Climb the leaderboard and track your success against others. Get smarter, faster, and more confident with every simulation.</p>
   </div>
+
+  <!-- 🐳 Whale Feed Section -->
+  <div class="section" id="whaleFeed">
+    <h2>🐳 Latest Whale Trades</h2>
+    <div id="whaleList">Loading...</div>
+  </div>
+
+  <script>
+    fetch("/whales.json")
+      .then(res => res.json())
+      .then(data => {
+        const trades = data.whale_trades;
+        const container = document.getElementById("whaleList");
+
+        if (!trades || trades.length === 0) {
+          container.innerHTML = "No trades available.";
+          return;
+        }
+
+        container.innerHTML = trades.slice(0, 5).map(t => `
+          <div class="trade-card">
+            <strong>${t.symbol}</strong> - ${t.type}<br>
+            Strike: $${t.strike}<br>
+            Exp: ${t.expiration}<br>
+            Premium: $${Number(t.premium).toFixed(2)}
+          </div>
+        `).join("");
+      })
+      .catch(err => {
+        document.getElementById("whaleList").innerHTML = "Error loading whale data.";
+        console.error("Fetch error:", err);
+      });
+  </script>
 </body>
 </html>
