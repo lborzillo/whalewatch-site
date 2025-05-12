@@ -152,16 +152,47 @@
 
       const filtered = whaleData.filter(t => t.symbol === symbol && t.type === type);
 
-      populateDropdown("strike", [...new Set(filtered.map(t => t.strike))]);
-      populateDropdown("expiration", [...new Set(filtered.map(t => t.expiration))]);
-      populateDropdown("premium", [...new Set(filtered.map(t => t.last_price.toFixed(2)))]);
+      const strikes = [...new Set(filtered.map(t => t.strike))];
+      const expirations = [...new Set(filtered.map(t => t.expiration))];
 
-      const infoBox = document.getElementById("premiumInfo");
-      if (filtered.length > 0) {
-        const example = filtered[0];
-        infoBox.textContent = `💡 Based on whale trade: ${example.strike} ${example.type} on ${example.symbol} expiring ${example.expiration} with $${example.last_price.toFixed(2)} premium (${example.open_interest} open interest)`;
+      populateDropdown("strike", strikes);
+      populateDropdown("expiration", expirations);
+
+      // Wire up event handlers for premium lookup
+      document.getElementById("strike").addEventListener("change", updatePremium);
+      document.getElementById("expiration").addEventListener("change", updatePremium);
+
+      // Clear premium field
+      populateDropdown("premium", []);
+      document.getElementById("premiumInfo").textContent = '';
+    }
+
+    function updatePremium() {
+      const symbol = document.getElementById("symbol").value;
+      const type = document.getElementById("type").value;
+      const strike = parseFloat(document.getElementById("strike").value);
+      const expiration = document.getElementById("expiration").value;
+
+      const match = whaleData.find(t =>
+        t.symbol === symbol &&
+        t.type === type &&
+        t.strike === strike &&
+        t.expiration === expiration
+      );
+
+      const premiumDropdown = document.getElementById("premium");
+      premiumDropdown.innerHTML = "";
+
+      if (match) {
+        const opt = document.createElement("option");
+        opt.value = match.last_price.toFixed(2);
+        opt.textContent = match.last_price.toFixed(2);
+        premiumDropdown.appendChild(opt);
+
+        document.getElementById("premiumInfo").textContent =
+          `💡 Based on whale trade: ${strike} ${type} on ${symbol} expiring ${expiration} with $${match.last_price.toFixed(2)} premium (${match.open_interest} open interest)`;
       } else {
-        infoBox.textContent = 'No matching trades found.';
+        document.getElementById("premiumInfo").textContent = "No matching whale trade found.";
       }
     }
 
