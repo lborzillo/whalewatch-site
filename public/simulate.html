@@ -128,7 +128,7 @@
   <script>
     let whaleData = [];
 
-    fetch("../whales.json")
+    fetch("/whales.json")
       .then(res => res.json())
       .then(data => {
         whaleData = data.whale_trades;
