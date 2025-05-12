@@ -118,102 +118,119 @@
   </div>
 
   <script>
-    let whaleData = [];
+  let whaleData = [];
 
-    fetch("whales.json")
-      .then(res => res.json())
-      .then(data => {
-        whaleData = data.whale_trades;
-        const symbols = [...new Set(whaleData.map(t => t.symbol))];
-        const symbolSelect = document.getElementById("symbol");
-        symbols.forEach(s => {
-          const opt = document.createElement("option");
-          opt.value = s;
-          opt.textContent = s;
-          symbolSelect.appendChild(opt);
-        });
-        updateDropdowns();
-      });
+  // Fetch whale trade data
+  fetch("whales.json")
+    .then(res => res.json())
+    .then(data => {
+      whaleData = data.whale_trades;
 
-    document.getElementById("symbol").addEventListener("change", updateDropdowns);
-    document.getElementById("type").addEventListener("change", updateDropdowns);
+      const symbolSelect = document.getElementById("symbol");
+      symbolSelect.innerHTML = `<option disabled selected value="">Select Symbol</option>`;
 
-    function updateDropdowns() {
-      const symbol = document.getElementById("symbol").value;
-      let type = document.getElementById("type").value.toUpperCase();
-      const typeNote = document.getElementById("typeNote");
-      const premiumInput = document.getElementById("premium");
-
-      // Clear premium input on update
-      premiumInput.value = "";
-
-      let filtered = whaleData.filter(t => t.symbol === symbol && t.type === type);
-
-      if (filtered.length === 0) {
-        const fallback = type === "CALL" ? "PUT" : "CALL";
-        const fallbackData = whaleData.filter(t => t.symbol === symbol && t.type === fallback);
-        if (fallbackData.length > 0) {
-          type = fallback;
-          document.getElementById("type").value = fallback;
-          filtered = fallbackData;
-          typeNote.innerHTML = `⚠️ Only <strong>${fallback}</strong> trades are available for <strong>${symbol}</strong>. We switched it for you.`;
-          typeNote.style.display = "block";
-        } else {
-          typeNote.innerHTML = `⚠️ No whale data available yet for <strong>${symbol}</strong>. Try another.`;
-          typeNote.style.display = "block";
-          populateDropdown("strike", []);
-          populateDropdown("expiration", []);
-          return;
-        }
-      } else {
-        typeNote.style.display = "none";
-      }
-
-      populateDropdown("strike", [...new Set(filtered.map(t => t.strike))]);
-      populateDropdown("expiration", [...new Set(filtered.map(t => t.expiration))]);
-
-      // 💥 Do NOT populate premium field automatically
-    }
-
-    function populateDropdown(id, values) {
-      const el = document.getElementById(id);
-      el.innerHTML = "";
-      values.sort((a, b) => a - b).forEach(v => {
+      const symbols = [...new Set(whaleData.map(t => t.symbol))];
+      symbols.sort().forEach(s => {
         const opt = document.createElement("option");
-        opt.value = v;
-        opt.textContent = v;
-        el.appendChild(opt);
+        opt.value = s;
+        opt.textContent = s;
+        symbolSelect.appendChild(opt);
       });
-    }
+    })
+    .catch(error => {
+      console.error("Error loading whale data:", error);
+      document.querySelector(".container").innerHTML = `
+        <h2>⚠️ Unable to load whale data</h2>
+        <p>Please try again later.</p>
+      `;
+    });
 
-    document.getElementById("simForm").addEventListener("submit", function(e) {
-      e.preventDefault();
-      const symbol = document.getElementById("symbol").value;
-      const type = document.getElementById("type").value.toUpperCase();
-      const strike = document.getElementById("strike").value;
-      const expiration = document.getElementById("expiration").value;
-      const premium = document.getElementById("premium").value;
+  document.getElementById("symbol").addEventListener("change", updateDropdowns);
+  document.getElementById("type").addEventListener("change", updateDropdowns);
 
-      const output = document.getElementById("output");
+  function updateDropdowns() {
+    const symbol = document.getElementById("symbol").value;
+    let type = document.getElementById("type").value.toUpperCase();
+    const typeNote = document.getElementById("typeNote");
+    const premiumInput = document.getElementById("premium");
 
-      if (!strike || !expiration || !premium) {
-        output.innerHTML = `<strong>⚠️ Teachable moment: This trade can't be simulated until you complete all fields.</strong>`;
-        output.style.display = "block";
+    premiumInput.value = "";
+
+    let filtered = whaleData.filter(t => t.symbol === symbol && t.type === type);
+
+    if (filtered.length === 0) {
+      const fallback = type === "CALL" ? "PUT" : "CALL";
+      const fallbackData = whaleData.filter(t => t.symbol === symbol && t.type === fallback);
+      if (fallbackData.length > 0) {
+        type = fallback;
+        document.getElementById("type").value = fallback;
+        filtered = fallbackData;
+        typeNote.innerHTML = `⚠️ Only <strong>${fallback}</strong> trades found for <strong>${symbol}</strong>. We've switched the type for you.`;
+        typeNote.style.display = "block";
+      } else {
+        typeNote.innerHTML = `⚠️ No whale data available yet for <strong>${symbol}</strong>. Try another.`;
+        typeNote.style.display = "block";
+        clearDropdowns();
         return;
       }
+    } else {
+      typeNote.style.display = "none";
+    }
 
-      const totalPremium = (parseFloat(premium) * 100).toFixed(2);
-      output.innerHTML = `
-        <strong>✅ You simulated selling a ${type} on ${symbol}.</strong>
-        <ul>
-          <li><strong>Strike:</strong> $${strike}</li>
-          <li><strong>Premium Collected:</strong> $${totalPremium} (for 1 contract)</li>
-          <li><strong>Expiration Date:</strong> ${expiration}</li>
-        </ul>
-        <em>This is premium harvesting in action — income now, stock later (maybe).</em>
-      `;
-      output.style.display = "block";
+    const strikes = [...new Set(filtered.map(t => t.strike))].sort((a, b) => a - b);
+    const expirations = [...new Set(filtered.map(t => t.expiration))].sort();
+
+    populateDropdown("strike", strikes, "Select Strike Price");
+    populateDropdown("expiration", expirations, "Select Expiration");
+
+    // Optional: Pre-fill the premium field with the first match
+    // premiumInput.value = filtered[0]?.premium.toFixed(2) || "";
+  }
+
+  function populateDropdown(id, values, placeholder) {
+    const el = document.getElementById(id);
+    el.innerHTML = `<option disabled selected value="">${placeholder}</option>`;
+    values.forEach(v => {
+      const opt = document.createElement("option");
+      opt.value = v;
+      opt.textContent = v;
+      el.appendChild(opt);
     });
-  </script>
+  }
+
+  function clearDropdowns() {
+    populateDropdown("strike", [], "Select Strike Price");
+    populateDropdown("expiration", [], "Select Expiration");
+  }
+
+  document.getElementById("simForm").addEventListener("submit", function (e) {
+    e.preventDefault();
+    const symbol = document.getElementById("symbol").value;
+    const type = document.getElementById("type").value.toUpperCase();
+    const strike = document.getElementById("strike").value;
+    const expiration = document.getElementById("expiration").value;
+    const premium = document.getElementById("premium").value;
+    const output = document.getElementById("output");
+
+    if (!symbol || !type || !strike || !expiration || !premium) {
+      output.innerHTML = `<strong>⚠️ Please complete all fields before simulating a trade.</strong>`;
+      output.style.display = "block";
+      return;
+    }
+
+    const totalPremium = (parseFloat(premium) * 100).toFixed(2);
+    output.innerHTML = `
+      <strong>✅ Simulated ${type} on ${symbol}</strong>
+      <ul>
+        <li><strong>Strike Price:</strong> $${strike}</li>
+        <li><strong>Premium Collected:</strong> $${totalPremium} (1 contract)</li>
+        <li><strong>Expiration:</strong> ${expiration}</li>
+      </ul>
+      <em>This is premium harvesting in action. 🧠</em>
+    `;
+    output.style.display = "block";
+  });
+</script>
+
 </body>
 </html>
