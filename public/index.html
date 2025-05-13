@@ -118,11 +118,6 @@
       transition: width 1.5s ease-in-out;
     }
 
-    .whale-meter-text,
-    .timestamp {
-      white-space: nowrap;
-    }
-
     .trade-card {
       background-color: #003850;
       padding: 1em;
@@ -133,13 +128,34 @@
     .leaderboard {
       display: grid;
       grid-template-columns: 1fr 1fr;
-      gap: 0.5em 2em;
+      gap: 1em;
     }
 
-    .leaderboard div {
+    .leaderboard-entry {
       background-color: #003850;
-      padding: 0.8em 1em;
-      border-radius: 6px;
+      padding: 1em;
+      border-radius: 8px;
+      font-size: 1.05em;
+      line-height: 1.5;
+    }
+
+    .leaderboard-entry strong {
+      color: #00ffee;
+      font-size: 1.1em;
+    }
+
+    .whale-strength {
+      font-size: 1.3em;
+      color: #00ffee;
+      text-align: center;
+      margin-top: 0.5em;
+      animation: pulse 1.5s infinite ease-in-out;
+    }
+
+    @keyframes pulse {
+      0%   { transform: scale(1); opacity: 0.8; }
+      50%  { transform: scale(1.2); opacity: 1; }
+      100% { transform: scale(1); opacity: 0.8; }
     }
 
     #whaleAssistant {
@@ -204,6 +220,7 @@
       <div id="whaleTimestamp" class="timestamp">Loading...</div>
     </div>
     <div id="whaleAssistant">💡 Tip: Loading...</div>
+    <div id="whaleStrength" class="whale-strength" style="display: none;">🐋 Whale Strength Detected</div>
   </div>
 
   <div class="section">
@@ -283,20 +300,16 @@
           }, 0);
 
           document.getElementById("whaleMeterText").textContent = `Total Premium Traded: $${totalPremium.toLocaleString()}`;
+          document.getElementById("whaleStrength").style.display = totalPremium >= 500000 ? "block" : "none";
 
           const percent = Math.min((totalPremium / 1000000) * 100, 100);
           const whaleFill = document.getElementById("whaleFill");
           whaleFill.style.width = percent + "%";
 
-          if (percent >= 90) {
-            whaleFill.style.backgroundColor = "#ff0044";
-          } else if (percent >= 60) {
-            whaleFill.style.backgroundColor = "#ffaa00";
-          } else if (percent >= 30) {
-            whaleFill.style.backgroundColor = "#00ffee";
-          } else {
-            whaleFill.style.backgroundColor = "#005577";
-          }
+          if (percent >= 90) whaleFill.style.backgroundColor = "#ff0044";
+          else if (percent >= 60) whaleFill.style.backgroundColor = "#ffaa00";
+          else if (percent >= 30) whaleFill.style.backgroundColor = "#00ffee";
+          else whaleFill.style.backgroundColor = "#005577";
 
           const bullishCount = trades.filter(t => t.type === "CALL").length;
           const bearishCount = trades.filter(t => t.type === "PUT").length;
@@ -311,6 +324,18 @@
           const ts = new Date(data.timestamp);
           document.getElementById("whaleTimestamp").textContent = `Last updated: ${ts.toLocaleString()}`;
           document.getElementById("whaleAssistant").textContent = getDynamicTip(trades);
+
+          // Leaderboard
+          const top = data.top_10 || {};
+          const board = document.getElementById("leaderboard");
+          board.innerHTML = Object.entries(top).map(([symbol, stats]) => `
+            <div class="leaderboard-entry">
+              <strong>${symbol}</strong><br/>
+              Trades: ${stats.count}<br/>
+              Total: $${stats.total_premium.toLocaleString()}
+            </div>
+          `).join("");
+          document.getElementById("leaderboardTimestamp").textContent = `Leaderboard synced: ${ts.toLocaleString()}`;
         });
     }
 
