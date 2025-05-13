@@ -181,7 +181,45 @@
   </style>
 </head>
 <body>
-  <!-- rest of the document is unchanged -->
+  <nav>
+    <a href="index.html">Home</a>
+    <a href="learn.html">Learn</a>
+    <a href="simulate.html">Simulate</a>
+  </nav>
+
+  <div class="hero">
+    <h1>🐋 WhaleWatch.ai</h1>
+    <p>Real-time sonar on big money moves.</p>
+  </div>
+
+  <div class="section">
+    <h2>🌊 Whale Meter</h2>
+    <div class="whale-meter-container">
+      <div id="whaleFill" class="whale-meter-fill"></div>
+    </div>
+    <div id="whaleMeterText" class="whale-meter-text">Loading...</div>
+  </div>
+
+  <div class="section">
+    <h2>📈 Bullish vs. Bearish Sentiment</h2>
+    <div class="sentiment-bar">
+      <div id="bullFill" class="sentiment-fill-bullish"></div>
+      <div id="bearFill" class="sentiment-fill-bearish"></div>
+    </div>
+    <div id="sentimentLabel" class="whale-meter-text" style="margin-top: 10px;"></div>
+  </div>
+
+  <div class="section">
+    <h2>📊 Latest Whale Trades</h2>
+    <div id="whaleList">Loading...</div>
+  </div>
+
+  <div class="section">
+    <h2>🏆 Top 10 Leaderboard</h2>
+    <div id="leaderboard" class="leaderboard">Loading...</div>
+  </div>
+
+  <div id="whaleAssistant">💡 Tip: NVDA premiums are hot right now. Check the simulator!</div>
 
   <script>
     function updateWhaleData() {
