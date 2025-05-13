@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>WhaleWatch | Home</title>
   <style>
     body {
@@ -11,6 +11,7 @@
       color: white;
       margin: 0;
       padding: 0;
+      overflow-x: hidden;
     }
 
     nav {
@@ -33,6 +34,7 @@
       text-align: center;
       padding: 4em 2em 2em;
       background-color: #002b3f;
+      position: relative;
     }
 
     .hero h1 {
@@ -50,6 +52,12 @@
       max-width: 800px;
       margin: 3em auto;
       padding: 2em;
+      animation: fadeIn 1s ease-in;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
     }
 
     .section h2 {
@@ -62,6 +70,11 @@
       padding: 1em;
       border-radius: 6px;
       margin-bottom: 1em;
+      transition: transform 0.3s;
+    }
+
+    .trade-card:hover {
+      transform: scale(1.02);
     }
 
     .leaderboard {
@@ -123,9 +136,23 @@
       float: left;
       transition: width 1.5s ease-in-out;
     }
+
+    #whaleAssistant {
+      position: fixed;
+      bottom: 10px;
+      right: 10px;
+      background: #00293e;
+      border: 2px solid #00ffee;
+      color: #00ffee;
+      padding: 0.8em 1em;
+      border-radius: 10px;
+      font-size: 0.95em;
+      max-width: 250px;
+      z-index: 999;
+      animation: fadeIn 2s ease-in;
+    }
   </style>
 </head>
-
 <body>
   <nav>
     <a href="index.html">Home</a>
@@ -165,54 +192,59 @@
     <div id="leaderboard" class="leaderboard">Loading...</div>
   </div>
 
+  <div id="whaleAssistant">💡 Tip: NVDA premiums are hot right now. Check the simulator!</div>
+
   <script>
-    fetch("whales.json")
-      .then(res => res.json())
-      .then(data => {
-        const trades = data.whale_trades;
-        const whaleList = document.getElementById("whaleList");
-        const whaleFill = document.getElementById("whaleFill");
-        const whaleMeterText = document.getElementById("whaleMeterText");
-        const bullFill = document.getElementById("bullFill");
-        const bearFill = document.getElementById("bearFill");
-        const sentimentLabel = document.getElementById("sentimentLabel");
+    function updateWhaleData() {
+      fetch("whales.json")
+        .then(res => res.json())
+        .then(data => {
+          const trades = data.whale_trades;
+          const whaleList = document.getElementById("whaleList");
+          const whaleFill = document.getElementById("whaleFill");
+          const whaleMeterText = document.getElementById("whaleMeterText");
+          const bullFill = document.getElementById("bullFill");
+          const bearFill = document.getElementById("bearFill");
+          const sentimentLabel = document.getElementById("sentimentLabel");
 
-        if (!trades || trades.length === 0) {
-          whaleList.innerHTML = "No trades found.";
-          return;
-        }
+          if (!trades || trades.length === 0) {
+            whaleList.innerHTML = "No trades found.";
+            return;
+          }
 
-        // Populate latest trades
-        whaleList.innerHTML = trades.slice(0, 5).map(t => `
-          <div class="trade-card">
-            <strong>${t.symbol}</strong> — ${t.type}<br>
-            Strike: $${t.strike}<br>
-            Exp: ${t.expiration}<br>
-            Premium: $${Number(t.premium).toFixed(2)}<br>
-            OI: ${t.open_interest}
-          </div>
-        `).join("");
+          whaleList.innerHTML = trades.slice(0, 5).map(t => `
+            <div class="trade-card">
+              <strong>${t.symbol}</strong> — ${t.type}<br>
+              Strike: $${t.strike}<br>
+              Exp: ${t.expiration}<br>
+              Premium: $${Number(t.premium).toFixed(2)}<br>
+              OI: ${t.open_interest}
+            </div>
+          `).join("");
 
-        // Whale Meter calculation
-        const totalPremium = trades.reduce((sum, t) => {
-          const val = Number(t.premium);
-          return sum + (isNaN(val) ? 0 : val * 100);
-        }, 0);
+          const totalPremium = trades.reduce((sum, t) => {
+            const val = Number(t.premium);
+            return sum + (isNaN(val) ? 0 : val * 100);
+          }, 0);
 
-        whaleMeterText.textContent = `Total Premium Traded: $${totalPremium.toLocaleString(undefined, { maximumFractionDigits: 0 })}`;
+          whaleFill.style.width = Math.min(totalPremium / 1000000 * 100, 100) + "%";
+          whaleMeterText.textContent = `Total Premium Traded: $${totalPremium.toLocaleString(undefined, { maximumFractionDigits: 0 })}`;
 
-        // Sentiment Bar
-        const bullishCount = trades.filter(t => t.type === "CALL").length;
-        const bearishCount = trades.filter(t => t.type === "PUT").length;
-        const totalCount = bullishCount + bearishCount;
-        const bullishPct = totalCount > 0 ? (bullishCount / totalCount) * 100 : 50;
-        const bearishPct = 100 - bullishPct;
+          const bullishCount = trades.filter(t => t.type === "CALL").length;
+          const bearishCount = trades.filter(t => t.type === "PUT").length;
+          const totalCount = bullishCount + bearishCount;
+          const bullishPct = totalCount > 0 ? (bullishCount / totalCount) * 100 : 50;
+          const bearishPct = 100 - bullishPct;
 
-        bullFill.style.width = `${bullishPct}%`;
-        bearFill.style.width = `${bearishPct}%`;
+          bullFill.style.width = `${bullishPct}%`;
+          bearFill.style.width = `${bearishPct}%`;
 
-        sentimentLabel.textContent = `🐂 Bullish: ${bullishPct.toFixed(1)}% | 🐻 Bearish: ${bearishPct.toFixed(1)}%`;
-      });
+          sentimentLabel.textContent = `🐂 Bullish: ${bullishPct.toFixed(1)}% | 🐻 Bearish: ${bearishPct.toFixed(1)}%`;
+        });
+    }
+
+    updateWhaleData();
+    setInterval(updateWhaleData, 60000);
 
     fetch("leaderboard.json")
       .then(res => res.json())
