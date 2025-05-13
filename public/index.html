@@ -8,7 +8,7 @@
     body {
       font-family: 'Segoe UI', sans-serif;
       background-color: #001d2d;
-      color: #ffffff;
+      color: white;
       margin: 0;
       padding: 0;
     }
@@ -23,8 +23,8 @@
     nav a {
       color: #00ffee;
       margin: 0 15px;
-      text-decoration: none;
       font-weight: bold;
+      text-decoration: none;
     }
     .hero {
       text-align: center;
@@ -32,13 +32,13 @@
       background-color: #002b3f;
     }
     .hero h1 {
-      font-size: 2.8em;
+      font-size: 3em;
       color: #00ffee;
       margin-bottom: 0.3em;
     }
     .hero p {
-      font-size: 1.25em;
-      color: #cccccc;
+      font-size: 1.2em;
+      color: #ccc;
     }
     .section {
       max-width: 800px;
@@ -47,10 +47,9 @@
     }
     .section h2 {
       color: #00ffee;
-      font-size: 1.4em;
-      margin-bottom: 0.3em;
+      margin-bottom: 0.5em;
     }
-    .trade-card, .leaderboard div {
+    .trade-card {
       background-color: #003850;
       padding: 1em;
       border-radius: 6px;
@@ -59,43 +58,54 @@
     .leaderboard {
       display: grid;
       grid-template-columns: 1fr 1fr;
-      gap: 1em;
+      gap: 0.5em 2em;
     }
-    .whale-meter {
-      background-color: #004b60;
+    .leaderboard div {
+      background-color: #003850;
+      padding: 0.8em 1em;
       border-radius: 6px;
-      padding: 1.5em;
-      text-align: center;
-      color: #00ffee;
-      font-weight: bold;
-      font-size: 1.2em;
-      position: relative;
+    }
+    .whale-meter-container {
+      background-color: #003850;
+      border-radius: 6px;
       overflow: hidden;
+      height: 30px;
+      position: relative;
+      margin-bottom: 1em;
     }
-    .meter-fill {
-      height: 10px;
-      background: linear-gradient(to right, #00ff88, #ff0044);
-      border-radius: 4px;
-      margin-top: 1em;
-      animation: fillBar 1s ease-out forwards;
-      width: 0%;
+    .whale-meter-fill {
+      background-color: #00ffee;
+      height: 100%;
+      width: 0;
+      transition: width 2s ease-in-out;
     }
-    @keyframes fillBar {
-      to { width: 100%; }
+    .whale-meter-text {
+      text-align: center;
+      font-weight: bold;
+      padding-top: 0.5em;
+      color: #00ffee;
     }
     .sentiment-bar {
+      background-color: #00425f;
+      border-radius: 6px;
       height: 20px;
-      border-radius: 4px;
-      background: linear-gradient(to right, #00ff88 50%, #ff0044 50%);
-      margin-top: 1em;
+      overflow: hidden;
+      margin-top: 10px;
       position: relative;
     }
-    .sentiment-labels {
-      display: flex;
-      justify-content: space-between;
-      font-size: 0.85em;
-      margin-top: 0.5em;
-      color: #ccc;
+    .sentiment-fill-bullish {
+      background-color: #00ff88;
+      height: 100%;
+      width: 0;
+      float: left;
+      transition: width 1.5s ease-in-out;
+    }
+    .sentiment-fill-bearish {
+      background-color: #ff0044;
+      height: 100%;
+      width: 0;
+      float: left;
+      transition: width 1.5s ease-in-out;
     }
   </style>
 </head>
@@ -103,12 +113,29 @@
   <nav>
     <a href="index.html">Home</a>
     <a href="learn.html">Learn</a>
-    <a href="simulate.html">Live Data</a>
+    <a href="simulate.html">Simulate</a>
   </nav>
 
   <div class="hero">
     <h1>🐋 WhaleWatch.ai</h1>
     <p>Real-time sonar on big money moves.</p>
+  </div>
+
+  <div class="section">
+    <h2>🌊 Whale Meter</h2>
+    <div class="whale-meter-container">
+      <div id="whaleFill" class="whale-meter-fill"></div>
+    </div>
+    <div id="whaleMeterText" class="whale-meter-text">Loading...</div>
+  </div>
+
+  <div class="section">
+    <h2>📈 Bullish vs. Bearish Sentiment</h2>
+    <div class="sentiment-bar">
+      <div id="bullFill" class="sentiment-fill-bullish"></div>
+      <div id="bearFill" class="sentiment-fill-bearish"></div>
+    </div>
+    <div id="sentimentLabel" class="whale-meter-text" style="margin-top: 10px;"></div>
   </div>
 
   <div class="section">
@@ -121,61 +148,59 @@
     <div id="leaderboard" class="leaderboard">Loading...</div>
   </div>
 
-  <div class="section">
-    <h2>🌊 Whale Meter</h2>
-    <div id="whaleMeter" class="whale-meter">
-      Loading whale activity...
-      <div class="meter-fill" id="meterFill"></div>
-    </div>
-    <div id="sentiment" class="sentiment-bar"></div>
-    <div class="sentiment-labels">
-      <span>Bullish</span>
-      <span>Bearish</span>
-    </div>
-  </div>
-
   <script>
     fetch("whales.json")
       .then(res => res.json())
       .then(data => {
-        const trades = data.whale_trades || [];
-        const list = document.getElementById("whaleList");
-        const meter = document.getElementById("whaleMeter");
-        const fill = document.getElementById("meterFill");
+        const trades = data.whale_trades;
+        const whaleList = document.getElementById("whaleList");
+        const whaleFill = document.getElementById("whaleFill");
+        const whaleMeterText = document.getElementById("whaleMeterText");
+        const bullFill = document.getElementById("bullFill");
+        const bearFill = document.getElementById("bearFill");
+        const sentimentLabel = document.getElementById("sentimentLabel");
 
-        if (!trades.length) {
-          list.innerHTML = "No trades available.";
+        if (!trades || trades.length === 0) {
+          whaleList.innerHTML = "No trades found.";
           return;
         }
 
-        list.innerHTML = trades.slice(0, 5).map(t => `
+        // Populate trades
+        whaleList.innerHTML = trades.slice(0, 5).map(t => `
           <div class="trade-card">
-            <strong>${t.symbol}</strong> - ${t.type}<br>
-            Strike: $${t.strike} | Exp: ${t.expiration}<br>
-            Premium: $${(t.premium).toFixed(2)}
+            <strong>${t.symbol}</strong> — ${t.type}<br>
+            Strike: $${t.strike}<br>
+            Exp: ${t.expiration}<br>
+            Premium: $${(t.premium).toFixed(2)}<br>
+            OI: ${t.open_interest}
           </div>
         `).join("");
 
-        // Whale meter total
-        const total = trades.reduce((sum, t) => sum + t.premium * 100, 0);
-        meter.innerHTML = `Total Premium Traded Today: $${total.toLocaleString(undefined, {maximumFractionDigits: 0})}`;
-        meter.appendChild(fill);
-        fill.style.width = "100%";
+        // Whale Meter
+        const totalPremium = trades.reduce((sum, t) => sum + (t.premium * 100), 0);
+        const maxPremium = 1000000; // Arbitrary cap for fill percentage
+        const fillPercent = Math.min(100, (totalPremium / maxPremium) * 100);
+        whaleFill.style.width = fillPercent + "%";
+        whaleMeterText.textContent = `Total Premium Traded: $${Math.round(totalPremium).toLocaleString()}`;
 
-        // Sentiment bar
-        const bullish = trades.filter(t => t.type === "CALL").length;
-        const bearish = trades.filter(t => t.type === "PUT").length;
-        const totalTrades = bullish + bearish;
-        const bullPercent = totalTrades > 0 ? (bullish / totalTrades) * 100 : 50;
-        const sentiment = document.getElementById("sentiment");
-        sentiment.style.background = `linear-gradient(to right, #00ff88 ${bullPercent}%, #ff0044 ${bullPercent}%)`;
+        // Sentiment Meter
+        const bullishCount = trades.filter(t => t.type === "CALL").length;
+        const bearishCount = trades.filter(t => t.type === "PUT").length;
+        const totalCount = bullishCount + bearishCount;
+        const bullishPct = totalCount > 0 ? (bullishCount / totalCount) * 100 : 50;
+        const bearishPct = 100 - bullishPct;
+
+        bullFill.style.width = bullishPct + "%";
+        bearFill.style.width = bearishPct + "%";
+        sentimentLabel.textContent = `🐂 Bullish: ${bullishPct.toFixed(1)}% | 🐻 Bearish: ${bearishPct.toFixed(1)}%`;
       });
 
     fetch("leaderboard.json")
       .then(res => res.json())
       .then(data => {
+        const top = data.top_10;
         const board = document.getElementById("leaderboard");
-        board.innerHTML = Object.entries(data.top_10 || {}).map(([symbol, stats]) => `
+        board.innerHTML = Object.entries(top).map(([symbol, stats]) => `
           <div><strong>${symbol}</strong><br/>Trades: ${stats.count}<br/>$${stats.total_premium.toLocaleString()}</div>
         `).join("");
       });
