@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Whale Whispers | Premium Flow</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background-color: #00151f;
+      color: #ffffff;
+      padding: 2rem;
+    }
+    h1 {
+      color: #00ffff;
+    }
+    .whisper {
+      background: #012634;
+      padding: 1rem;
+      margin-bottom: 1.5rem;
+      border-left: 4px solid #00bcd4;
+      border-radius: 8px;
+      cursor: pointer;
+    }
+    .blurred {
+      filter: blur(5px);
+      user-select: none;
+    }
+    .modal {
+      display: none;
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      background-color: rgba(0, 0, 0, 0.8);
+      justify-content: center;
+      align-items: center;
+      z-index: 999;
+    }
+    .modal-content {
+      background: #012634;
+      padding: 2rem;
+      border-radius: 10px;
+      text-align: center;
+      width: 90%;
+      max-width: 400px;
+    }
+    .modal-content h2 {
+      color: #00ffff;
+    }
+    .modal-content button {
+      margin-top: 1rem;
+      padding: 0.5rem 1rem;
+      background: #00bcd4;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>🐳 Whale Whispers</h1>
+  <p>Get early access to the most aggressive whale trades and dark pool activity. Upgrade to Whisper+ for full visibility.</p>
+
+  <div class="whisper" onclick="showModal()">
+    <p><strong>Time:</strong> 10:03 AM</p>
+    <p><strong>Type:</strong> CALL Sweep</p>
+    <p><strong>Ticker:</strong> <span class="blurred">[LOCKED]</span></p>
+    <p><strong>Premium:</strong> $2.8M</p>
+    <p><strong>Expiration:</strong> <span class="blurred">[LOCKED]</span></p>
+  </div>
+
+  <div class="whisper" onclick="showModal()">
+    <p><strong>Time:</strong> 9:42 AM</p>
+    <p><strong>Type:</strong> Dark Pool Buy</p>
+    <p><strong>Ticker:</strong> <span class="blurred">[LOCKED]</span></p>
+    <p><strong>Size:</strong> 180,000 shares</p>
+  </div>
+
+  <!-- Modal -->
+  <div class="modal" id="loginModal">
+    <div class="modal-content">
+      <h2>🔐 Premium Content</h2>
+      <p>Join Whisper+ to unlock full trade details and see what the whales are really doing.</p>
+      <button onclick="hideModal()">Close</button>
+      <br/>
+      <button onclick="window.location.href='/login.html'">Login or Upgrade</button>
+    </div>
+  </div>
+
+  <script>
+    function showModal() {
+      document.getElementById('loginModal').style.display = 'flex';
+    }
+    function hideModal() {
+      document.getElementById('loginModal').style.display = 'none';
+    }
+  </script>
+
+</body>
+</html>
