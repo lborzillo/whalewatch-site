@@ -118,6 +118,21 @@
       text-align: center;
       padding: 0.3em 0;
     }
+    #whaleAssistant {
+      position: fixed;
+      bottom: 10px;
+      right: 10px;
+      background: #00293e;
+      border: 2px solid #00ffee;
+      color: #00ffee;
+      padding: 0.8em 1em;
+      border-radius: 10px;
+      font-size: 0.95em;
+      max-width: 250px;
+      z-index: 999;
+      animation: fadeIn 2s ease-in;
+      box-shadow: 0 0 10px rgba(0, 255, 255, 0.5);
+    }
   </style>
 </head>
 <body>
@@ -166,6 +181,9 @@
     <p><strong>Premium:</strong> $3.2M | Exp: <span>[Hidden]</span></p>
     <a href="whispers.html">See All Whispers →</a>
   </div>
+
+  <div id="whaleAssistant">💡 Tip: Loading tip...</div>
+
   <script>
     function updateLiveClock() {
       const now = new Date();
@@ -174,13 +192,28 @@
     setInterval(updateLiveClock, 1000);
     updateLiveClock();
 
+    let tipIndex = 0;
+    const baseTips = [
+      "💡 Tip: Use the simulator to plan your next move.",
+      "💡 Tip: Covered calls can boost returns in sideways markets.",
+      "💡 Tip: Selling puts is like getting paid to set a limit order.",
+      "💡 Tip: Watch the meter — when it glows red, whales are hungry.",
+      "💡 Tip: Sentiment spikes can front-run news. Stay alert!"
+    ];
+
+    function rotateTip() {
+      const tipBox = document.getElementById("whaleAssistant");
+      tipBox.textContent = baseTips[tipIndex];
+      tipIndex = (tipIndex + 1) % baseTips.length;
+    }
+    setInterval(rotateTip, 10000);
+
     function updateWhaleData() {
       fetch("whales.json")
         .then(res => res.json())
         .then(data => {
           const trades = data.whale_trades;
 
-          // Total Premium
           const totalPremium = trades.reduce((sum, t) => {
             const premium = Number(t.premium);
             return sum + (isNaN(premium) ? 0 : premium * 10000);
@@ -201,6 +234,12 @@
             whaleFill.style.backgroundColor = "#00ffee";
           } else {
             whaleFill.style.backgroundColor = "#005577";
+          }
+
+          // NVDA spicy detection
+          const tipBox = document.getElementById("whaleAssistant");
+          if (trades.some(t => t.symbol === "NVDA" && t.premium >= 1)) {
+            tipBox.textContent = "🔥 NVDA is lighting up the tape. Time to ride the dragon.";
           }
 
           // Sentiment
@@ -226,7 +265,6 @@
             </div>
           `).join("");
 
-          // Timestamp
           const ts = new Date(data.timestamp);
           document.getElementById("whaleTimestamp").textContent =
             `Last updated: ${ts.toLocaleString()}`;
