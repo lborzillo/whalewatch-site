@@ -1,13 +1,22 @@
 {
   "headers": [
     {
-      "source": "/(.*)\\.json",
+      "source": "/(.*)\\.json$",
       "headers": [
         {
           "key": "Content-Type",
           "value": "application/json"
+        },
+        {
+          "key": "Cache-Control",
+          "value": "no-cache"
         }
       ]
     }
-  ]
+  ],
+  "static": {
+    "files": {
+      "include": ["whales.json", "leaderboard.json"]
+    }
+  }
 }
