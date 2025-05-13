@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>WhaleWatch | Home</title>
   <style>
     body {
@@ -18,6 +18,7 @@
       text-align: center;
       position: sticky;
       top: 0;
+      z-index: 1000;
     }
     nav a {
       color: #00ffee;
@@ -27,7 +28,7 @@
     }
     .hero {
       text-align: center;
-      padding: 6em 2em 3em;
+      padding: 4em 2em 2em;
       background-color: #002b3f;
     }
     .hero h1 {
@@ -38,7 +39,6 @@
     .hero p {
       font-size: 1.25em;
       color: #cccccc;
-      margin-top: 0;
     }
     .section {
       max-width: 800px;
@@ -50,11 +50,7 @@
       font-size: 1.4em;
       margin-bottom: 0.3em;
     }
-    .section p {
-      color: #dddddd;
-      font-size: 1em;
-    }
-    .trade-card {
+    .trade-card, .leaderboard div {
       background-color: #003850;
       padding: 1em;
       border-radius: 6px;
@@ -63,20 +59,43 @@
     .leaderboard {
       display: grid;
       grid-template-columns: 1fr 1fr;
-      gap: 0.5em 2em;
-    }
-    .leaderboard div {
-      background-color: #003850;
-      padding: 0.5em 1em;
-      border-radius: 5px;
+      gap: 1em;
     }
     .whale-meter {
       background-color: #004b60;
       border-radius: 6px;
-      padding: 1em;
+      padding: 1.5em;
       text-align: center;
       color: #00ffee;
       font-weight: bold;
+      font-size: 1.2em;
+      position: relative;
+      overflow: hidden;
+    }
+    .meter-fill {
+      height: 10px;
+      background: linear-gradient(to right, #00ff88, #ff0044);
+      border-radius: 4px;
+      margin-top: 1em;
+      animation: fillBar 1s ease-out forwards;
+      width: 0%;
+    }
+    @keyframes fillBar {
+      to { width: 100%; }
+    }
+    .sentiment-bar {
+      height: 20px;
+      border-radius: 4px;
+      background: linear-gradient(to right, #00ff88 50%, #ff0044 50%);
+      margin-top: 1em;
+      position: relative;
+    }
+    .sentiment-labels {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.85em;
+      margin-top: 0.5em;
+      color: #ccc;
     }
   </style>
 </head>
@@ -104,42 +123,59 @@
 
   <div class="section">
     <h2>🌊 Whale Meter</h2>
-    <div id="whaleMeter" class="whale-meter">Loading whale activity...</div>
+    <div id="whaleMeter" class="whale-meter">
+      Loading whale activity...
+      <div class="meter-fill" id="meterFill"></div>
+    </div>
+    <div id="sentiment" class="sentiment-bar"></div>
+    <div class="sentiment-labels">
+      <span>Bullish</span>
+      <span>Bearish</span>
+    </div>
   </div>
 
   <script>
     fetch("whales.json")
       .then(res => res.json())
       .then(data => {
-        const trades = data.whale_trades;
-        const container = document.getElementById("whaleList");
+        const trades = data.whale_trades || [];
+        const list = document.getElementById("whaleList");
+        const meter = document.getElementById("whaleMeter");
+        const fill = document.getElementById("meterFill");
 
-        if (!trades || trades.length === 0) {
-          container.innerHTML = "No trades available.";
+        if (!trades.length) {
+          list.innerHTML = "No trades available.";
           return;
         }
 
-        container.innerHTML = trades.slice(0, 5).map(t => `
+        list.innerHTML = trades.slice(0, 5).map(t => `
           <div class="trade-card">
             <strong>${t.symbol}</strong> - ${t.type}<br>
-            Strike: $${t.strike}<br>
-            Exp: ${t.expiration}<br>
-            Premium: $${Number(t.premium || t.last_price).toFixed(2)}
+            Strike: $${t.strike} | Exp: ${t.expiration}<br>
+            Premium: $${(t.premium).toFixed(2)}
           </div>
         `).join("");
 
-        // Whale Meter
-        const totalPremium = trades.reduce((sum, t) => sum + (Number(t.premium || t.last_price) * 100), 0);
-        const whaleMeter = document.getElementById("whaleMeter");
-        whaleMeter.textContent = `Total Premium Today: $${totalPremium.toLocaleString(undefined, {maximumFractionDigits: 0})}`;
+        // Whale meter total
+        const total = trades.reduce((sum, t) => sum + t.premium * 100, 0);
+        meter.innerHTML = `Total Premium Traded Today: $${total.toLocaleString(undefined, {maximumFractionDigits: 0})}`;
+        meter.appendChild(fill);
+        fill.style.width = "100%";
+
+        // Sentiment bar
+        const bullish = trades.filter(t => t.type === "CALL").length;
+        const bearish = trades.filter(t => t.type === "PUT").length;
+        const totalTrades = bullish + bearish;
+        const bullPercent = totalTrades > 0 ? (bullish / totalTrades) * 100 : 50;
+        const sentiment = document.getElementById("sentiment");
+        sentiment.style.background = `linear-gradient(to right, #00ff88 ${bullPercent}%, #ff0044 ${bullPercent}%)`;
       });
 
     fetch("leaderboard.json")
       .then(res => res.json())
       .then(data => {
-        const top = data.top_10;
         const board = document.getElementById("leaderboard");
-        board.innerHTML = Object.entries(top).map(([symbol, stats]) => `
+        board.innerHTML = Object.entries(data.top_10 || {}).map(([symbol, stats]) => `
           <div><strong>${symbol}</strong><br/>Trades: ${stats.count}<br/>$${stats.total_premium.toLocaleString()}</div>
         `).join("");
       });
