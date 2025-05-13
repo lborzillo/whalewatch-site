@@ -13,7 +13,6 @@
       padding: 0;
       overflow-x: hidden;
     }
-
     nav {
       background-color: #001520;
       padding: 1em;
@@ -22,49 +21,41 @@
       top: 0;
       z-index: 1000;
     }
-
     nav a {
       color: #00ffee;
       margin: 0 15px;
       font-weight: bold;
       text-decoration: none;
     }
-
     .hero {
       text-align: center;
       padding: 4em 2em 2em;
       background-color: #002b3f;
       position: relative;
     }
-
     .hero h1 {
       font-size: 3em;
       color: #00ffee;
       margin-bottom: 0.3em;
     }
-
     .hero p {
       font-size: 1.2em;
       color: #ccc;
     }
-
     .section {
       max-width: 800px;
       margin: 3em auto;
       padding: 2em;
       animation: fadeIn 1s ease-in;
     }
-
     @keyframes fadeIn {
       from { opacity: 0; transform: translateY(10px); }
       to { opacity: 1; transform: translateY(0); }
     }
-
     .section h2 {
       color: #00ffee;
       margin-bottom: 0.5em;
     }
-
     .trade-card {
       background-color: #003850;
       padding: 1em;
@@ -72,23 +63,19 @@
       margin-bottom: 1em;
       transition: transform 0.3s;
     }
-
     .trade-card:hover {
       transform: scale(1.02);
     }
-
     .leaderboard {
       display: grid;
       grid-template-columns: 1fr 1fr;
       gap: 0.5em 2em;
     }
-
     .leaderboard div {
       background-color: #003850;
       padding: 0.8em 1em;
       border-radius: 6px;
     }
-
     .whale-meter-container {
       background-color: #003850;
       border-radius: 6px;
@@ -97,21 +84,18 @@
       position: relative;
       margin-bottom: 1em;
     }
-
     .whale-meter-fill {
       background-color: #00ffee;
       height: 100%;
       width: 0;
       transition: width 2s ease-in-out;
     }
-
     .whale-meter-text {
       text-align: center;
       font-weight: bold;
       padding-top: 0.5em;
       color: #00ffee;
     }
-
     .sentiment-bar {
       background-color: #00425f;
       border-radius: 6px;
@@ -120,7 +104,6 @@
       margin-top: 10px;
       position: relative;
     }
-
     .sentiment-fill-bullish {
       background-color: #00ff88;
       height: 100%;
@@ -128,7 +111,6 @@
       float: left;
       transition: width 1.5s ease-in-out;
     }
-
     .sentiment-fill-bearish {
       background-color: #ff0044;
       height: 100%;
@@ -136,7 +118,6 @@
       float: left;
       transition: width 1.5s ease-in-out;
     }
-
     #whaleAssistant {
       position: fixed;
       bottom: 10px;
@@ -151,12 +132,10 @@
       z-index: 999;
       animation: fadeIn 2s ease-in;
     }
-
     .tooltip {
       position: relative;
       cursor: help;
     }
-
     .tooltip::after {
       content: 'Open Interest = number of outstanding contracts not yet closed or exercised.';
       position: absolute;
@@ -174,13 +153,33 @@
       font-size: 0.85em;
       z-index: 10;
     }
-
     .tooltip:hover::after {
       opacity: 1;
+    }
+    .timestamp {
+      text-align: center;
+      font-size: 0.9em;
+      color: #aaa;
+      margin-top: -1.5em;
+    }
+    #updateAge {
+      text-align: center;
+      font-size: 0.85em;
+      color: #888;
+      margin-top: 0.2em;
+    }
+    #liveClockBanner {
+      background: #002b3f;
+      color: #00ffee;
+      font-size: 0.9em;
+      text-align: center;
+      padding: 0.3em 0;
     }
   </style>
 </head>
 <body>
+  <div id="liveClockBanner">🕒 Market Clock: <span id="liveClock">Loading...</span></div>
+
   <nav>
     <a href="index.html">Home</a>
     <a href="learn.html">Learn</a>
@@ -198,15 +197,8 @@
       <div id="whaleFill" class="whale-meter-fill"></div>
     </div>
     <div id="whaleMeterText" class="whale-meter-text">Loading...</div>
-  </div>
-
-  <div class="section">
-    <h2>📈 Bullish vs. Bearish Sentiment</h2>
-    <div class="sentiment-bar">
-      <div id="bullFill" class="sentiment-fill-bullish"></div>
-      <div id="bearFill" class="sentiment-fill-bearish"></div>
-    </div>
-    <div id="sentimentLabel" class="whale-meter-text" style="margin-top: 10px;"></div>
+    <div id="dataTimestamp" class="timestamp"></div>
+    <div id="updateAge" class="timestamp"></div>
   </div>
 
   <div class="section">
@@ -217,11 +209,18 @@
   <div class="section">
     <h2>🏆 Top 10 Leaderboard</h2>
     <div id="leaderboard" class="leaderboard">Loading...</div>
+    <div id="leaderboardTimestamp" class="timestamp"></div>
   </div>
 
-  <div id="whaleAssistant">💡 Tip: NVDA premiums are hot right now. Check the simulator!</div>
-
   <script>
+    function updateLiveClock() {
+      const now = new Date();
+      document.getElementById("liveClock").textContent = now.toLocaleTimeString();
+    }
+
+    setInterval(updateLiveClock, 1000);
+    updateLiveClock();
+
     function updateWhaleData() {
       fetch("whales.json")
         .then(res => res.json())
@@ -233,10 +232,25 @@
           const bullFill = document.getElementById("bullFill");
           const bearFill = document.getElementById("bearFill");
           const sentimentLabel = document.getElementById("sentimentLabel");
+          const timestampLabel = document.getElementById("dataTimestamp");
+          const updateAge = document.getElementById("updateAge");
+          const leaderboardTimestamp = document.getElementById("leaderboardTimestamp");
 
           if (!trades || trades.length === 0) {
             whaleList.innerHTML = "No trades found.";
             return;
+          }
+
+          if (data.timestamp) {
+            const ts = new Date(data.timestamp);
+            const now = new Date();
+            const ageSeconds = Math.floor((now - ts) / 1000);
+            const mins = Math.floor(ageSeconds / 60);
+            const secs = ageSeconds % 60;
+
+            timestampLabel.textContent = `Last updated: ${ts.toLocaleString()}`;
+            updateAge.textContent = `⏱ Updated ${mins}m ${secs}s ago`;
+            leaderboardTimestamp.textContent = `Leaderboard synced: ${ts.toLocaleString()}`;
           }
 
           whaleList.innerHTML = trades.slice(0, 5).map(t => `
@@ -273,20 +287,6 @@
 
     updateWhaleData();
     setInterval(updateWhaleData, 60000);
-
-    fetch("leaderboard.json")
-      .then(res => res.json())
-      .then(data => {
-        const top = data.top_10;
-        const board = document.getElementById("leaderboard");
-        board.innerHTML = Object.entries(top).map(([symbol, stats]) => `
-          <div>
-            <strong>${symbol}</strong><br/>
-            Trades: ${stats.count}<br/>
-            $${stats.total_premium.toLocaleString()}
-          </div>
-        `).join("");
-      });
   </script>
 </body>
 </html>
