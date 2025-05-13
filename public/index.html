@@ -12,6 +12,7 @@
       margin: 0;
       padding: 0;
     }
+
     nav {
       background-color: #001520;
       padding: 1em;
@@ -20,51 +21,61 @@
       top: 0;
       z-index: 1000;
     }
+
     nav a {
       color: #00ffee;
       margin: 0 15px;
       font-weight: bold;
       text-decoration: none;
     }
+
     .hero {
       text-align: center;
       padding: 4em 2em 2em;
       background-color: #002b3f;
     }
+
     .hero h1 {
       font-size: 3em;
       color: #00ffee;
       margin-bottom: 0.3em;
     }
+
     .hero p {
       font-size: 1.2em;
       color: #ccc;
     }
+
     .section {
       max-width: 800px;
       margin: 3em auto;
       padding: 2em;
     }
+
     .section h2 {
       color: #00ffee;
       margin-bottom: 0.5em;
     }
+
     .trade-card {
       background-color: #003850;
       padding: 1em;
       border-radius: 6px;
       margin-bottom: 1em;
     }
+
     .leaderboard {
       display: grid;
       grid-template-columns: 1fr 1fr;
       gap: 0.5em 2em;
     }
+
     .leaderboard div {
       background-color: #003850;
       padding: 0.8em 1em;
       border-radius: 6px;
     }
+
     .whale-meter-container {
       background-color: #003850;
       border-radius: 6px;
@@ -73,18 +84,21 @@
       position: relative;
       margin-bottom: 1em;
     }
+
     .whale-meter-fill {
       background-color: #00ffee;
       height: 100%;
       width: 0;
       transition: width 2s ease-in-out;
     }
+
     .whale-meter-text {
       text-align: center;
       font-weight: bold;
       padding-top: 0.5em;
       color: #00ffee;
     }
+
     .sentiment-bar {
       background-color: #00425f;
       border-radius: 6px;
@@ -93,6 +107,7 @@
       margin-top: 10px;
       position: relative;
     }
+
     .sentiment-fill-bullish {
       background-color: #00ff88;
       height: 100%;
@@ -100,6 +115,7 @@
       float: left;
       transition: width 1.5s ease-in-out;
     }
+
     .sentiment-fill-bearish {
       background-color: #ff0044;
       height: 100%;
@@ -109,6 +125,7 @@
     }
   </style>
 </head>
+
 <body>
   <nav>
     <a href="index.html">Home</a>
@@ -165,33 +182,35 @@
           return;
         }
 
-        // Populate trades
+        // Populate latest trades
         whaleList.innerHTML = trades.slice(0, 5).map(t => `
           <div class="trade-card">
             <strong>${t.symbol}</strong> — ${t.type}<br>
             Strike: $${t.strike}<br>
             Exp: ${t.expiration}<br>
-            Premium: $${(t.premium).toFixed(2)}<br>
+            Premium: $${Number(t.premium).toFixed(2)}<br>
             OI: ${t.open_interest}
           </div>
         `).join("");
 
-        // Whale Meter
-        const totalPremium = trades.reduce((sum, t) => sum + (t.premium * 100), 0);
-        const maxPremium = Math.max(...trades.map(t => t.premium * 100)) * trades.length * 0.6;
-        const fillPercent = Math.min(100, (totalPremium / maxPremium) * 100);
-        whaleFill.style.width = fillPercent + "%";
-        whaleMeterText.textContent = `Total Premium Traded: $${Math.round(totalPremium).toLocaleString()}`;
+        // Whale Meter calculation
+        const totalPremium = trades.reduce((sum, t) => {
+          const val = Number(t.premium);
+          return sum + (isNaN(val) ? 0 : val * 100);
+        }, 0);
 
-        // Sentiment Meter
+        whaleMeterText.textContent = `Total Premium Traded: $${totalPremium.toLocaleString(undefined, { maximumFractionDigits: 0 })}`;
+
+        // Sentiment Bar
         const bullishCount = trades.filter(t => t.type === "CALL").length;
         const bearishCount = trades.filter(t => t.type === "PUT").length;
         const totalCount = bullishCount + bearishCount;
         const bullishPct = totalCount > 0 ? (bullishCount / totalCount) * 100 : 50;
         const bearishPct = 100 - bullishPct;
 
-        bullFill.style.width = bullishPct + "%";
-        bearFill.style.width = bearishPct + "%";
+        bullFill.style.width = `${bullishPct}%`;
+        bearFill.style.width = `${bearishPct}%`;
+
         sentimentLabel.textContent = `🐂 Bullish: ${bullishPct.toFixed(1)}% | 🐻 Bearish: ${bearishPct.toFixed(1)}%`;
       });
 
@@ -201,7 +220,11 @@
         const top = data.top_10;
         const board = document.getElementById("leaderboard");
         board.innerHTML = Object.entries(top).map(([symbol, stats]) => `
-          <div><strong>${symbol}</strong><br/>Trades: ${stats.count}<br/>$${stats.total_premium.toLocaleString()}</div>
+          <div>
+            <strong>${symbol}</strong><br/>
+            Trades: ${stats.count}<br/>
+            $${stats.total_premium.toLocaleString()}
+          </div>
         `).join("");
       });
   </script>
