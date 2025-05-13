@@ -193,7 +193,7 @@
 
           const totalPremium = trades.reduce((sum, t) => {
             const premium = Number(t.premium);
-            return sum + (isNaN(premium) ? 0 : premium);
+            return sum + (isNaN(premium) ? 0 : premium * 100);
           }, 0);
 
           document.getElementById("whaleMeterText").textContent = `Total Premium Traded: $${totalPremium.toLocaleString()}`;
