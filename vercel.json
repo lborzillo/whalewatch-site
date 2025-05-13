@@ -12,11 +12,5 @@
           "value": "no-cache"
         }
       ]
-    }
-  ],
-  "static": {
-    "files": {
-      "include": ["whales.json", "leaderboard.json"]
-    }
   }
 }
