@@ -62,7 +62,6 @@
       border-radius: 6px;
       overflow: hidden;
       height: 30px;
-      position: relative;
       margin-bottom: 1em;
     }
 
@@ -99,7 +98,6 @@
       height: 20px;
       overflow: hidden;
       margin-top: 10px;
-      position: relative;
     }
 
     .sentiment-fill-bullish {
@@ -166,7 +164,6 @@
       padding: 0.8em 1em;
       border-radius: 10px;
       font-size: 0.95em;
-      max-width: 100%;
       box-shadow: 0 0 10px rgba(0, 255, 255, 0.5);
     }
 
@@ -222,27 +219,6 @@
     <div id="whaleAssistant">💡 Tip: Loading...</div>
     <div id="whaleStrength" class="whale-strength" style="display: none;">🐋 Whale Strength Detected</div>
   </div>
-
-  <div class="section">
-    <h2>📈 Bullish vs. Bearish Sentiment</h2>
-    <div class="sentiment-bar">
-      <div id="bullFill" class="sentiment-fill-bullish"></div>
-      <div id="bearFill" class="sentiment-fill-bearish"></div>
-    </div>
-    <div id="sentimentLabel" class="whale-meter-text" style="margin-top: 10px;"></div>
-  </div>
-
-  <div class="section">
-    <h2>📊 Latest Whale Trades</h2>
-    <div id="whaleList">Loading...</div>
-  </div>
-
-  <div class="section">
-    <h2>🏆 Top 10 Leaderboard</h2>
-    <div id="leaderboard" class="leaderboard">Loading...</div>
-    <div id="leaderboardTimestamp" class="timestamp"></div>
-  </div>
-
   <script>
     function updateLiveClock() {
       const now = new Date();
@@ -252,30 +228,44 @@
     setInterval(updateLiveClock, 1000);
     updateLiveClock();
 
-    function getDynamicTip(trades) {
-      const priorityTips = {
-        "NVDA": "NVDA premiums are hot right now. Consider a short-term put play.",
-        "AAPL": "AAPL is showing strong options flow today. Time to harvest?",
-        "TSLA": "TSLA volume is spiking. Consider a directional move.",
-        "AMZN": "Whales are watching AMZN. Are you?",
-        "MSFT": "MSFT action detected. Covered calls might be juicy."
-      };
+    const priorityTips = {
+      "NVDA": "NVDA premiums are hot right now. Consider a short-term put play.",
+      "AAPL": "AAPL is trending upward. Covered calls may be a strong move.",
+      "TSLA": "TSLA volatility favors iron condors. Trade carefully.",
+      "AMZN": "Whales are circling AMZN. Watch for directional momentum.",
+      "MSFT": "MSFT has strong OI signals. Look into spread strategies."
+    };
 
+    const generalTips = [
+      "💡 Tip: Covered calls can boost returns in sideways markets.",
+      "💡 Tip: Selling puts lets you buy quality stocks at a discount.",
+      "💡 Tip: Don't chase. Let the trade come to you.",
+      "💡 Tip: Use delta to manage probability of profit.",
+      "💡 Tip: Watch open interest for confirmation.",
+      "💡 Tip: Large block trades often hint at institutional intent.",
+      "💡 Tip: Whisper+ unlocks full visibility on dark pool flows. Upgrade now!",
+      "💡 Tip: IV crush hits hardest after earnings — plan exits accordingly.",
+      "💡 Tip: Whale clusters often signal upcoming breakouts.",
+      "💡 Tip: Let premium work for you, not against you."
+    ];
+
+    let tipIndex = 0;
+    let activeTradeSymbols = [];
+
+    function rotateTip() {
+      const tipBox = document.getElementById("whaleAssistant");
+
+      // Check if any priority tips are relevant
       for (let symbol in priorityTips) {
-        if (trades.some(t => t.symbol === symbol)) {
-          return `💡 Tip: ${priorityTips[symbol]}`;
+        if (activeTradeSymbols.includes(symbol)) {
+          tipBox.textContent = `💡 Tip: ${priorityTips[symbol]}`;
+          return;
         }
       }
 
-      const generalTips = [
-        "💡 Tip: Covered calls can boost returns in sideways markets.",
-        "💡 Tip: Put selling can help you buy stocks at a discount.",
-        "💡 Tip: Track volume and OI — the smart money leaves footprints.",
-        "💡 Tip: Don’t chase — wait for setups with clear premium.",
-        "💡 Tip: Harvest premium, don’t gamble it."
-      ];
-
-      return generalTips[Math.floor(Math.random() * generalTips.length)];
+      // Rotate general tips
+      tipBox.textContent = generalTips[tipIndex];
+      tipIndex = (tipIndex + 1) % generalTips.length;
     }
 
     function updateWhaleData() {
@@ -283,6 +273,9 @@
         .then(res => res.json())
         .then(data => {
           const trades = data.whale_trades;
+
+          // Store active symbols
+          activeTradeSymbols = trades.map(t => t.symbol);
 
           document.getElementById("whaleList").innerHTML = trades.slice(0, 5).map(t => `
             <div class="trade-card">
@@ -323,24 +316,26 @@
 
           const ts = new Date(data.timestamp);
           document.getElementById("whaleTimestamp").textContent = `Last updated: ${ts.toLocaleString()}`;
-          document.getElementById("whaleAssistant").textContent = getDynamicTip(trades);
 
-          // Leaderboard
           const top = data.top_10 || {};
           const board = document.getElementById("leaderboard");
-          board.innerHTML = Object.entries(top).map(([symbol, stats]) => `
-            <div class="leaderboard-entry">
-              <strong>${symbol}</strong><br/>
-              Trades: ${stats.count}<br/>
-              Total: $${stats.total_premium.toLocaleString()}
-            </div>
-          `).join("");
+          board.innerHTML = Object.entries(top)
+            .sort((a, b) => b[1].total_premium - a[1].total_premium)
+            .map(([symbol, stats]) => `
+              <div class="leaderboard-entry">
+                <strong>${symbol}</strong><br/>
+                Trades: ${stats.count}<br/>
+                Total: $${stats.total_premium.toLocaleString()}
+              </div>
+            `).join("");
           document.getElementById("leaderboardTimestamp").textContent = `Leaderboard synced: ${ts.toLocaleString()}`;
         });
     }
 
     updateWhaleData();
+    rotateTip(); // run immediately
     setInterval(updateWhaleData, 60000);
+    setInterval(rotateTip, 12000); // rotate every 12s
   </script>
 </body>
 </html>
