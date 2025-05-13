@@ -1,3 +1,4 @@
+<!-- BEGIN index.html -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -52,6 +53,12 @@
       color: #aaa;
       margin-top: -1.5em;
       margin-bottom: 2em;
+    }
+    #leaderboardTimestamp {
+      text-align: right;
+      font-size: 0.85em;
+      color: #aaa;
+      margin: -1em 2em 2em 0;
     }
     .trade-card {
       background-color: #003850;
@@ -134,6 +141,30 @@
       text-align: center;
       padding: 0.3em 0;
     }
+
+    /* Whisper teaser styles */
+    .whisper-teaser {
+      background-color: #012634;
+      padding: 2em;
+      border-left: 4px solid #00bcd4;
+      border-radius: 10px;
+      max-width: 800px;
+      margin: 2em auto;
+    }
+    .whisper-teaser span {
+      filter: blur(4px);
+      color: #aaa;
+    }
+    .whisper-teaser a {
+      display: inline-block;
+      margin-top: 1rem;
+      padding: 0.5rem 1rem;
+      background: #00bcd4;
+      color: #000;
+      text-decoration: none;
+      font-weight: bold;
+      border-radius: 5px;
+    }
   </style>
 </head>
 <body>
@@ -143,6 +174,7 @@
     <a href="index.html">Home</a>
     <a href="learn.html">Learn</a>
     <a href="simulate.html">Simulate</a>
+    <a href="whispers.html">Whispers</a>
   </nav>
 
   <div class="hero">
@@ -176,7 +208,16 @@
   <div class="section">
     <h2>🏆 Top 10 Leaderboard</h2>
     <div id="leaderboard" class="leaderboard">Loading...</div>
-    <div id="leaderboardTimestamp" class="timestamp"></div>
+  </div>
+
+  <div id="leaderboardTimestamp"></div>
+
+  <div class="whisper-teaser">
+    <h2>🔊 Whale Whisper Detected</h2>
+    <p><strong>Time:</strong> 10:17 AM EDT</p>
+    <p><strong>Trade:</strong> CALL Sweep | Ticker: <span>[Hidden]</span></p>
+    <p><strong>Premium:</strong> $3.2M | Exp: <span>[Hidden]</span></p>
+    <a href="/whispers.html">See All Whispers →</a>
   </div>
 
   <div id="whaleAssistant"></div>
@@ -273,3 +314,4 @@
   </script>
 </body>
 </html>
+<!-- END index.html -->
