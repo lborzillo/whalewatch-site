@@ -223,11 +223,12 @@
           `).join("");
 
           const totalPremium = trades.reduce((sum, t) => {
-            const val = Number(t.premium);
-            return sum + (isNaN(val) ? 0 : val * 100);
+            const premium = Number(t.premium);
+            const oi = Number(t.open_interest);
+            return sum + (isNaN(premium) || isNaN(oi) ? 0 : premium * oi * 100);
           }, 0);
 
-          whaleFill.style.width = Math.min(totalPremium / 1000000 * 100, 100) + "%";
+          whaleFill.style.width = Math.min(totalPremium / 100000000 * 100, 100) + "%";
           whaleMeterText.textContent = `Total Premium Traded: $${totalPremium.toLocaleString(undefined, { maximumFractionDigits: 0 })}`;
 
           const bullishCount = trades.filter(t => t.type === "CALL").length;
