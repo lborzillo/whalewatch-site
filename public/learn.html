@@ -16,41 +16,42 @@
       background-color: #001520;
       padding: 1em;
       text-align: center;
-      position: sticky;
-      top: 0;
     }
     nav a {
       color: #00ffee;
       margin: 0 15px;
-      text-decoration: none;
       font-weight: bold;
+      text-decoration: none;
     }
     .container {
       max-width: 800px;
       margin: 3em auto;
       padding: 2em;
-      background-color: #002b3f;
-      border-radius: 8px;
+      background-color: #003244;
+      border-radius: 10px;
+      line-height: 1.6;
     }
     h1 {
       text-align: center;
       color: #00ffee;
-      font-size: 2em;
+      margin-bottom: 1em;
     }
-    p {
-      font-size: 1.1em;
-      color: #dddddd;
+    h2 {
+      color: #00ffee;
+      margin-top: 2em;
     }
     ul {
-      margin-top: 1em;
-      padding-left: 1.2em;
+      margin-left: 1.5em;
     }
-    li {
-      margin-bottom: 1em;
-      line-height: 1.5em;
-    }
-    strong {
-      color: #ffffff;
+    @media (max-width: 600px) {
+      .container {
+        margin: 1em;
+        padding: 1.5em;
+      }
+      nav a {
+        display: block;
+        margin: 0.5em 0;
+      }
     }
   </style>
 </head>
@@ -58,24 +59,51 @@
   <nav>
     <a href="index.html">Home</a>
     <a href="learn.html">Learn</a>
-    <a href="simulate.html">Live Data</a>
+    <a href="simulate.html">Simulate</a>
   </nav>
 
   <div class="container">
     <h1>📘 How to Read Whale Data</h1>
     <p>
-      Whale trades are large, high-volume options trades made by institutions or big players. Tracking these trades can give insight into future market moves.
+      Whale trades are large, high-volume options trades made by institutions or big players.
+      Tracking these trades can give insight into future market moves — especially when they cluster,
+      repeat, or aggressively favor one direction.
     </p>
-    <p>
-      When using the simulator, you may see some fields empty or unavailable. Here's why:
-    </p>
+
+    <h2>🔍 Why Some Fields Might Be Empty</h2>
     <ul>
       <li><strong>No symbols appear:</strong> The whale feed may be temporarily empty. Try refreshing later.</li>
-      <li><strong>Can’t select Call or Put:</strong> Only one type of trade (e.g., Calls) may exist for a symbol. The simulator will switch to the available one and explain.</li>
-      <li><strong>Empty Strike or Expiration fields:</strong> Whale trades for that symbol might be missing matching strike/expiry pairs.</li>
+      <li><strong>Can't select Call or Put:</strong> Only one type (e.g., Calls) may exist for a symbol at the time.</li>
+      <li><strong>Empty Strike or Expiration:</strong> The data may be missing matching strike/expiry pairs.</li>
     </ul>
+    <p>This is normal — it’s part of learning how to read live option flow.</p>
+
+    <h2>📘 What the Fields Mean</h2>
+    <ul>
+      <li><strong>Symbol:</strong> The stock ticker being traded (e.g., AAPL, NVDA).</li>
+      <li><strong>Type:</strong> Call or Put — calls are bullish bets, puts are bearish.</li>
+      <li><strong>Strike:</strong> The price the option controls. It’s where the trader believes the stock may move.</li>
+      <li><strong>Expiration:</strong> When the option contract ends (weekly, monthly, etc.).</li>
+      <li><strong>Premium:</strong> How much was paid for the contract — higher = more conviction.</li>
+      <li><strong>Open Interest (OI):</strong> How many open contracts exist. Spikes = building interest.</li>
+    </ul>
+
+    <h2>🎯 Interpreting the Whale Meter</h2>
     <p>
-      This is part of the learning process — sometimes the trade just isn’t there. We show you how to spot it.
+      The Whale Meter on the homepage shows total premium traded in real time.
+      As it fills up and changes color, it signals intensity:
+    </p>
+    <ul>
+      <li><span style="color:#005577;">Blue:</span> Quiet market</li>
+      <li><span style="color:#00ffee;">Aqua:</span> Normal flow</li>
+      <li><span style="color:#ffaa00;">Orange:</span> Elevated activity</li>
+      <li><span style="color:#ff0044;">Red:</span> 🚨 Whale-level aggression</li>
+    </ul>
+
+    <h2>🧠 Want to Practice?</h2>
+    <p>
+      Head over to the <a href="simulate.html" style="color: #00ffee;">Simulate</a> page and use real whale trades to build your own options play.
+      It’s like a flight simulator for options — without the crash risk.
     </p>
   </div>
 </body>
