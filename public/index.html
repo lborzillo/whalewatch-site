@@ -160,13 +160,12 @@
       text-align: center;
       font-size: 0.9em;
       color: #aaa;
-      margin-top: -1.5em;
+      margin: 0.5em 0;
     }
     #updateAge {
       text-align: center;
       font-size: 0.85em;
       color: #888;
-      margin-top: 0.2em;
     }
     #liveClockBanner {
       background: #002b3f;
@@ -197,8 +196,17 @@
       <div id="whaleFill" class="whale-meter-fill"></div>
     </div>
     <div id="whaleMeterText" class="whale-meter-text">Loading...</div>
-    <div id="dataTimestamp" class="timestamp"></div>
-    <div id="updateAge" class="timestamp"></div>
+  </div>
+  <div id="dataTimestamp" class="timestamp"></div>
+  <div id="updateAge" class="timestamp"></div>
+
+  <div class="section">
+    <h2>📈 Bullish vs. Bearish Sentiment</h2>
+    <div class="sentiment-bar">
+      <div id="bullFill" class="sentiment-fill-bullish"></div>
+      <div id="bearFill" class="sentiment-fill-bearish"></div>
+    </div>
+    <div id="sentimentLabel" class="whale-meter-text" style="margin-top: 10px;"></div>
   </div>
 
   <div class="section">
@@ -234,7 +242,6 @@
           const sentimentLabel = document.getElementById("sentimentLabel");
           const timestampLabel = document.getElementById("dataTimestamp");
           const updateAge = document.getElementById("updateAge");
-          const leaderboardTimestamp = document.getElementById("leaderboardTimestamp");
 
           if (!trades || trades.length === 0) {
             whaleList.innerHTML = "No trades found.";
@@ -250,7 +257,6 @@
 
             timestampLabel.textContent = `Last updated: ${ts.toLocaleString()}`;
             updateAge.textContent = `⏱ Updated ${mins}m ${secs}s ago`;
-            leaderboardTimestamp.textContent = `Leaderboard synced: ${ts.toLocaleString()}`;
           }
 
           whaleList.innerHTML = trades.slice(0, 5).map(t => `
@@ -282,6 +288,26 @@
           bearFill.style.width = `${bearishPct}%`;
 
           sentimentLabel.textContent = `🐂 Bullish: ${bullishPct.toFixed(1)}% | 🐻 Bearish: ${bearishPct.toFixed(1)}%`;
+        });
+
+      fetch("leaderboard.json")
+        .then(res => res.json())
+        .then(data => {
+          const top = data.top_10;
+          const board = document.getElementById("leaderboard");
+          board.innerHTML = Object.entries(top).map(([symbol, stats]) => `
+            <div>
+              <strong>${symbol}</strong><br/>
+              Trades: ${stats.count}<br/>
+              $${stats.total_premium.toLocaleString()}
+            </div>
+          `).join("");
+
+          const leaderboardTimestamp = document.getElementById("leaderboardTimestamp");
+          if (data.timestamp) {
+            const ts = new Date(data.timestamp);
+            leaderboardTimestamp.textContent = `Leaderboard synced: ${ts.toLocaleString()}`;
+          }
         });
     }
 
