@@ -175,27 +175,13 @@
     setInterval(updateLiveClock, 1000);
     updateLiveClock();
 
-    function getDynamicTip(trades) {
-      const tips = {
-        "NVDA": "NVDA premiums are hot right now.",
-        "AAPL": "AAPL is showing strong options flow.",
-        "TSLA": "TSLA volume is spiking.",
-        "AMZN": "Whales are watching AMZN.",
-        "MSFT": "MSFT action detected."
-      };
-      for (let symbol in tips) {
-        if (trades.some(t => t.symbol === symbol)) return tips[symbol];
-      }
-      return "Use the simulator to plan your next move.";
-    }
-
     function updateWhaleData() {
       fetch("whales.json")
         .then(res => res.json())
         .then(data => {
           const trades = data.whale_trades;
-          const whaleList = document.getElementById("whaleList");
-          whaleList.innerHTML = trades.slice(0, 5).map(t => `
+
+          document.getElementById("whaleList").innerHTML = trades.slice(0, 5).map(t => `
             <div style="background:#003850; padding:1em; border-radius:6px; margin-bottom:1em;">
               <strong>${t.symbol}</strong> — ${t.type}<br>
               Strike: $${t.strike}<br>
@@ -210,8 +196,8 @@
             return sum + (isNaN(premium) ? 0 : premium);
           }, 0);
 
-          document.getElementById("whaleMeterText").textContent = `Total Premium Traded: $${(totalPremium * 100).toLocaleString()}`;
-          document.getElementById("whaleFill").style.width = Math.min((totalPremium / 1000) * 100, 100) + "%";
+          document.getElementById("whaleMeterText").textContent = `Total Premium Traded: $${totalPremium.toLocaleString()}`;
+          document.getElementById("whaleFill").style.width = Math.min((totalPremium / 10000000) * 100, 100) + "%";
 
           const calls = trades.filter(t => t.type === "CALL").length;
           const puts = trades.filter(t => t.type === "PUT").length;
