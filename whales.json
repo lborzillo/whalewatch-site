@@ -1,0 +1,50 @@
+{
+  "timestamp": "2025-05-13T13:43:51.919595",
+  "whale_trades": [
+    {
+      "symbol": "NVDA",
+      "type": "CALL",
+      "strike": 95.0,
+      "expiration": "2025-05-16",
+      "premium": 1187548.32,
+      "open_interest": 43278,
+      "last_price": 27.44
+    },
+    {
+      "symbol": "NVDA",
+      "type": "CALL",
+      "strike": 5.0,
+      "expiration": "2025-05-16",
+      "premium": 1141057.06,
+      "open_interest": 9731,
+      "last_price": 117.26
+    },
+    {
+      "symbol": "NVDA",
+      "type": "CALL",
+      "strike": 110.0,
+      "expiration": "2025-05-16",
+      "premium": 924490.0,
+      "open_interest": 70250,
+      "last_price": 13.16
+    },
+    {
+      "symbol": "NVDA",
+      "type": "CALL",
+      "strike": 105.0,
+      "expiration": "2025-05-16",
+      "premium": 628160.5,
+      "open_interest": 34705,
+      "last_price": 18.1
+    },
+    {
+      "symbol": "NVDA",
+      "type": "CALL",
+      "strike": 120.0,
+      "expiration": "2025-05-16",
+      "premium": 532622.7999999999,
+      "open_interest": 129908,
+      "last_price": 4.1
+    }
+  ]
+}
