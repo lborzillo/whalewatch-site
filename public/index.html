@@ -219,6 +219,26 @@
     <div id="whaleAssistant">💡 Tip: Loading...</div>
     <div id="whaleStrength" class="whale-strength" style="display: none;">🐋 Whale Strength Detected</div>
   </div>
+
+  <div class="section">
+    <h2>📈 Bullish vs. Bearish Sentiment</h2>
+    <div class="sentiment-bar">
+      <div id="bullFill" class="sentiment-fill-bullish"></div>
+      <div id="bearFill" class="sentiment-fill-bearish"></div>
+    </div>
+    <div id="sentimentLabel" class="whale-meter-text" style="margin-top: 10px;">Loading...</div>
+  </div>
+
+  <div class="section">
+    <h2>📊 Latest Whale Trades</h2>
+    <div id="whaleList">Loading...</div>
+  </div>
+
+  <div class="section">
+    <h2>🏆 Top 10 Leaderboard</h2>
+    <div id="leaderboard">Loading...</div>
+    <div id="leaderboardTimestamp" class="timestamp">Loading...</div>
+  </div>
   <script>
     function updateLiveClock() {
       const now = new Date();
@@ -255,7 +275,6 @@
     function rotateTip() {
       const tipBox = document.getElementById("whaleAssistant");
 
-      // Check if any priority tips are relevant
       for (let symbol in priorityTips) {
         if (activeTradeSymbols.includes(symbol)) {
           tipBox.textContent = `💡 Tip: ${priorityTips[symbol]}`;
@@ -263,7 +282,6 @@
         }
       }
 
-      // Rotate general tips
       tipBox.textContent = generalTips[tipIndex];
       tipIndex = (tipIndex + 1) % generalTips.length;
     }
@@ -274,7 +292,6 @@
         .then(data => {
           const trades = data.whale_trades;
 
-          // Store active symbols
           activeTradeSymbols = trades.map(t => t.symbol);
 
           document.getElementById("whaleList").innerHTML = trades.slice(0, 5).map(t => `
@@ -333,9 +350,9 @@
     }
 
     updateWhaleData();
-    rotateTip(); // run immediately
+    rotateTip();
     setInterval(updateWhaleData, 60000);
-    setInterval(rotateTip, 12000); // rotate every 12s
+    setInterval(rotateTip, 12000);
   </script>
 </body>
 </html>
