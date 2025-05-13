@@ -37,6 +37,73 @@
       font-size: 1.2em;
       color: #ccc;
     }
+    .section {
+      max-width: 800px;
+      margin: 3em auto;
+      padding: 2em;
+    }
+    .section h2 {
+      color: #00ffee;
+      margin-bottom: 0.5em;
+    }
+    .trade-card {
+      background-color: #003850;
+      padding: 1em;
+      border-radius: 6px;
+      margin-bottom: 1em;
+    }
+    .leaderboard {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0.5em 2em;
+    }
+    .leaderboard div {
+      background-color: #003850;
+      padding: 0.8em 1em;
+      border-radius: 6px;
+    }
+    .whale-meter-container {
+      background-color: #003850;
+      border-radius: 6px;
+      overflow: hidden;
+      height: 30px;
+      position: relative;
+      margin-bottom: 1em;
+    }
+    .whale-meter-fill {
+      background-color: #00ffee;
+      height: 100%;
+      width: 0;
+      transition: width 2s ease-in-out;
+    }
+    .whale-meter-text {
+      text-align: center;
+      font-weight: bold;
+      padding-top: 0.5em;
+      color: #00ffee;
+    }
+    .sentiment-bar {
+      background-color: #00425f;
+      border-radius: 6px;
+      height: 20px;
+      overflow: hidden;
+      margin-top: 10px;
+      position: relative;
+    }
+    .sentiment-fill-bullish {
+      background-color: #00ff88;
+      height: 100%;
+      width: 0;
+      float: left;
+      transition: width 1.5s ease-in-out;
+    }
+    .sentiment-fill-bearish {
+      background-color: #ff0044;
+      height: 100%;
+      width: 0;
+      float: left;
+      transition: width 1.5s ease-in-out;
+    }
     #whaleAssistant {
       position: fixed;
       bottom: 10px;
@@ -76,6 +143,33 @@
     <p>Real-time sonar on big money moves.</p>
   </div>
 
+  <div class="section">
+    <h2>🌊 Whale Meter</h2>
+    <div class="whale-meter-container">
+      <div id="whaleFill" class="whale-meter-fill"></div>
+    </div>
+    <div id="whaleMeterText" class="whale-meter-text">Loading...</div>
+  </div>
+
+  <div class="section">
+    <h2>📈 Bullish vs. Bearish Sentiment</h2>
+    <div class="sentiment-bar">
+      <div id="bullFill" class="sentiment-fill-bullish"></div>
+      <div id="bearFill" class="sentiment-fill-bearish"></div>
+    </div>
+    <div id="sentimentLabel" class="whale-meter-text" style="margin-top: 10px;"></div>
+  </div>
+
+  <div class="section">
+    <h2>📊 Latest Whale Trades</h2>
+    <div id="whaleList">Loading...</div>
+  </div>
+
+  <div class="section">
+    <h2>🏆 Top 10 Leaderboard</h2>
+    <div id="leaderboard" class="leaderboard">Loading...</div>
+  </div>
+
   <div id="whaleAssistant"></div>
 
   <script>
@@ -110,6 +204,38 @@
         .then(res => res.json())
         .then(data => {
           const trades = data.whale_trades;
+
+          const whaleList = document.getElementById("whaleList");
+          const whaleFill = document.getElementById("whaleFill");
+          const whaleMeterText = document.getElementById("whaleMeterText");
+          const bullFill = document.getElementById("bullFill");
+          const bearFill = document.getElementById("bearFill");
+          const sentimentLabel = document.getElementById("sentimentLabel");
+
+          whaleList.innerHTML = trades.slice(0, 5).map(t => `
+            <div class="trade-card">
+              <strong>${t.symbol}</strong> — ${t.type}<br>
+              Strike: $${t.strike}<br>
+              Exp: ${t.expiration}<br>
+              Premium: $${Number(t.premium).toFixed(2)}<br>
+              OI: ${t.open_interest}
+            </div>
+          `).join("");
+
+          const totalPremium = trades.reduce((sum, t) => sum + (Number(t.premium) || 0) * 100, 0);
+          whaleFill.style.width = Math.min(totalPremium / 100000000 * 100, 100) + "%";
+          whaleMeterText.textContent = `Total Premium Traded: $${totalPremium.toLocaleString()}`;
+
+          const bullishCount = trades.filter(t => t.type === "CALL").length;
+          const bearishCount = trades.filter(t => t.type === "PUT").length;
+          const totalCount = bullishCount + bearishCount;
+          const bullishPct = totalCount > 0 ? (bullishCount / totalCount) * 100 : 50;
+          const bearishPct = 100 - bullishPct;
+
+          bullFill.style.width = `${bullishPct}%`;
+          bearFill.style.width = `${bearishPct}%`;
+          sentimentLabel.textContent = `🐂 Bullish: ${bullishPct.toFixed(1)}% | 🐻 Bearish: ${bearishPct.toFixed(1)}%`;
+
           const tipBox = document.getElementById("whaleAssistant");
           tipBox.textContent = getDynamicTip(trades);
           tipBox.style.display = "block";
@@ -118,7 +244,11 @@
       fetch("leaderboard.json")
         .then(res => res.json())
         .then(data => {
-          // leaderboard code stays the same
+          const top = data.top_10;
+          const board = document.getElementById("leaderboard");
+          board.innerHTML = Object.entries(top).map(([symbol, stats]) => `
+            <div><strong>${symbol}</strong><br/>Trades: ${stats.count}<br/>$${stats.total_premium.toLocaleString()}</div>
+          `).join("");
         });
     }
 
