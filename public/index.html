@@ -178,7 +178,7 @@
 
         // Whale Meter
         const totalPremium = trades.reduce((sum, t) => sum + (t.premium * 100), 0);
-        const maxPremium = 1000000; // Arbitrary cap for fill percentage
+        const maxPremium = Math.max(...trades.map(t => t.premium * 100)) * trades.length * 0.6;
         const fillPercent = Math.min(100, (totalPremium / maxPremium) * 100);
         whaleFill.style.width = fillPercent + "%";
         whaleMeterText.textContent = `Total Premium Traded: $${Math.round(totalPremium).toLocaleString()}`;
