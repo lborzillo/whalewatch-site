@@ -57,33 +57,6 @@
       margin-bottom: 0.5em;
     }
 
-    .timestamp {
-      text-align: center;
-      font-size: 0.9em;
-      color: #aaa;
-      margin-top: -1.5em;
-      margin-bottom: 2em;
-    }
-
-    .trade-card {
-      background-color: #003850;
-      padding: 1em;
-      border-radius: 6px;
-      margin-bottom: 1em;
-    }
-
-    .leaderboard {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 0.5em 2em;
-    }
-
-    .leaderboard div {
-      background-color: #003850;
-      padding: 0.8em 1em;
-      border-radius: 6px;
-    }
-
     .whale-meter-container {
       background-color: #003850;
       border-radius: 6px;
@@ -100,11 +73,24 @@
       transition: width 2s ease-in-out;
     }
 
+    .whale-meter-flex {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 1em;
+      margin-bottom: 1em;
+    }
+
     .whale-meter-text {
-      text-align: center;
       font-weight: bold;
-      padding-top: 0.5em;
       color: #00ffee;
+      font-size: 1.1em;
+    }
+
+    .timestamp {
+      font-size: 0.9em;
+      color: #aaa;
     }
 
     .sentiment-bar {
@@ -132,6 +118,30 @@
       transition: width 1.5s ease-in-out;
     }
 
+    .whale-meter-text,
+    .timestamp {
+      white-space: nowrap;
+    }
+
+    .trade-card {
+      background-color: #003850;
+      padding: 1em;
+      border-radius: 6px;
+      margin-bottom: 1em;
+    }
+
+    .leaderboard {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0.5em 2em;
+    }
+
+    .leaderboard div {
+      background-color: #003850;
+      padding: 0.8em 1em;
+      border-radius: 6px;
+    }
+
     #whaleAssistant {
       position: relative;
       background: #00293e;
@@ -141,7 +151,6 @@
       border-radius: 10px;
       font-size: 0.95em;
       max-width: 100%;
-      margin-top: 1em;
       box-shadow: 0 0 10px rgba(0, 255, 255, 0.5);
     }
 
@@ -157,11 +166,15 @@
       .hero h1 {
         font-size: 2em;
       }
+      .section {
+        padding: 1.2em;
+      }
       .leaderboard {
         grid-template-columns: 1fr;
       }
-      .section {
-        padding: 1em;
+      .whale-meter-flex {
+        flex-direction: column;
+        align-items: flex-start;
       }
     }
   </style>
@@ -186,8 +199,10 @@
     <div class="whale-meter-container">
       <div id="whaleFill" class="whale-meter-fill"></div>
     </div>
-    <div id="whaleMeterText" class="whale-meter-text">Loading...</div>
-    <div id="whaleTimestamp" class="timestamp"></div>
+    <div class="whale-meter-flex">
+      <div id="whaleMeterText" class="whale-meter-text">Loading...</div>
+      <div id="whaleTimestamp" class="timestamp">Loading...</div>
+    </div>
     <div id="whaleAssistant">💡 Tip: Loading...</div>
   </div>
 
@@ -252,16 +267,7 @@
         .then(data => {
           const trades = data.whale_trades;
 
-          const whaleList = document.getElementById("whaleList");
-          const whaleFill = document.getElementById("whaleFill");
-          const whaleMeterText = document.getElementById("whaleMeterText");
-          const bullFill = document.getElementById("bullFill");
-          const bearFill = document.getElementById("bearFill");
-          const sentimentLabel = document.getElementById("sentimentLabel");
-          const whaleTimestamp = document.getElementById("whaleTimestamp");
-          const assistant = document.getElementById("whaleAssistant");
-
-          whaleList.innerHTML = trades.slice(0, 5).map(t => `
+          document.getElementById("whaleList").innerHTML = trades.slice(0, 5).map(t => `
             <div class="trade-card">
               <strong>${t.symbol}</strong> — ${t.type}<br>
               Strike: $${t.strike}<br>
@@ -276,8 +282,10 @@
             return sum + (isNaN(premium) ? 0 : premium * 10000);
           }, 0);
 
-          whaleMeterText.textContent = `Total Premium Traded: $${totalPremium.toLocaleString()}`;
+          document.getElementById("whaleMeterText").textContent = `Total Premium Traded: $${totalPremium.toLocaleString()}`;
+
           const percent = Math.min((totalPremium / 1000000) * 100, 100);
+          const whaleFill = document.getElementById("whaleFill");
           whaleFill.style.width = percent + "%";
 
           if (percent >= 90) {
@@ -296,13 +304,13 @@
           const bullishPct = totalCount > 0 ? (bullishCount / totalCount) * 100 : 50;
           const bearishPct = 100 - bullishPct;
 
-          bullFill.style.width = `${bullishPct}%`;
-          bearFill.style.width = `${bearishPct}%`;
-          sentimentLabel.textContent = `🐂 Bullish: ${bullishPct.toFixed(1)}% | 🐻 Bearish: ${bearishPct.toFixed(1)}%`;
+          document.getElementById("bullFill").style.width = `${bullishPct}%`;
+          document.getElementById("bearFill").style.width = `${bearishPct}%`;
+          document.getElementById("sentimentLabel").textContent = `🐂 Bullish: ${bullishPct.toFixed(1)}% | 🐻 Bearish: ${bearishPct.toFixed(1)}%`;
 
           const ts = new Date(data.timestamp);
-          whaleTimestamp.textContent = `Last updated: ${ts.toLocaleString()}`;
-          assistant.textContent = getDynamicTip(trades);
+          document.getElementById("whaleTimestamp").textContent = `Last updated: ${ts.toLocaleString()}`;
+          document.getElementById("whaleAssistant").textContent = getDynamicTip(trades);
         });
     }
 
