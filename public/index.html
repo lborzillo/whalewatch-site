@@ -46,16 +46,6 @@
       color: #00ffee;
       margin-bottom: 0.5em;
     }
-    .leaderboard {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 0.5em 2em;
-    }
-    .leaderboard div {
-      background-color: #003850;
-      padding: 0.8em 1em;
-      border-radius: 6px;
-    }
     .whale-meter-container {
       background-color: #003850;
       border-radius: 6px;
@@ -64,7 +54,6 @@
       position: relative;
     }
     .whale-meter-fill {
-      background-color: #00ffee;
       height: 100%;
       width: 0;
       transition: width 2s ease-in-out;
@@ -89,6 +78,16 @@
       background-color: #ff0044;
       height: 100%;
       float: left;
+    }
+    .leaderboard {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0.5em 2em;
+    }
+    .leaderboard div {
+      background-color: #003850;
+      padding: 0.8em 1em;
+      border-radius: 6px;
     }
     .whisper-teaser {
       background-color: #012634;
@@ -165,7 +164,7 @@
     <p><strong>Time:</strong> 10:17 AM EDT</p>
     <p><strong>Trade:</strong> CALL Sweep | Ticker: <span>[Hidden]</span></p>
     <p><strong>Premium:</strong> $3.2M | Exp: <span>[Hidden]</span></p>
-    <a href="/whispers.html">See All Whispers →</a>
+    <a href="whispers.html">See All Whispers →</a>
   </div>
   <script>
     function updateLiveClock() {
@@ -181,6 +180,42 @@
         .then(data => {
           const trades = data.whale_trades;
 
+          // Total Premium
+          const totalPremium = trades.reduce((sum, t) => {
+            const premium = Number(t.premium);
+            return sum + (isNaN(premium) ? 0 : premium * 10000);
+          }, 0);
+
+          const whaleMeterText = document.getElementById("whaleMeterText");
+          const whaleFill = document.getElementById("whaleFill");
+          const percent = Math.min((totalPremium / 1000000) * 100, 100);
+
+          whaleMeterText.textContent = `Total Premium Traded: $${totalPremium.toLocaleString()}`;
+          whaleFill.style.width = percent + "%";
+
+          if (percent >= 90) {
+            whaleFill.style.backgroundColor = "#ff0044";
+          } else if (percent >= 60) {
+            whaleFill.style.backgroundColor = "#ffaa00";
+          } else if (percent >= 30) {
+            whaleFill.style.backgroundColor = "#00ffee";
+          } else {
+            whaleFill.style.backgroundColor = "#005577";
+          }
+
+          // Sentiment
+          const calls = trades.filter(t => t.type === "CALL").length;
+          const puts = trades.filter(t => t.type === "PUT").length;
+          const total = calls + puts;
+          const bullPct = total > 0 ? (calls / total) * 100 : 50;
+          const bearPct = 100 - bullPct;
+
+          document.getElementById("bullFill").style.width = `${bullPct}%`;
+          document.getElementById("bearFill").style.width = `${bearPct}%`;
+          document.getElementById("sentimentLabel").textContent =
+            `🐂 Bullish: ${bullPct.toFixed(1)}% | 🐻 Bearish: ${bearPct.toFixed(1)}%`;
+
+          // Whale trades
           document.getElementById("whaleList").innerHTML = trades.slice(0, 5).map(t => `
             <div style="background:#003850; padding:1em; border-radius:6px; margin-bottom:1em;">
               <strong>${t.symbol}</strong> — ${t.type}<br>
@@ -191,25 +226,10 @@
             </div>
           `).join("");
 
-          const totalPremium = trades.reduce((sum, t) => {
-            const premium = Number(t.premium);
-            return sum + (isNaN(premium) ? 0 : premium * 100);
-          }, 0);
-
-          document.getElementById("whaleMeterText").textContent = `Total Premium Traded: $${totalPremium.toLocaleString()}`;
-          document.getElementById("whaleFill").style.width = Math.min((totalPremium / 10000000) * 100, 100) + "%";
-
-          const calls = trades.filter(t => t.type === "CALL").length;
-          const puts = trades.filter(t => t.type === "PUT").length;
-          const total = calls + puts;
-          const bullPct = total > 0 ? (calls / total) * 100 : 50;
-          const bearPct = 100 - bullPct;
-          document.getElementById("bullFill").style.width = `${bullPct}%`;
-          document.getElementById("bearFill").style.width = `${bearPct}%`;
-          document.getElementById("sentimentLabel").textContent = `🐂 Bullish: ${bullPct.toFixed(1)}% | 🐻 Bearish: ${bearPct.toFixed(1)}%`;
-
+          // Timestamp
           const ts = new Date(data.timestamp);
-          document.getElementById("whaleTimestamp").textContent = `Last updated: ${ts.toLocaleString()}`;
+          document.getElementById("whaleTimestamp").textContent =
+            `Last updated: ${ts.toLocaleString()}`;
         });
 
       fetch("leaderboard.json")
@@ -219,8 +239,10 @@
           document.getElementById("leaderboard").innerHTML = Object.entries(top).map(([symbol, stats]) => `
             <div><strong>${symbol}</strong><br/>Trades: ${stats.count}<br/>$${stats.total_premium.toLocaleString()}</div>
           `).join("");
+
           const ts = new Date(data.timestamp);
-          document.getElementById("leaderboardTimestamp").textContent = `Leaderboard synced: ${ts.toLocaleString()}`;
+          document.getElementById("leaderboardTimestamp").textContent =
+            `Leaderboard synced: ${ts.toLocaleString()}`;
         });
     }
 
