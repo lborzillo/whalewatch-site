@@ -46,6 +46,13 @@
       color: #00ffee;
       margin-bottom: 0.5em;
     }
+    .timestamp {
+      text-align: center;
+      font-size: 0.9em;
+      color: #aaa;
+      margin-top: -1.5em;
+      margin-bottom: 2em;
+    }
     .trade-card {
       background-color: #003850;
       padding: 1em;
@@ -139,7 +146,7 @@
   </nav>
 
   <div class="hero">
-    <h1>🐋 WhaleWatch.ai</h1>
+    <h1>🐋 WhaleWatch.Trade</h1>
     <p>Real-time sonar on big money moves.</p>
   </div>
 
@@ -149,6 +156,7 @@
       <div id="whaleFill" class="whale-meter-fill"></div>
     </div>
     <div id="whaleMeterText" class="whale-meter-text">Loading...</div>
+    <div id="whaleTimestamp" class="timestamp"></div>
   </div>
 
   <div class="section">
@@ -168,6 +176,7 @@
   <div class="section">
     <h2>🏆 Top 10 Leaderboard</h2>
     <div id="leaderboard" class="leaderboard">Loading...</div>
+    <div id="leaderboardTimestamp" class="timestamp"></div>
   </div>
 
   <div id="whaleAssistant"></div>
@@ -211,6 +220,7 @@
           const bullFill = document.getElementById("bullFill");
           const bearFill = document.getElementById("bearFill");
           const sentimentLabel = document.getElementById("sentimentLabel");
+          const whaleTimestamp = document.getElementById("whaleTimestamp");
 
           whaleList.innerHTML = trades.slice(0, 5).map(t => `
             <div class="trade-card">
@@ -236,6 +246,9 @@
           bearFill.style.width = `${bearishPct}%`;
           sentimentLabel.textContent = `🐂 Bullish: ${bullishPct.toFixed(1)}% | 🐻 Bearish: ${bearishPct.toFixed(1)}%`;
 
+          const ts = new Date(data.timestamp);
+          whaleTimestamp.textContent = `Last updated: ${ts.toLocaleString()}`;
+
           const tipBox = document.getElementById("whaleAssistant");
           tipBox.textContent = getDynamicTip(trades);
           tipBox.style.display = "block";
@@ -249,6 +262,9 @@
           board.innerHTML = Object.entries(top).map(([symbol, stats]) => `
             <div><strong>${symbol}</strong><br/>Trades: ${stats.count}<br/>$${stats.total_premium.toLocaleString()}</div>
           `).join("");
+
+          const ts = new Date(data.timestamp);
+          document.getElementById("leaderboardTimestamp").textContent = `Leaderboard synced: ${ts.toLocaleString()}`;
         });
     }
 
