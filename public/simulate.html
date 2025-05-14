@@ -2,301 +2,224 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>WhaleWatch | Simulate</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>WhaleWatch | Simulator</title>
   <style>
     body {
       font-family: 'Segoe UI', sans-serif;
       background-color: #001d2d;
       color: white;
       margin: 0;
-      padding: 2em;
+      padding: 0;
     }
+
     nav {
       background-color: #001520;
       padding: 1em;
-      text-align: center;
+      display: flex;
+      justify-content: center;
+      flex-wrap: wrap;
+      gap: 1em;
     }
+
     nav a {
       color: #00ffee;
-      margin: 0 15px;
       font-weight: bold;
       text-decoration: none;
     }
+
     .container {
-      max-width: 750px;
+      max-width: 900px;
       margin: 2em auto;
-      padding: 2em;
-      background-color: #002b3f;
-      border-radius: 10px;
-    }
-    label {
-      display: block;
-      margin-top: 1em;
-      font-weight: bold;
-      color: #00ffee;
-    }
-    input, select, button {
-      width: 100%;
-      padding: 0.5em;
-      margin-top: 0.3em;
-      border-radius: 5px;
-      border: none;
-      background-color: #004a66;
-      color: white;
-    }
-    button {
-      margin-top: 1em;
-      background-color: #00ffee;
-      color: #001d2d;
-      font-weight: bold;
-      cursor: pointer;
-    }
-    .controls {
-      display: flex;
-      gap: 10px;
-      margin-top: 1em;
-    }
-    .controls button {
-      flex: 1;
-    }
-    .output {
-      margin-top: 2em;
-      background-color: #003850;
       padding: 1em;
-      border-radius: 8px;
-      transition: transform 0.6s ease, background-color 0.6s ease;
+      text-align: center;
     }
-    .bullish {
-      background-color: #004f3f;
-      transform: scale(1.02);
-    }
-    .bearish {
-      background-color: #4a002a;
-      transform: scale(1.02);
-    }
-    iframe {
-      width: 100%;
-      height: 400px;
-      border: none;
-      margin-top: 2em;
-      border-radius: 8px;
-    }
-    #sliderContainer {
-      margin-top: 1.5em;
-    }
-    #sliderContainer label {
+
+    h1 {
+      color: #00ffee;
+      font-size: 2.5em;
       margin-bottom: 0.5em;
     }
-    #pricePreview {
-      font-weight: bold;
+
+    select {
+      padding: 0.7em;
+      font-size: 1.1em;
+      border-radius: 8px;
+      margin-bottom: 1em;
+      background: #001d2d;
       color: #00ffee;
-      margin-top: 0.5em;
+      border: 2px solid #00ffee;
     }
+
+    .buttons {
+      display: flex;
+      gap: 1em;
+      flex-wrap: wrap;
+      justify-content: center;
+      margin: 1.5em 0;
+    }
+
+    .buttons button {
+      padding: 1em 2em;
+      font-size: 1.1em;
+      font-weight: bold;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: transform 0.2s ease;
+    }
+
+    .buttons button:hover {
+      transform: scale(1.05);
+    }
+
+    #simulateBtn {
+      background-color: #70f5e3;
+      color: #001d2d;
+    }
+
+    #resetBtn {
+      background-color: #ee4455;
+      color: white;
+    }
+
+    #themeToggle {
+      background-color: #70f5e3;
+      color: #001d2d;
+    }
+
+    #resultBox {
+      background-color: var(--bg-color, #fff);
+      color: var(--text-color, #000);
+      border: 2px solid #00ffee;
+      padding: 2em;
+      border-radius: 10px;
+      min-height: 120px;
+      transition: background-color 0.3s ease, color 0.3s ease;
+      font-size: 1.4em;
+      box-shadow: 0 0 12px rgba(0,255,255,0.2);
+    }
+
+    #resultBox.dark-theme {
+      --bg-color: #001d2d;
+      --text-color: #00ffee;
+    }
+
     @media (max-width: 600px) {
-      body {
-        padding: 1em;
+      .buttons {
+        flex-direction: column;
       }
-      nav a {
-        display: block;
-        margin: 0.5em 0;
+      h1 {
+        font-size: 2em;
       }
     }
   </style>
 </head>
 <body>
+
   <nav>
     <a href="index.html">Home</a>
     <a href="learn.html">Learn</a>
     <a href="simulate.html">Simulate</a>
+    <a href="whisper.html">Whispers</a>
   </nav>
 
   <div class="container">
-    <h2>🎮 Options Trade Simulator</h2>
+    <h1>🎯 Options Trade Simulator</h1>
 
-    <label for="tradeSelect">Choose a Whale Trade</label>
-    <select id="tradeSelect">
-      <option value="">-- Select a trade --</option>
+    <select id="symbolSelect">
+      <option value="" disabled selected>Select a symbol</option>
+      <option value="NVDA">NVDA</option>
+      <option value="AAPL">AAPL</option>
+      <option value="TSLA">TSLA</option>
+      <option value="MSFT">MSFT</option>
+      <option value="AMZN">AMZN</option>
+      <option value="META">META</option>
     </select>
 
-    <label for="symbol">Symbol</label>
-    <input type="text" id="symbol" readonly />
-
-    <label for="type">Type</label>
-    <input type="text" id="type" readonly />
-
-    <label for="strike">Strike</label>
-    <input type="text" id="strike" readonly />
-
-    <label for="expiration">Expiration</label>
-    <input type="text" id="expiration" readonly />
-
-    <label for="premium">Premium Paid</label>
-    <input type="text" id="premium" placeholder="Auto-filled from whale trade" />
-
-    <div class="controls">
-      <button onclick="simulateTrade()">Simulate</button>
-      <button onclick="resetForm()" style="background-color:#ff0044;color:white;">Reset</button>
-      <button onclick="toggleChartTheme()">🌓 Toggle Chart Theme</button>
+    <div class="buttons">
+      <button id="simulateBtn">Simulate</button>
+      <button id="resetBtn">Reset</button>
+      <button id="themeToggle">🌗 Toggle Theme</button>
     </div>
 
-    <div id="result" class="output" style="display:none;"></div>
-
-    <div id="sliderContainer" style="display:none;">
-      <label for="priceSlider">📉 Simulate closing early at stock price:</label>
-      <input type="range" min="0" max="1000" value="0" id="priceSlider" step="0.1" />
-      <div id="pricePreview">Current Price: $0.00</div>
-    </div>
-
-    <iframe id="chart" src="" style="display:none;"></iframe>
+    <div id="resultBox">📈 Select a symbol and simulate a trade.</div>
   </div>
 
   <script>
-    let whaleTrades = [];
-    let currentTheme = "dark";
-    let simulateSound, resetSound, flipSound, callSound, putSound;
+    const symbolSelect = document.getElementById("symbolSelect");
+    const resultBox = document.getElementById("resultBox");
 
-    // Load sounds
-    function loadSounds() {
-      simulateSound = new Audio("https://cdn.pixabay.com/audio/2022/03/15/audio_7b1f9a88b7.mp3"); // whoosh
-      resetSound = new Audio("https://cdn.pixabay.com/audio/2022/03/15/audio_2f615ba22c.mp3"); // click
-      flipSound = new Audio("https://cdn.pixabay.com/audio/2022/03/15/audio_c9ef79e1c0.mp3");  // flip
-      callSound = new Audio("https://cdn.pixabay.com/audio/2022/03/22/audio_3b5b89a269.mp3");   // high-ping
-      putSound = new Audio("https://cdn.pixabay.com/audio/2022/03/25/audio_9d15f97ae5.mp3");    // thud
-    }
+    const insights = {
+      "NVDA": [
+        "💥 NVDA premiums are spiking. Consider a short-term put play.",
+        "🔥 NVDA signals are flashing bullish — whale volume detected.",
+        "👀 Eyes on NVDA: huge open interest stacking for next week."
+      ],
+      "AAPL": [
+        "🍏 AAPL is climbing — consider a covered call strategy.",
+        "💼 AAPL stability may favor a credit spread.",
+        "📊 Implied volatility low — naked puts might shine."
+      ],
+      "TSLA": [
+        "⚡ TSLA volatility favors straddles this week.",
+        "🚗 TSLA flow shows mixed sentiment. Delta-neutral play?",
+        "🧠 Iron condor strategy might suit TSLA now."
+      ],
+      "MSFT": [
+        "🧠 MSFT whale activity detected — look for breakout levels.",
+        "📘 MSFT is steady — vertical spreads may work here.",
+        "🔍 Open interest buildup hints upside in MSFT."
+      ],
+      "AMZN": [
+        "📦 AMZN is stacking premium — are the whales buying or hedging?",
+        "🧊 Consider a calendar spread with AMZN’s longer expiry.",
+        "🎯 Big volume hit AMZN’s $180 calls."
+      ],
+      "META": [
+        "📱 META looks rangebound — condors could shine.",
+        "💡 META dark pool signals spotted. Upgrade to Whisper+ to view.",
+        "🔥 META’s flow is heating up. Consider riding the momentum."
+      ]
+    };
 
-    function fetchWhaleTrades() {
-      fetch("whales.json")
-        .then(res => res.json())
-        .then(data => {
-          whaleTrades = data.whale_trades || [];
-          const tradeSelect = document.getElementById("tradeSelect");
-
-          whaleTrades.forEach((trade, index) => {
-            const opt = document.createElement("option");
-            opt.value = index;
-            opt.textContent = `${trade.symbol} | ${trade.type} | $${trade.strike} | Exp: ${trade.expiration}`;
-            tradeSelect.appendChild(opt);
-          });
-        });
-    }
-
-    function simulateTrade() {
-      const symbol = document.getElementById("symbol").value;
-      const type = document.getElementById("type").value.toUpperCase();
-      const strike = parseFloat(document.getElementById("strike").value);
-      const premium = parseFloat(document.getElementById("premium").value);
-      const expiration = document.getElementById("expiration").value;
-      const resultBox = document.getElementById("result");
-
-      if (!symbol || isNaN(strike) || isNaN(premium)) {
-        alert("Missing or invalid trade data.");
-        return;
+    const resultThemes = {
+      light: {
+        bg: "#ffffff",
+        color: "#001d2d"
+      },
+      dark: {
+        bg: "#001d2d",
+        color: "#00ffee"
       }
+    };
 
-      if (type === "CALL") callSound.play();
-      if (type === "PUT") putSound.play();
-      simulateSound.play();
-
-      const breakEven = type === "CALL"
-        ? (strike + premium).toFixed(2)
-        : (strike - premium).toFixed(2);
-
-      const assignment = type === "CALL"
-        ? `If assigned, you'd sell 100 shares at $${strike}, keeping the $${premium} premium.`
-        : `If assigned, you'd buy 100 shares at $${strike}, minus the $${premium} premium.`;
-
-      const outcome = type === "CALL"
-        ? `You profit if the stock closes <strong>above $${breakEven}</strong> by expiration.`
-        : `You profit if the stock stays <strong>above $${breakEven}</strong> — or you’re happy owning at a discount.`;
-
-      resultBox.innerHTML = `
-        <strong>📊 Trade Summary:</strong><br>
-        Symbol: ${symbol}<br>
-        Type: ${type}<br>
-        Strike: $${strike}<br>
-        Premium: $${premium}<br>
-        Expiration: ${expiration}<br><br>
-        💡 <strong>Break-even:</strong> $${breakEven}<br>
-        📈 <strong>Forecast:</strong> ${outcome}<br><br>
-        📦 <strong>Assignment:</strong> ${assignment}
-      `;
-
-      resultBox.className = "output " + (type === "CALL" ? "bullish" : "bearish");
-      resultBox.style.display = "block";
-
-      // Show slider
-      const slider = document.getElementById("sliderContainer");
-      const priceSlider = document.getElementById("priceSlider");
-      priceSlider.min = (type === "CALL" ? strike : strike - 20).toFixed(1);
-      priceSlider.max = (type === "CALL" ? strike + 40 : strike + 10).toFixed(1);
-      priceSlider.value = strike.toFixed(1);
-      slider.style.display = "block";
-
-      updateSliderPrice(); // Initial preview
-
-      // Load chart
-      const chart = document.getElementById("chart");
-      chart.src = `https://widget.finnhub.io/widgets/stocks/chart?symbol=${symbol.toUpperCase()}&theme=${currentTheme}`;
-      chart.style.display = "block";
+    // Apply saved theme
+    const savedTheme = localStorage.getItem("simTheme");
+    if (savedTheme === "dark") {
+      resultBox.classList.add("dark-theme");
     }
 
-    function updateSliderPrice() {
-      const slider = document.getElementById("priceSlider");
-      const price = parseFloat(slider.value);
-      const symbol = document.getElementById("symbol").value;
-      const type = document.getElementById("type").value.toUpperCase();
-      const strike = parseFloat(document.getElementById("strike").value);
-      const premium = parseFloat(document.getElementById("premium").value);
-      const preview = document.getElementById("pricePreview");
-
-      const breakEven = type === "CALL"
-        ? strike + premium
-        : strike - premium;
-
-      const profit = type === "CALL"
-        ? price > breakEven
-        : price < breakEven;
-
-      preview.innerHTML = `Current Price: $${price.toFixed(2)} → <strong>${profit ? "✅ Profitable" : "⚠️ Not Profitable"}</strong>`;
-    }
-
-    function resetForm() {
-      resetSound.play();
-      document.getElementById("tradeSelect").selectedIndex = 0;
-      ["symbol", "type", "strike", "expiration", "premium"].forEach(id => {
-        document.getElementById(id).value = "";
-      });
-      document.getElementById("result").style.display = "none";
-      document.getElementById("sliderContainer").style.display = "none";
-      document.getElementById("chart").style.display = "none";
-    }
-
-    function toggleChartTheme() {
-      currentTheme = currentTheme === "dark" ? "light" : "dark";
-      flipSound.play();
-      const symbol = document.getElementById("symbol").value;
-      if (symbol) {
-        const chart = document.getElementById("chart");
-        chart.src = `https://widget.finnhub.io/widgets/stocks/chart?symbol=${symbol.toUpperCase()}&theme=${currentTheme}`;
-      }
-    }
-
-    document.getElementById("tradeSelect").addEventListener("change", function () {
-      const selected = whaleTrades[this.value];
-      if (selected) {
-        document.getElementById("symbol").value = selected.symbol || "";
-        document.getElementById("type").value = selected.type || "";
-        document.getElementById("strike").value = selected.strike || "";
-        document.getElementById("expiration").value = selected.expiration || "";
-        document.getElementById("premium").value = selected.premium || "";
-      }
+    document.getElementById("themeToggle").addEventListener("click", () => {
+      const isDark = resultBox.classList.toggle("dark-theme");
+      localStorage.setItem("simTheme", isDark ? "dark" : "light");
     });
 
-    document.getElementById("priceSlider").addEventListener("input", updateSliderPrice);
+    document.getElementById("simulateBtn").addEventListener("click", () => {
+      const symbol = symbolSelect.value;
+      if (!symbol) {
+        resultBox.innerHTML = "⚠️ Please select a symbol first.";
+        return;
+      }
+      const options = insights[symbol];
+      const randomTip = options[Math.floor(Math.random() * options.length)];
+      resultBox.innerHTML = `<strong>${symbol}</strong>: ${randomTip}`;
+    });
 
-    loadSounds();
-    fetchWhaleTrades();
+    document.getElementById("resetBtn").addEventListener("click", () => {
+      resultBox.innerHTML = "📈 Select a symbol and simulate a trade.";
+    });
   </script>
+
 </body>
 </html>
