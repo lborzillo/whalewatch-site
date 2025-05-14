@@ -10,6 +10,26 @@
       background-color: #00151f;
       color: #ffffff;
       padding: 2rem;
+      margin: 0;
+    }
+    nav {
+      background-color: #001520;
+      padding: 1em;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    nav a {
+      color: #00ffee;
+      font-weight: bold;
+      text-decoration: none;
+      padding: 0.5em 1em;
+      background-color: #003849;
+      border-radius: 8px;
+      transition: background-color 0.3s;
+    }
+    nav a:hover {
+      background-color: #005d74;
     }
     h1 {
       color: #00ffff;
@@ -37,27 +57,32 @@
       z-index: 999;
     }
     .modal-content {
-      background: #ffffff;
-      color: #000;
+      background: #012634;
       padding: 2rem;
       border-radius: 10px;
       text-align: center;
       width: 90%;
-      max-width: 420px;
+      max-width: 400px;
     }
-    .close-modal {
-      background: #e74c3c;
-      color: #fff;
-      border: none;
+    .modal-content h2 {
+      color: #00ffff;
+    }
+    .modal-content button {
+      margin-top: 1rem;
       padding: 0.5rem 1rem;
-      margin-bottom: 1rem;
-      border-radius: 6px;
+      background: #00bcd4;
+      border: none;
+      border-radius: 5px;
       cursor: pointer;
     }
   </style>
-  <style type="text/css">@import url("https://assets.mlcdn.com/fonts.css?version=1747141");</style>
 </head>
 <body>
+
+  <nav>
+    <a href="index.html">← Back to Home</a>
+    <strong style="color:#00ffee;">Whale Whispers</strong>
+  </nav>
 
   <h1>🐳 Whale Whispers</h1>
   <p>Get early access to the most aggressive whale trades and dark pool activity. Upgrade to Whisper+ for full visibility.</p>
@@ -77,43 +102,14 @@
     <p><strong>Size:</strong> 180,000 shares</p>
   </div>
 
-  <!-- Modal with MailerLite Embed -->
+  <!-- Modal -->
   <div class="modal" id="loginModal">
     <div class="modal-content">
-      <button class="close-modal" onclick="hideModal()">Close</button>
-      <!-- BEGIN MailerLite Embed -->
-      <div id="mlb2-25994972" class="ml-form-embedContainer ml-subscribe-form ml-subscribe-form-25994972">
-        <div class="ml-form-align-center">
-          <div class="ml-form-embedWrapper embedForm">
-            <div class="ml-form-embedBody ml-form-embedBodyDefault row-form">
-              <div class="ml-form-embedContent">
-                <h4>Newsletter</h4>
-                <p>Signup for early trade signals and premium market flow.</p>
-              </div>
-              <form class="ml-block-form" action="https://assets.mailerlite.com/jsonp/1489032/forms/154416088737646139/subscribe" method="post" target="_blank">
-                <div class="ml-form-formContent">
-                  <div class="ml-form-fieldRow ml-last-item">
-                    <div class="ml-field-group ml-field-email ml-validate-email ml-validate-required">
-                      <input type="email" class="form-control" name="fields[email]" placeholder="Your Email" autocomplete="email" required>
-                    </div>
-                  </div>
-                </div>
-                <div class="ml-form-embedSubmit">
-                  <button type="submit" class="primary">Subscribe & Unlock</button>
-                </div>
-              </form>
-            </div>
-            <div class="ml-form-successBody row-success" style="display: none;">
-              <div class="ml-form-successContent">
-                <h4>Welcome aboard!</h4>
-                <p>We’ll send you premium whispers shortly.</p>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-      <script src="https://groot.mailerlite.com/js/w/webforms.min.js" type="text/javascript"></script>
-      <!-- END MailerLite Embed -->
+      <h2>🔐 Premium Content</h2>
+      <p>Join Whisper+ to unlock full trade details and see what the whales are really doing.</p>
+      <button onclick="hideModal()">Close</button>
+      <br/>
+      <button onclick="window.location.href='/login.html'">Login or Upgrade</button>
     </div>
   </div>
 
