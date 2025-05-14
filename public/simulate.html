@@ -1,23 +1,192 @@
-<div class="section">
-  <h2>⚠️ When Data Is Missing in the Simulator</h2>
-  <ul>
-    <li><strong style="color:#00ffee;">No symbols appear:</strong> The whale feed may be temporarily empty. Try refreshing later.</li>
-    <li><strong style="color:#00ffee;">Can’t select Call or Put:</strong> Only one type of trade (e.g., Calls) may exist for a symbol. The simulator will switch and explain.</li>
-    <li><strong style="color:#00ffee;">Empty Strike or Expiration fields:</strong> Whale trades might be missing matching data. This is part of the learning process.</li>
-  </ul>
-  <p>Remember: <strong>Premium harvesting is about consistent edges, not constant action.</strong> If no trade fits, sit it out — that’s also part of the discipline.</p>
-</div>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>WhaleWatch | Simulator</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>
+    :root {
+      --bg: #001d2d;
+      --text: #ffffff;
+      --accent: #00ffee;
+      --box: #002b3f;
+    }
+    body {
+      background-color: var(--bg);
+      color: var(--text);
+      font-family: 'Segoe UI', sans-serif;
+      margin: 0;
+      padding: 0;
+    }
+    nav {
+      background-color: #001520;
+      padding: 1rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    nav h1 {
+      margin: 0;
+      font-size: 1.8rem;
+      color: var(--accent);
+    }
+    nav a {
+      text-decoration: none;
+      color: #ffffff;
+      font-weight: bold;
+      background-color: #005580;
+      padding: 0.5rem 1rem;
+      border-radius: 8px;
+      transition: background-color 0.3s;
+    }
+    nav a:hover {
+      background-color: #0077a3;
+    }
+    .whale-link {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    .whale-icon {
+      width: 40px;
+      height: auto;
+    }
+    main {
+      padding: 2rem;
+      text-align: center;
+    }
+    h2 {
+      font-size: 2rem;
+      margin-bottom: 1rem;
+      color: var(--accent);
+    }
+    select, input, button {
+      padding: 0.6em;
+      margin: 0.5em;
+      font-size: 1em;
+      border-radius: 8px;
+      border: 1px solid var(--accent);
+      background: var(--box);
+      color: var(--text);
+    }
+    button {
+      cursor: pointer;
+      transition: background 0.3s;
+    }
+    button:hover {
+      background-color: #004c60;
+    }
+    .result-box {
+      background: var(--box);
+      color: var(--text);
+      padding: 1.5em;
+      margin-top: 2em;
+      border-radius: 12px;
+      border: 2px solid var(--accent);
+      box-shadow: 0 0 10px var(--accent);
+    }
+    .chart-container {
+      max-width: 600px;
+      margin: 2em auto;
+    }
+    .whisper-modal {
+      display: none;
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      background: rgba(0,0,0,0.8);
+      justify-content: center;
+      align-items: center;
+      z-index: 999;
+    }
+    .modal-content {
+      background: #012634;
+      padding: 2rem;
+      border-radius: 12px;
+      max-width: 500px;
+      width: 90%;
+      box-shadow: 0 0 15px var(--accent);
+    }
+    .close-modal {
+      background: #e74c3c;
+      color: #fff;
+      float: right;
+      border: none;
+      padding: 0.4em 0.8em;
+      border-radius: 8px;
+      cursor: pointer;
+    }
+    .advanced-link {
+      display: block;
+      margin-top: 2em;
+      font-weight: bold;
+      color: var(--accent);
+      text-decoration: underline;
+    }
+  </style>
+</head>
+<body>
+  <nav>
+    <div class="whale-link">
+      <img src="/whale.png" alt="Whale Logo" class="whale-icon">
+      <a href="/index.html">Back to WhaleWatch</a>
+    </div>
+    <h1>Options Trade Simulator</h1>
+  </nav>
+  <main>
+    <h2>Simulate a Whale Trade</h2>
+    <select id="symbolSelect"><option value="">Loading symbols...</option></select>
+    <select id="typeSelect"><option value="CALL">CALL</option><option value="PUT">PUT</option></select>
+    <select id="strikeSelect"></select>
+    <select id="expirationSelect"></select>
+    <div>
+      <button onclick="simulateTrade()">Simulate</button>
+      <button onclick="resetForm()">Reset</button>
+      <button onclick="showModal()">Unlock Whisper+</button>
+    </div>
+    <div id="resultBox" class="result-box">📈 Select options and click Simulate.</div>
+    <div class="chart-container" id="chartSection">
+      <canvas id="profitChart" width="400" height="200"></canvas>
+    </div>
+    <a class="advanced-link" href="/whisper.html">🔍 View My Whisper Trades</a>
+  </main>
 
-<div class="section">
-  <h2>🧠 Additional Simulator Tips</h2>
-  <ul>
-    <li><strong style="color:#00ffee;">Start with megacaps:</strong> These are the most reliable names for premium harvesting (AAPL, NVDA, KO, etc.).</li>
-    <li><strong style="color:#00ffee;">Use realistic sizing:</strong> The simulator assumes 100-share blocks, so choose positions you're comfortable executing in real life.</li>
-    <li><strong style="color:#00ffee;">Harvest, don't gamble:</strong> Use whales for direction, but base your trade on volatility, risk/reward, and stock quality.</li>
-    <li><strong style="color:#00ffee;">Rolling practice:</strong> Try simulating a roll if your strike nears the money. This prepares you for live management.</li>
-    <li><strong style="color:#00ffee;">Repetition builds mastery:</strong> The more you simulate, the more intuitive premium harvesting becomes.</li>
-  </ul>
-  <p>Want to go deeper? Explore the <a href="/harvesting.html" style="color:#00ffee; text-decoration:underline;">Premium Harvesting guide</a> or <a href="/learn.html" style="color:#00ffee; text-decoration:underline;">Learn page</a> for more context.</p>
-</div>
+  <!-- Whisper+ Modal -->
+  <div class="whisper-modal" id="whisperModal">
+    <div class="modal-content">
+      <button class="close-modal" onclick="closeModal()">X</button>
+      <h2>Join Whisper+</h2>
+      <p>Subscribe for premium access to unlock hidden trades and alerts.</p>
+      <!-- Embedded MailerLite form -->
+      <div id="mlb2-25994972" class="ml-form-embedContainer ml-subscribe-form ml-subscribe-form-25994972">
+        <!-- Paste your full MailerLite embed HTML form code block here -->
+        <!-- The full HTML from MailerLite should be included, not just script or link -->
+        <!-- This ensures the form renders directly in the modal -->
+      </div>
+    </div>
+  </div>
+
+  <script>
+    function showModal() {
+      document.getElementById('whisperModal').style.display = 'flex';
+    }
+    function closeModal() {
+      document.getElementById('whisperModal').style.display = 'none';
+    }
+
+    function simulateTrade() {
+      // Stub function for now
+      document.getElementById('resultBox').innerText = '🚧 Simulation logic not implemented yet.';
+    }
+
+    function resetForm() {
+      document.getElementById('symbolSelect').selectedIndex = 0;
+      document.getElementById('typeSelect').selectedIndex = 0;
+      document.getElementById('strikeSelect').innerHTML = '';
+      document.getElementById('expirationSelect').innerHTML = '';
+      document.getElementById('resultBox').innerText = '📈 Select options and click Simulate.';
+    }
+  </script>
 </body>
 </html>
