@@ -2,177 +2,151 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Options Trade Simulator</title>
   <style>
     body {
+      margin: 0;
       font-family: 'Segoe UI', sans-serif;
       background-color: #001d2d;
-      color: #ffffff;
-      margin: 0;
-      padding: 2em;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
+      color: #fff;
+      text-align: center;
     }
+
     h1 {
-      font-size: 2.5em;
       color: #00ffee;
+      font-size: 2.5em;
+      margin-top: 1em;
     }
-    select, input {
-      padding: 0.5em;
+
+    select, input, button {
       margin: 0.5em;
-      border-radius: 6px;
+      padding: 0.6em;
+      border-radius: 8px;
       border: none;
       font-size: 1em;
     }
-    .form-group {
+
+    .controls {
       display: flex;
-      flex-direction: column;
-      margin: 1em 0;
-    }
-    .buttons {
-      display: flex;
-      gap: 1em;
-      margin: 1em 0;
       flex-wrap: wrap;
       justify-content: center;
+      gap: 1em;
+      margin: 2em 0;
     }
-    button {
-      padding: 0.8em 1.5em;
-      font-size: 1em;
-      font-weight: bold;
-      border: none;
-      border-radius: 10px;
-      cursor: pointer;
-      transition: background 0.3s ease;
-    }
-    .simulate-btn {
-      background-color: #66ffee;
-      color: black;
-    }
-    .reset-btn {
-      background-color: #ee4455;
-      color: white;
-    }
-    .toggle-theme {
-      background-color: #66ffee;
-      color: black;
-    }
-    .output {
-      margin-top: 2em;
+
+    .result-box {
+      background: #fff;
+      color: #000;
+      max-width: 800px;
+      margin: 2em auto;
       padding: 1.5em;
-      border-radius: 10px;
-      background: #ffffff;
-      color: black;
-      min-width: 60%;
-      box-shadow: 0 0 10px #00ffee;
-      font-size: 1.1em;
+      border-radius: 12px;
+      border: 3px solid #00ffee;
+      box-shadow: 0 0 15px #00ffee99;
+      font-size: 1.2em;
     }
+
+    .btn {
+      font-weight: bold;
+      min-width: 120px;
+      cursor: pointer;
+    }
+
+    .simulate { background: #5ff; }
+    .reset { background: #e74c3c; color: white; }
+    .theme { background: #5ff; }
+
+    .dark-theme {
+      background-color: #001d2d;
+      color: #fff;
+    }
+
+    .dark-theme .result-box {
+      background: #fff;
+      color: #000;
+    }
+
     @media (max-width: 600px) {
-      .output {
-        min-width: 90%;
-      }
+      .controls { flex-direction: column; align-items: center; }
     }
   </style>
 </head>
 <body>
   <h1>🎯 Options Trade Simulator</h1>
 
-  <div class="form-group">
-    <label for="symbol">Select a symbol:</label>
-    <select id="symbol">
-      <option value="">-- Choose --</option>
-      <option value="NVDA">NVDA</option>
-      <option value="AAPL">AAPL</option>
-      <option value="TSLA">TSLA</option>
-      <option value="MSFT">MSFT</option>
-      <option value="AMZN">AMZN</option>
-    </select>
+  <select id="symbolSelect">
+    <option value="">Select a symbol</option>
+  </select>
+
+  <div class="controls">
+    <button class="btn simulate" onclick="simulateTrade()">Simulate</button>
+    <button class="btn reset" onclick="resetForm()">Reset</button>
+    <button class="btn theme" onclick="toggleTheme()">🌗 Toggle Theme</button>
   </div>
 
-  <div class="form-group">
-    <label for="strike">Strike Price ($):</label>
-    <input type="number" id="strike" placeholder="e.g. 120">
+  <div id="result" class="result-box">
+    📈 Select a symbol and simulate a trade.
   </div>
-
-  <div class="form-group">
-    <label for="expiration">Expiration Date:</label>
-    <input type="date" id="expiration">
-  </div>
-
-  <div class="form-group">
-    <label for="premium">Premium per Contract ($):</label>
-    <input type="number" id="premium" placeholder="Optional (will auto-fill if available)">
-  </div>
-
-  <div class="buttons">
-    <button class="simulate-btn" onclick="simulateTrade()">Simulate</button>
-    <button class="reset-btn" onclick="resetForm()">Reset</button>
-    <button class="toggle-theme" onclick="toggleTheme()">🌗 Toggle Theme</button>
-  </div>
-
-  <div id="result" class="output">📈 Select a symbol and simulate a trade.</div>
 
   <script>
-    const data = {
-      NVDA: { strike: 120, premium: 3.45 },
-      AAPL: { strike: 190, premium: 2.64 },
-      TSLA: { strike: 250, premium: 4.78 },
-      MSFT: { strike: 330, premium: 3.22 },
-      AMZN: { strike: 110, premium: 2.12 }
-    };
+    const whaleURL = "whales.json";
+    let whaleData = [];
+    let selectedSymbol = "";
 
-    const resultBox = document.getElementById("result");
-    const symbolEl = document.getElementById("symbol");
-    const strikeEl = document.getElementById("strike");
-    const expirationEl = document.getElementById("expiration");
-    const premiumEl = document.getElementById("premium");
-
-    symbolEl.addEventListener("change", () => {
-      const symbol = symbolEl.value;
-      if (data[symbol]) {
-        strikeEl.value = data[symbol].strike;
-        premiumEl.value = data[symbol].premium;
-      }
-    });
+    fetch(whaleURL)
+      .then(res => res.json())
+      .then(data => {
+        whaleData = data.whale_trades;
+        const symbols = [...new Set(whaleData.map(t => t.symbol))];
+        const select = document.getElementById("symbolSelect");
+        symbols.forEach(s => {
+          const option = document.createElement("option");
+          option.value = s;
+          option.textContent = s;
+          select.appendChild(option);
+        });
+      });
 
     function simulateTrade() {
-      const symbol = symbolEl.value;
-      const strike = parseFloat(strikeEl.value);
-      const expiration = expirationEl.value;
-      const premium = parseFloat(premiumEl.value);
+      const symbol = document.getElementById("symbolSelect").value;
+      const resultBox = document.getElementById("result");
 
-      if (!symbol || isNaN(strike) || !expiration || isNaN(premium)) {
-        resultBox.innerHTML = "⚠️ Please fill all fields to simulate a trade.";
+      if (!symbol) {
+        resultBox.innerHTML = "⚠️ Please select a symbol first.";
         return;
       }
 
-      const earnings = premium * 100;
+      const trades = whaleData.filter(t => t.symbol === symbol);
+      if (!trades.length) {
+        resultBox.innerHTML = "❌ No trades found for that symbol.";
+        return;
+      }
+
+      const latest = trades[0];
+      const premium = Number(latest.premium) || 0;
+      const openInterest = latest.open_interest || 0;
+      const expiration = latest.expiration || "N/A";
+
       resultBox.innerHTML = `
-        ✅ Simulated Trade:<br><br>
-        <strong>Symbol:</strong> ${symbol}<br>
-        <strong>Strike:</strong> $${strike}<br>
-        <strong>Expiration:</strong> ${expiration}<br>
-        <strong>Premium:</strong> $${premium.toFixed(2)} per share<br><br>
-        💰 <strong>Estimated Income:</strong> $${earnings.toFixed(2)}
+        ✅ Simulated Trade for <strong>${symbol}</strong><br><br>
+        Type: <strong>${latest.type}</strong><br>
+        Strike: $${latest.strike}<br>
+        Expiration: ${expiration}<br>
+        Premium: $${premium.toFixed(2)}<br>
+        Open Interest: ${openInterest}<br>
+        <br>💡 <em>Premium reflects latest whale trade data</em>
       `;
     }
 
     function resetForm() {
-      symbolEl.value = "";
-      strikeEl.value = "";
-      expirationEl.value = "";
-      premiumEl.value = "";
-      resultBox.innerHTML = "📈 Select a symbol and simulate a trade.";
+      document.getElementById("symbolSelect").value = "";
+      document.getElementById("result").innerHTML =
+        "📉 Select a symbol and simulate a trade.";
     }
 
     function toggleTheme() {
-      const dark = document.body.style.backgroundColor === "white";
-      document.body.style.backgroundColor = dark ? "#001d2d" : "white";
-      document.body.style.color = dark ? "#ffffff" : "#001d2d";
-      resultBox.style.backgroundColor = dark ? "#ffffff" : "#001d2d";
-      resultBox.style.color = dark ? "#001d2d" : "#ffffff";
+      document.body.classList.toggle("dark-theme");
     }
   </script>
 </body>
