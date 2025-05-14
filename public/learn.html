@@ -76,6 +76,28 @@
       color: #00ffee;
     }
 
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 1em;
+      font-size: 1em;
+    }
+
+    table th, table td {
+      border: 1px solid #00ffee;
+      padding: 0.75em;
+      text-align: left;
+    }
+
+    table th {
+      background-color: #003850;
+      color: #00ffee;
+    }
+
+    table tr:nth-child(even) {
+      background-color: #003040;
+    }
+
     @media (max-width: 600px) {
       .hero h1 {
         font-size: 1.8em;
@@ -98,26 +120,67 @@
       <a href="simulate.html">Simulate</a>
       <a href="whisper.html">Whispers</a>
       <a href="harvesting.html">Premium Harvesting</a>
-
     </div>
   </nav>
 
   <div class="hero">
-    <h1>📘 How to Read Whale Data</h1>
+    <h1>📘 Learn to Read Whale Data and Harvest Premium</h1>
   </div>
 
   <div class="section">
-    <p>Whale trades are large, high-volume options trades made by institutions or big players. Tracking these trades can give insight into future market moves.</p>
+    <p><strong>Whale trades</strong> are large, high-volume options positions placed by institutions or high-net-worth traders. Tracking them reveals where volatility — and opportunity — is building.</p>
 
-    <p>When using the simulator, you may see some fields empty or unavailable. Here's why:</p>
+    <p>But <strong>premium harvesting</strong> isn’t about mimicking those trades. It’s about watching their wake, then placing smarter, safer, income-producing positions based on the activity.</p>
 
+    <h2>📊 How Premium Harvesting Compares</h2>
+    <table>
+      <thead>
+        <tr>
+          <th>Strategy</th>
+          <th>Risk</th>
+          <th>Goal</th>
+          <th>Common Terms</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>Premium Harvesting</strong></td>
+          <td>Low to moderate, defined</td>
+          <td>Weekly income from selling options</td>
+          <td>Cash-secured puts, covered calls</td>
+        </tr>
+        <tr>
+          <td>The Wheel Strategy</td>
+          <td>Moderate to high if unmanaged</td>
+          <td>Buying & selling loop for returns</td>
+          <td>Sell put → assigned → covered call</td>
+        </tr>
+        <tr>
+          <td>Speculative Options Buying</td>
+          <td>High, total loss likely</td>
+          <td>Big payoff on fast moves</td>
+          <td>Out-of-the-money calls/puts</td>
+        </tr>
+        <tr>
+          <td>Income Funds / Covered Call ETFs</td>
+          <td>Low, but returns diluted by fees</td>
+          <td>Passive option-based income</td>
+          <td>JEPI, QYLD, XYLD</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <h2>🔍 Why Whale Data Can Help</h2>
+    <p>Big trades don’t tell you what to do — they tell you where to look. When whales show up in NVDA, AAPL, or KO, we don’t chase. We <strong>strategically harvest</strong> volatility premiums in safer ranges using real option selling techniques.</p>
+
+    <h2>⚠️ When Data Is Missing in the Simulator</h2>
     <ul>
       <li><strong>No symbols appear:</strong> The whale feed may be temporarily empty. Try refreshing later.</li>
-      <li><strong>Can’t select Call or Put:</strong> Only one type of trade (e.g., Calls) may exist for a symbol. The simulator will switch to the available one and explain.</li>
-      <li><strong>Empty Strike or Expiration fields:</strong> Whale trades for that symbol might be missing matching strike/expiry pairs.</li>
+      <li><strong>Can’t select Call or Put:</strong> Only one type of trade (e.g., Calls) may exist for a symbol. The simulator will switch and explain.</li>
+      <li><strong>Empty Strike or Expiration fields:</strong> Whale trades might be missing matching data. This is part of the learning process.</li>
     </ul>
 
-    <p>This is part of the learning process — sometimes the trade just isn’t there. We show you how to spot it.</p>
+    <p>Remember: Premium harvesting is about consistent edges, not constant action. If no trade fits, sit it out — that’s also part of the discipline.</p>
   </div>
 </body>
 </html>
