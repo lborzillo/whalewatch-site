@@ -131,6 +131,7 @@
       border-radius: 10px;
       font-size: 0.95em;
       box-shadow: 0 0 10px rgba(0, 255, 255, 0.5);
+      margin-top: 1em;
     }
     #liveClockBanner {
       background: #002b3f;
@@ -139,20 +140,29 @@
       text-align: center;
       padding: 0.3em 0;
     }
+    .upgrade-btn {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      background-color: #00ffee;
+      color: #001520;
+      border: none;
+      padding: 0.8em 1.2em;
+      font-weight: bold;
+      border-radius: 6px;
+      cursor: pointer;
+      animation: blink 1.5s infinite;
+      box-shadow: 0 0 12px #00ffee;
+    }
+    @keyframes blink {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.5; }
+    }
     @media (max-width: 600px) {
-      .hero h1 {
-        font-size: 2em;
-      }
-      .section {
-        padding: 1.2em;
-      }
-      .leaderboard {
-        grid-template-columns: 1fr;
-      }
-      .whale-meter-flex {
-        flex-direction: column;
-        align-items: flex-start;
-      }
+      .hero h1 { font-size: 2em; }
+      .section { padding: 1.2em; }
+      .leaderboard { grid-template-columns: 1fr; }
+      .whale-meter-flex { flex-direction: column; align-items: flex-start; }
     }
   </style>
 </head>
@@ -164,7 +174,6 @@
     <a href="simulate.html">Simulate</a>
     <a href="whisper.html">Whispers</a>
   </nav>
-
   <div class="hero">
     <h1>🐋 WhaleWatch.Trade</h1>
     <p>Real-time sonar on big money moves.</p>
@@ -202,12 +211,13 @@
     <div id="leaderboardTimestamp" class="timestamp">Loading...</div>
   </div>
 
+  <button class="upgrade-btn" onclick="location.href='whisper.html'">Upgrade to Whisper+</button>
+
   <script>
     function updateLiveClock() {
       const now = new Date();
       document.getElementById("liveClock").textContent = now.toLocaleTimeString();
     }
-
     setInterval(updateLiveClock, 1000);
     updateLiveClock();
 
@@ -224,7 +234,7 @@
       "💡 Tip: Selling puts lets you buy quality stocks at a discount.",
       "💡 Tip: Large block trades often hint at institutional intent.",
       "💡 Tip: Whale clusters often signal breakouts before earnings.",
-      "💡 Tip: Whisper+ shows you what the whales *aren’t* posting publicly. 🧠",
+      "💡 Tip: Whisper+ shows you what the whales aren’t posting publicly. 🧠",
       "💡 Tip: IV crush hits hardest after earnings — plan exits accordingly.",
       "💡 Tip: Whisper+ members get 10x more insight into dark pool trades. 🚀",
       "💡 Tip: Let premium work for you — not against you.",
