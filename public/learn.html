@@ -16,11 +16,28 @@
     nav {
       background-color: #001520;
       padding: 1em;
-      text-align: center;
       display: flex;
       flex-wrap: wrap;
-      justify-content: center;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .whale-link {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .whale-icon {
+      width: 40px;
+      height: auto;
+    }
+
+    .nav-links {
+      display: flex;
       gap: 1em;
+      flex-wrap: wrap;
+      justify-content: center;
     }
 
     nav a {
@@ -72,10 +89,15 @@
 </head>
 <body>
   <nav>
-    <a href="index.html">Home</a>
-    <a href="learn.html">Learn</a>
-    <a href="simulate.html">Simulate</a>
-    <a href="whisper.html">Whispers</a>
+    <div class="whale-link">
+      <img src="/whale.png" alt="Whale Logo" class="whale-icon">
+    </div>
+    <div class="nav-links">
+      <a href="index.html">Home</a>
+      <a href="learn.html">Learn</a>
+      <a href="simulate.html">Simulate</a>
+      <a href="whisper.html">Whispers</a>
+    </div>
   </nav>
 
   <div class="hero">
