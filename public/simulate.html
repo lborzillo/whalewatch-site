@@ -154,12 +154,9 @@ const resultBox = document.getElementById("resultBox");
 
 const isPremium = () => localStorage.getItem("whisperPlus") === "true";
 
-// ✅ Live data from deployed domain
-fetch("https://whalewatch-site.vercel.app/whales.json")
-  .then(res => {
-    if (!res.ok) throw new Error("Failed to load whales.json");
-    return res.json();
-  })
+// ✅ Load live data from whales.json
+fetch("whales.json")
+  .then(res => res.json())
   .then(data => {
     trades = data.whale_trades;
     const symbols = [...new Set(trades.map(t => t.symbol))];
@@ -170,12 +167,29 @@ fetch("https://whalewatch-site.vercel.app/whales.json")
       opt.textContent = s;
       symbolSelect.appendChild(opt);
     });
-    symbolSelect.dispatchEvent(new Event("change"));
+
+    // Auto-select the first valid symbol
+    if (symbols.length > 0) {
+      symbolSelect.value = symbols[0];
+      symbolSelect.dispatchEvent(new Event("change"));
+    }
   })
   .catch(err => {
-    console.error("Fetch error:", err);
-    resultBox.textContent = "❌ Failed to load whale data.";
+    console.error("Failed to load whales.json", err);
+    resultBox.textContent = "❌ Failed to load data.";
   });
+
+symbolSelect.addEventListener("change", () => {
+  updateOptions();
+  if (strikeSelect.options.length > 0) strikeSelect.selectedIndex = 0;
+  if (expirationSelect.options.length > 0) expirationSelect.selectedIndex = 0;
+});
+
+typeSelect.addEventListener("change", () => {
+  updateOptions();
+  if (strikeSelect.options.length > 0) strikeSelect.selectedIndex = 0;
+  if (expirationSelect.options.length > 0) expirationSelect.selectedIndex = 0;
+});
 
 function updateOptions() {
   const sym = symbolSelect.value;
@@ -186,12 +200,10 @@ function updateOptions() {
 
   strikeSelect.innerHTML = "";
   expirationSelect.innerHTML = "";
+
   strikes.forEach(s => strikeSelect.appendChild(new Option(`$${s}`, s)));
   exps.forEach(e => expirationSelect.appendChild(new Option(e, e)));
 }
-
-symbolSelect.addEventListener("change", updateOptions);
-typeSelect.addEventListener("change", updateOptions);
 
 function simulateTrade() {
   const sym = symbolSelect.value;
@@ -236,7 +248,6 @@ function simulateTrade() {
   document.getElementById("chartSection").classList.remove("hidden");
 
   if (isPremium()) saveTrade(sym, type, strike, exp, premium);
-  history.replaceState(null, "", `?symbol=${sym}&type=${type}&strike=${strike}&expiration=${exp}`);
 }
 
 function drawChart(strike, premium, type) {
