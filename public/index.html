@@ -2,194 +2,171 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>WhaleWatch | Home</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>WhaleWatch | Simulator</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <style>
+    :root {
+      --bg: #001d2d;
+      --text: #ffffff;
+      --accent: #00ffee;
+      --box: #002b3f;
+    }
     body {
+      background-color: var(--bg);
+      color: var(--text);
       font-family: 'Segoe UI', sans-serif;
-      background-color: #001d2d;
-      color: white;
       margin: 0;
       padding: 0;
     }
     nav {
       background-color: #001520;
-      padding: 1em;
-      text-align: center;
-      display: flex;
-      justify-content: center;
-      gap: 1em;
-      flex-wrap: wrap;
-    }
-    nav a {
-      color: #00ffee;
-      font-weight: bold;
-      text-decoration: none;
-    }
-    .hero {
-      text-align: center;
-      padding: 4em 2em 2em;
-      background-color: #002b3f;
-    }
-    .whale-hero {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-    }
-    .homepage-logo {
-      width: 100px;
-      height: auto;
-      margin-bottom: 1rem;
-      filter: drop-shadow(0 0 10px #00ffee);
-    }
-    .hero h1 {
-      font-size: 3em;
-      color: #00ffee;
-      margin-bottom: 0.3em;
-    }
-    .hero p {
-      font-size: 1.2em;
-      color: #ccc;
-    }
-    .section {
-      max-width: 800px;
-      margin: 3em auto;
-      padding: 2em;
-    }
-    .section h2 {
-      color: #00ffee;
-      margin-bottom: 0.5em;
-    }
-    .whale-meter-container {
-      background-color: #003850;
-      border-radius: 6px;
-      overflow: hidden;
-      height: 30px;
-      margin-bottom: 1em;
-    }
-    .whale-meter-fill {
-      background-color: #00ffee;
-      height: 100%;
-      width: 0;
-      transition: width 2s ease-in-out;
-    }
-    .whale-meter-flex {
+      padding: 1rem;
       display: flex;
       justify-content: space-between;
       align-items: center;
-      flex-wrap: wrap;
-      gap: 1em;
-      margin-bottom: 1em;
     }
-    .whale-meter-text {
+    nav h1 {
+      margin: 0;
+      font-size: 1.8rem;
+      color: var(--accent);
+    }
+    nav a {
+      text-decoration: none;
+      color: #ffffff;
       font-weight: bold;
-      color: #00ffee;
-      font-size: 1.1em;
-    }
-    .timestamp {
-      font-size: 0.9em;
-      color: #aaa;
-    }
-    .sentiment-bar {
-      background-color: #00425f;
-      border-radius: 6px;
-      height: 20px;
-      overflow: hidden;
-      margin-top: 10px;
-    }
-    .sentiment-fill-bullish {
-      background-color: #00ff88;
-      height: 100%;
-      width: 0;
-      float: left;
-      transition: width 1.5s ease-in-out;
-    }
-    .sentiment-fill-bearish {
-      background-color: #ff0044;
-      height: 100%;
-      width: 0;
-      float: left;
-      transition: width 1.5s ease-in-out;
-    }
-    .trade-card {
-      background-color: #003850;
-      padding: 1em;
-      border-radius: 6px;
-      margin-bottom: 1em;
-    }
-    .leaderboard {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 1em;
-    }
-    .leaderboard-entry {
-      background-color: #003850;
-      padding: 1em;
+      background-color: #005580;
+      padding: 0.5rem 1rem;
       border-radius: 8px;
-      font-size: 1.05em;
-      line-height: 1.5;
+      transition: background-color 0.3s;
     }
-    .leaderboard-entry strong {
-      color: #00ffee;
-      font-size: 1.1em;
+    nav a:hover {
+      background-color: #0077a3;
     }
-    #whaleAssistant {
-      position: relative;
-      background: #00293e;
-      border: 2px solid #00ffee;
-      color: #00ffee;
-      padding: 0.8em 1em;
-      border-radius: 10px;
-      font-size: 0.95em;
-      box-shadow: 0 0 10px rgba(0, 255, 255, 0.5);
+    .whale-link {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    .whale-icon {
+      width: 40px;
+      height: auto;
+    }
+    main {
+      padding: 2rem;
+      text-align: center;
+    }
+    h2 {
+      font-size: 2rem;
+      margin-bottom: 1rem;
+      color: var(--accent);
+    }
+    select, input, button {
+      padding: 0.6em;
+      margin: 0.5em;
+      font-size: 1em;
+      border-radius: 8px;
+      border: 1px solid var(--accent);
+      background: var(--box);
+      color: var(--text);
+    }
+    button {
+      cursor: pointer;
+      transition: background 0.3s;
+    }
+    button:hover {
+      background-color: #004c60;
+    }
+    .result-box {
+      background: var(--box);
+      color: var(--text);
+      padding: 1.5em;
+      margin-top: 2em;
+      border-radius: 12px;
+      border: 2px solid var(--accent);
+      box-shadow: 0 0 10px var(--accent);
+    }
+    .chart-container {
+      max-width: 600px;
+      margin: 2em auto;
+    }
+    .whisper-modal {
+      display: none;
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      background: rgba(0,0,0,0.8);
+      justify-content: center;
+      align-items: center;
+      z-index: 999;
+    }
+    .modal-content {
+      background: var(--bg);
+      color: var(--text);
+      padding: 2em;
+      border-radius: 12px;
+      max-width: 400px;
+      width: 90%;
+      box-shadow: 0 0 15px var(--accent);
+      text-align: left;
+    }
+    .modal-content input,
+    .modal-content button {
+      width: 100%;
       margin-top: 1em;
     }
-    #liveClockBanner {
-      background: #002b3f;
-      color: #00ffee;
-      font-size: 0.9em;
-      text-align: center;
-      padding: 0.3em 0;
-    }
-    .upgrade-btn {
-      position: fixed;
-      bottom: 20px;
-      right: 20px;
-      background-color: #00ffee;
-      color: #001520;
+    .close-modal {
+      background: #e74c3c;
+      color: #fff;
+      float: right;
       border: none;
-      padding: 0.8em 1.2em;
+      padding: 0.4em 0.8em;
+      border-radius: 8px;
+    }
+    .advanced-link {
+      display: block;
+      margin-top: 2em;
       font-weight: bold;
-      border-radius: 6px;
-      cursor: pointer;
-      animation: blink 1.5s infinite;
-      box-shadow: 0 0 12px #00ffee;
-    }
-    @keyframes blink {
-      0%, 100% { opacity: 1; }
-      50% { opacity: 0.5; }
-    }
-    @media (max-width: 600px) {
-      .hero h1 { font-size: 2em; }
-      .section { padding: 1.2em; }
-      .leaderboard { grid-template-columns: 1fr; }
-      .whale-meter-flex { flex-direction: column; align-items: flex-start; }
+      color: var(--accent);
+      text-decoration: underline;
     }
   </style>
 </head>
 <body>
-  <div id="liveClockBanner">🕒 Market Clock: <span id="liveClock">Loading...</span></div>
   <nav>
-    <a href="index.html">Home</a>
-    <a href="learn.html">Learn</a>
-    <a href="simulate.html">Simulate</a>
-    <a href="whisper.html">Whispers</a>
+    <div class="whale-link">
+      <img src="/images/whale-whispers.png" alt="Whale Logo" class="whale-icon">
+      <a href="/index.html">Back to WhaleWatch</a>
+    </div>
+    <h1>Options Trade Simulator</h1>
   </nav>
-  <div class="hero whale-hero">
-    <img src="/images/whale-whispers.png" alt="WhaleWatch Logo" class="homepage-logo">
-    <h1>WhaleWatch.Trade</h1>
-    <p>Real-time sonar on big money moves.</p>
+  <main>
+    <h2>Simulate a Whale Trade</h2>
+    <select id="symbolSelect"><option value="">Loading symbols...</option></select>
+    <select id="typeSelect"><option value="CALL">CALL</option><option value="PUT">PUT</option></select>
+    <select id="strikeSelect"></select>
+    <select id="expirationSelect"></select>
+    <div>
+      <button onclick="simulateTrade()">Simulate</button>
+      <button onclick="resetForm()">Reset</button>
+      <button onclick="showModal()">Unlock Whisper+</button>
+    </div>
+    <div id="resultBox" class="result-box">📈 Select options and click Simulate.</div>
+    <div class="chart-container" id="chartSection">
+      <canvas id="profitChart" width="400" height="200"></canvas>
+    </div>
+    <a class="advanced-link" href="/whisper.html">🔍 View My Whisper Trades</a>
+  </main>
+  <div class="whisper-modal" id="whisperModal">
+    <div class="modal-content">
+      <button class="close-modal" onclick="closeModal()">X</button>
+      <h2>Upgrade to Whisper+</h2>
+      <form onsubmit="return unlockPremium(event)">
+        <label>Email to unlock premium features:</label>
+        <input type="email" required />
+        <button type="submit">🚀 Upgrade & Unlock</button>
+      </form>
+    </div>
   </div>
-  <!-- Remaining content stays unchanged -->
 </body>
 </html>
