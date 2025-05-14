@@ -164,10 +164,12 @@
     <a href="simulate.html">Simulate</a>
     <a href="whisper.html">Whispers</a>
   </nav>
+
   <div class="hero">
     <h1>🐋 WhaleWatch.Trade</h1>
     <p>Real-time sonar on big money moves.</p>
   </div>
+
   <div class="section">
     <h2>🌊 Whale Meter</h2>
     <div class="whale-meter-container">
@@ -179,6 +181,7 @@
     </div>
     <div id="whaleAssistant">💡 Tip: Loading...</div>
   </div>
+
   <div class="section">
     <h2>📈 Bullish vs. Bearish Sentiment</h2>
     <div class="sentiment-bar">
@@ -187,146 +190,141 @@
     </div>
     <div id="sentimentLabel" class="whale-meter-text" style="margin-top: 10px;">Loading...</div>
   </div>
+
   <div class="section">
     <h2>📊 Latest Whale Trades</h2>
     <div id="whaleList">Loading...</div>
   </div>
+
   <div class="section">
     <h2>🏆 Top 10 Leaderboard</h2>
     <div id="leaderboard" class="leaderboard">Loading...</div>
     <div id="leaderboardTimestamp" class="timestamp">Loading...</div>
   </div>
-<script>
-  function updateLiveClock() {
-    const now = new Date();
-    document.getElementById("liveClock").textContent = now.toLocaleTimeString();
-  }
 
-  setInterval(updateLiveClock, 1000);
-  updateLiveClock();
-
-  const priorityTips = {
-  "NVDA": "NVDA premiums are hot right now. Consider a short-term put play.",
-  "AAPL": "AAPL is trending upward. Covered calls may be a strong move.",
-  "TSLA": "TSLA volatility favors iron condors. Trade carefully.",
-  "AMZN": "Whales are circling AMZN. Watch for directional momentum.",
-  "MSFT": "MSFT has strong OI signals. Look into spread strategies."
-};
-
-const generalTips = [
-  "💡 Tip: Covered calls can boost returns in sideways markets.",
-  "💡 Tip: Selling puts lets you buy quality stocks at a discount.",
-  "💡 Tip: Large block trades often hint at institutional intent.",
-  "💡 Tip: Whale clusters often signal breakouts before earnings.",
-  "💡 Tip: Whisper+ shows you what the whales *aren’t* posting publicly. 🧠",
-  "💡 Tip: IV crush hits hardest after earnings — plan exits accordingly.",
-  "💡 Tip: Whisper+ members get 10x more insight into dark pool trades. 🚀",
-  "💡 Tip: Let premium work for you — not against you.",
-  "💡 Tip: Open interest spikes often precede price action.",
-  "💡 Tip: Stop guessing. Upgrade to Whisper+ and follow the money. 💰"
-];
-
-let tipIndex = 0;
-let activeTradeSymbols = [];
-
-function rotateTip() {
-  const tipBox = document.getElementById("whaleAssistant");
-
-  // Prioritize symbol-specific tips
-  for (let symbol in priorityTips) {
-    if (activeTradeSymbols.includes(symbol)) {
-      tipBox.textContent = `💡 Tip: ${priorityTips[symbol]}`;
-      return;
+  <script>
+    function updateLiveClock() {
+      const now = new Date();
+      document.getElementById("liveClock").textContent = now.toLocaleTimeString();
     }
-  }
 
-  // Fallback to rotating general tips
-  tipBox.textContent = generalTips[tipIndex];
-  tipIndex = (tipIndex + 1) % generalTips.length;
-}
+    setInterval(updateLiveClock, 1000);
+    updateLiveClock();
 
+    const priorityTips = {
+      "NVDA": "NVDA premiums are hot right now. Consider a short-term put play.",
+      "AAPL": "AAPL is trending upward. Covered calls may be a strong move.",
+      "TSLA": "TSLA volatility favors iron condors. Trade carefully.",
+      "AMZN": "Whales are circling AMZN. Watch for directional momentum.",
+      "MSFT": "MSFT has strong OI signals. Look into spread strategies."
+    };
+
+    const generalTips = [
+      "💡 Tip: Covered calls can boost returns in sideways markets.",
+      "💡 Tip: Selling puts lets you buy quality stocks at a discount.",
+      "💡 Tip: Large block trades often hint at institutional intent.",
+      "💡 Tip: Whale clusters often signal breakouts before earnings.",
+      "💡 Tip: Whisper+ shows you what the whales *aren’t* posting publicly. 🧠",
+      "💡 Tip: IV crush hits hardest after earnings — plan exits accordingly.",
+      "💡 Tip: Whisper+ members get 10x more insight into dark pool trades. 🚀",
+      "💡 Tip: Let premium work for you — not against you.",
+      "💡 Tip: Open interest spikes often precede price action.",
+      "💡 Tip: Stop guessing. Upgrade to Whisper+ and follow the money. 💰"
+    ];
+
+    let tipIndex = 0;
+    let activeTradeSymbols = [];
+
+    function rotateTip() {
+      const tipBox = document.getElementById("whaleAssistant");
+
+      for (let symbol in priorityTips) {
+        if (activeTradeSymbols.includes(symbol)) {
+          tipBox.textContent = `💡 Tip: ${priorityTips[symbol]}`;
+          return;
+        }
       }
+
+      tipBox.textContent = generalTips[tipIndex];
+      tipIndex = (tipIndex + 1) % generalTips.length;
     }
-    tipBox.textContent = generalTips[tipIndex];
-    tipIndex = (tipIndex + 1) % generalTips.length;
-  }
 
-  function updateWhaleData() {
-    fetch("whales.json")
-      .then(res => res.json())
-      .then(data => {
-        const trades = data.whale_trades;
-        activeTradeSymbols = trades.map(t => t.symbol);
+    function updateWhaleData() {
+      fetch("whales.json")
+        .then(res => res.json())
+        .then(data => {
+          const trades = data.whale_trades;
+          activeTradeSymbols = trades.map(t => t.symbol);
 
-        document.getElementById("whaleList").innerHTML = trades.slice(0, 5).map(t => `
-          <div class="trade-card">
-            <strong>${t.symbol}</strong> — ${t.type}<br>
-            Strike: $${t.strike}<br>
-            Exp: ${t.expiration}<br>
-            Premium: $${Number(t.premium).toFixed(2)}<br>
-            OI: ${t.open_interest}
-          </div>
-        `).join("");
-
-        const totalPremium = trades.reduce((sum, t) => {
-          const premium = Number(t.premium);
-          return sum + (isNaN(premium) ? 0 : premium * 10000);
-        }, 0);
-
-        document.getElementById("whaleMeterText").textContent =
-          `Total Premium Traded: $${totalPremium.toLocaleString()}`;
-
-        const percent = Math.min((totalPremium / 1000000) * 100, 100);
-        const whaleFill = document.getElementById("whaleFill");
-        whaleFill.style.width = percent + "%";
-
-        if (percent >= 90) whaleFill.style.backgroundColor = "#ff0044";
-        else if (percent >= 60) whaleFill.style.backgroundColor = "#ffaa00";
-        else if (percent >= 30) whaleFill.style.backgroundColor = "#00ffee";
-        else whaleFill.style.backgroundColor = "#005577";
-
-        const bullishCount = trades.filter(t => t.type === "CALL").length;
-        const bearishCount = trades.filter(t => t.type === "PUT").length;
-        const totalCount = bullishCount + bearishCount;
-        const bullishPct = totalCount > 0 ? (bullishCount / totalCount) * 100 : 50;
-        const bearishPct = 100 - bullishPct;
-
-        document.getElementById("bullFill").style.width = `${bullishPct}%`;
-        document.getElementById("bearFill").style.width = `${bearishPct}%`;
-        document.getElementById("sentimentLabel").textContent =
-          `🐂 Bullish: ${bullishPct.toFixed(1)}% | 🐻 Bearish: ${bearishPct.toFixed(1)}%`;
-
-        const ts = new Date(data.timestamp);
-        document.getElementById("whaleTimestamp").textContent =
-          `Last updated: ${ts.toLocaleString()}`;
-      });
-
-    fetch("leaderboard.json")
-      .then(res => res.json())
-      .then(data => {
-        const top = data.top_10 || {};
-        const ts = new Date(data.timestamp);
-        const board = document.getElementById("leaderboard");
-
-        board.innerHTML = Object.entries(top)
-          .sort((a, b) => b[1].total_premium - a[1].total_premium)
-          .map(([symbol, stats]) => `
-            <div class="leaderboard-entry">
-              <strong>${symbol}</strong><br/>
-              Trades: ${stats.count}<br/>
-              Total: $${stats.total_premium.toLocaleString()}
+          document.getElementById("whaleList").innerHTML = trades.slice(0, 5).map(t => `
+            <div class="trade-card">
+              <strong>${t.symbol}</strong> — ${t.type}<br>
+              Strike: $${t.strike}<br>
+              Exp: ${t.expiration}<br>
+              Premium: $${Number(t.premium).toFixed(2)}<br>
+              OI: ${t.open_interest}
             </div>
           `).join("");
 
-        document.getElementById("leaderboardTimestamp").textContent =
-          `Leaderboard synced: ${ts.toLocaleString()}`;
-      });
-  }
+          const totalPremium = trades.reduce((sum, t) => {
+            const premium = Number(t.premium);
+            return sum + (isNaN(premium) ? 0 : premium * 10000);
+          }, 0);
 
-  updateWhaleData();
-  rotateTip();
-  setInterval(updateWhaleData, 60000);
-  setInterval(rotateTip, 12000);
-</script>
+          document.getElementById("whaleMeterText").textContent =
+            `Total Premium Traded: $${totalPremium.toLocaleString()}`;
+
+          const percent = Math.min((totalPremium / 1000000) * 100, 100);
+          const whaleFill = document.getElementById("whaleFill");
+          whaleFill.style.width = percent + "%";
+
+          if (percent >= 90) whaleFill.style.backgroundColor = "#ff0044";
+          else if (percent >= 60) whaleFill.style.backgroundColor = "#ffaa00";
+          else if (percent >= 30) whaleFill.style.backgroundColor = "#00ffee";
+          else whaleFill.style.backgroundColor = "#005577";
+
+          const bullishCount = trades.filter(t => t.type === "CALL").length;
+          const bearishCount = trades.filter(t => t.type === "PUT").length;
+          const totalCount = bullishCount + bearishCount;
+          const bullishPct = totalCount > 0 ? (bullishCount / totalCount) * 100 : 50;
+          const bearishPct = 100 - bullishPct;
+
+          document.getElementById("bullFill").style.width = `${bullishPct}%`;
+          document.getElementById("bearFill").style.width = `${bearishPct}%`;
+          document.getElementById("sentimentLabel").textContent =
+            `🐂 Bullish: ${bullishPct.toFixed(1)}% | 🐻 Bearish: ${bearishPct.toFixed(1)}%`;
+
+          const ts = new Date(data.timestamp);
+          document.getElementById("whaleTimestamp").textContent =
+            `Last updated: ${ts.toLocaleString()}`;
+        });
+
+      fetch("leaderboard.json")
+        .then(res => res.json())
+        .then(data => {
+          const top = data.top_10 || {};
+          const ts = new Date(data.timestamp);
+          const board = document.getElementById("leaderboard");
+
+          board.innerHTML = Object.entries(top)
+            .sort((a, b) => b[1].total_premium - a[1].total_premium)
+            .map(([symbol, stats]) => `
+              <div class="leaderboard-entry">
+                <strong>${symbol}</strong><br/>
+                Trades: ${stats.count}<br/>
+                Total: $${stats.total_premium.toLocaleString()}
+              </div>
+            `).join("");
+
+          document.getElementById("leaderboardTimestamp").textContent =
+            `Leaderboard synced: ${ts.toLocaleString()}`;
+        });
+    }
+
+    updateWhaleData();
+    rotateTip();
+    setInterval(updateWhaleData, 60000);
+    setInterval(rotateTip, 12000);
+  </script>
 </body>
 </html>
