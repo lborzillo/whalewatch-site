@@ -206,34 +206,45 @@
   updateLiveClock();
 
   const priorityTips = {
-    "NVDA": "NVDA premiums are hot right now. Consider a short-term put play.",
-    "AAPL": "AAPL is trending upward. Covered calls may be a strong move.",
-    "TSLA": "TSLA volatility favors iron condors. Trade carefully.",
-    "AMZN": "Whales are circling AMZN. Watch for directional momentum.",
-    "MSFT": "MSFT has strong OI signals. Look into spread strategies."
-  };
+  "NVDA": "NVDA premiums are hot right now. Consider a short-term put play.",
+  "AAPL": "AAPL is trending upward. Covered calls may be a strong move.",
+  "TSLA": "TSLA volatility favors iron condors. Trade carefully.",
+  "AMZN": "Whales are circling AMZN. Watch for directional momentum.",
+  "MSFT": "MSFT has strong OI signals. Look into spread strategies."
+};
 
-  const generalTips = [
-    "💡 Tip: Covered calls can boost returns in sideways markets.",
-    "💡 Tip: Selling puts lets you buy quality stocks at a discount.",
-    "💡 Tip: Use delta to manage probability of profit.",
-    "💡 Tip: Whisper+ unlocks full dark pool visibility. Upgrade now!",
-    "💡 Tip: Whale clusters often signal breakouts.",
-    "💡 Tip: Let premium work for you, not against you.",
-    "💡 Tip: Large block trades often hint at institutional intent.",
-    "💡 Tip: Watch open interest for confirmation.",
-    "💡 Tip: IV crush hits hardest after earnings — plan exits accordingly."
-  ];
+const generalTips = [
+  "💡 Tip: Covered calls can boost returns in sideways markets.",
+  "💡 Tip: Selling puts lets you buy quality stocks at a discount.",
+  "💡 Tip: Large block trades often hint at institutional intent.",
+  "💡 Tip: Whale clusters often signal breakouts before earnings.",
+  "💡 Tip: Whisper+ shows you what the whales *aren’t* posting publicly. 🧠",
+  "💡 Tip: IV crush hits hardest after earnings — plan exits accordingly.",
+  "💡 Tip: Whisper+ members get 10x more insight into dark pool trades. 🚀",
+  "💡 Tip: Let premium work for you — not against you.",
+  "💡 Tip: Open interest spikes often precede price action.",
+  "💡 Tip: Stop guessing. Upgrade to Whisper+ and follow the money. 💰"
+];
 
-  let tipIndex = 0;
-  let activeTradeSymbols = [];
+let tipIndex = 0;
+let activeTradeSymbols = [];
 
-  function rotateTip() {
-    const tipBox = document.getElementById("whaleAssistant");
-    for (let symbol in priorityTips) {
-      if (activeTradeSymbols.includes(symbol)) {
-        tipBox.textContent = `💡 Tip: ${priorityTips[symbol]}`;
-        return;
+function rotateTip() {
+  const tipBox = document.getElementById("whaleAssistant");
+
+  // Prioritize symbol-specific tips
+  for (let symbol in priorityTips) {
+    if (activeTradeSymbols.includes(symbol)) {
+      tipBox.textContent = `💡 Tip: ${priorityTips[symbol]}`;
+      return;
+    }
+  }
+
+  // Fallback to rotating general tips
+  tipBox.textContent = generalTips[tipIndex];
+  tipIndex = (tipIndex + 1) % generalTips.length;
+}
+
       }
     }
     tipBox.textContent = generalTips[tipIndex];
