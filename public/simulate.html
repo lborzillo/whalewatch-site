@@ -101,12 +101,19 @@
       z-index: 999;
     }
     .modal-content {
-      background: #012634;
-      padding: 2rem;
+      background: var(--bg);
+      color: var(--text);
+      padding: 2em;
       border-radius: 12px;
-      max-width: 500px;
+      max-width: 400px;
       width: 90%;
       box-shadow: 0 0 15px var(--accent);
+      text-align: left;
+    }
+    .modal-content iframe {
+      border: none;
+      width: 100%;
+      height: 250px;
     }
     .close-modal {
       background: #e74c3c;
@@ -115,7 +122,6 @@
       border: none;
       padding: 0.4em 0.8em;
       border-radius: 8px;
-      cursor: pointer;
     }
     .advanced-link {
       display: block;
@@ -152,41 +158,88 @@
     <a class="advanced-link" href="/whisper.html">🔍 View My Whisper Trades</a>
   </main>
 
-  <!-- Whisper+ Modal -->
+  <!-- Modal for MailerLite Embed -->
   <div class="whisper-modal" id="whisperModal">
     <div class="modal-content">
       <button class="close-modal" onclick="closeModal()">X</button>
-      <h2>Join Whisper+</h2>
-      <p>Subscribe for premium access to unlock hidden trades and alerts.</p>
-      <!-- Embedded MailerLite form -->
-      <div id="mlb2-25994972" class="ml-form-embedContainer ml-subscribe-form ml-subscribe-form-25994972">
-        <!-- Paste your full MailerLite embed HTML form code block here -->
-        <!-- The full HTML from MailerLite should be included, not just script or link -->
-        <!-- This ensures the form renders directly in the modal -->
-      </div>
+      <h2>Unlock Whisper+ Access</h2>
+      <p>Enter your email to access premium insights from the whales:</p>
+      <iframe src="https://assets.mailerlite.com/embed/form/25994972" scrolling="no"></iframe>
     </div>
   </div>
 
   <script>
     function showModal() {
-      document.getElementById('whisperModal').style.display = 'flex';
+      document.getElementById("whisperModal").style.display = "flex";
     }
     function closeModal() {
-      document.getElementById('whisperModal').style.display = 'none';
+      document.getElementById("whisperModal").style.display = "none";
     }
 
     function simulateTrade() {
-      // Stub function for now
-      document.getElementById('resultBox').innerText = '🚧 Simulation logic not implemented yet.';
+      const resultBox = document.getElementById("resultBox");
+      const symbol = document.getElementById("symbolSelect").value;
+      const type = document.getElementById("typeSelect").value;
+      const strike = document.getElementById("strikeSelect").value;
+      const expiration = document.getElementById("expirationSelect").value;
+
+      if (!symbol || !strike || !expiration) {
+        resultBox.textContent = "⚠️ Please fill in all fields before simulating.";
+        return;
+      }
+
+      resultBox.textContent = `🧠 Simulating: ${type} on ${symbol} at $${strike} expiring ${expiration}...`;
+      // Example chart render
+      const ctx = document.getElementById("profitChart").getContext("2d");
+      new Chart(ctx, {
+        type: "line",
+        data: {
+          labels: ["Now", "Later"],
+          datasets: [{
+            label: "Profit Potential",
+            data: [0, type === "CALL" ? 500 : 300],
+            borderColor: "#00ffee",
+            tension: 0.4
+          }]
+        },
+        options: {
+          responsive: true,
+          plugins: {
+            legend: { labels: { color: "#ffffff" } }
+          },
+          scales: {
+            x: { ticks: { color: "#ffffff" } },
+            y: { ticks: { color: "#ffffff" } }
+          }
+        }
+      });
     }
 
     function resetForm() {
-      document.getElementById('symbolSelect').selectedIndex = 0;
-      document.getElementById('typeSelect').selectedIndex = 0;
-      document.getElementById('strikeSelect').innerHTML = '';
-      document.getElementById('expirationSelect').innerHTML = '';
-      document.getElementById('resultBox').innerText = '📈 Select options and click Simulate.';
+      document.getElementById("symbolSelect").selectedIndex = 0;
+      document.getElementById("typeSelect").value = "CALL";
+      document.getElementById("strikeSelect").innerHTML = "";
+      document.getElementById("expirationSelect").innerHTML = "";
+      document.getElementById("resultBox").textContent = "📈 Select options and click Simulate.";
+      const chartCanvas = document.getElementById("profitChart");
+      chartCanvas.getContext("2d").clearRect(0, 0, chartCanvas.width, chartCanvas.height);
     }
+
+    // Dummy whale data loader
+    window.onload = function() {
+      const symbols = ["AAPL", "NVDA", "KO"];
+      const strikes = ["100", "110", "120"];
+      const expirations = ["2025-05-17", "2025-05-24"];
+
+      const symbolSelect = document.getElementById("symbolSelect");
+      symbolSelect.innerHTML = symbols.map(s => `<option value="${s}">${s}</option>`).join("");
+
+      const strikeSelect = document.getElementById("strikeSelect");
+      strikeSelect.innerHTML = strikes.map(s => `<option value="${s}">${s}</option>`).join("");
+
+      const expirationSelect = document.getElementById("expirationSelect");
+      expirationSelect.innerHTML = expirations.map(e => `<option value="${e}">${e}</option>`).join("");
+    };
   </script>
 </body>
 </html>
