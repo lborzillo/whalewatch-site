@@ -50,6 +50,20 @@
     .hero p {
       font-size: 1.2em;
       color: #ccc;
+      margin-bottom: 1.5em;
+    }
+    .hero a.cta-button {
+      display: inline-block;
+      padding: 0.75em 1.5em;
+      background-color: #00ffee;
+      color: #001520;
+      font-weight: bold;
+      border-radius: 8px;
+      text-decoration: none;
+      transition: background-color 0.2s ease-in-out;
+    }
+    .hero a.cta-button:hover {
+      background-color: #00ddcc;
     }
     .section {
       max-width: 800px;
@@ -119,12 +133,14 @@
     <a href="index.html">Home</a>
     <a href="learn.html">Learn</a>
     <a href="simulate.html">Simulate</a>
+    <a href="harvesting.html">Premium Harvesting</a>
     <a href="whisper.html">Whispers</a>
   </nav>
   <div class="hero whale-hero">
     <img src="/whale.png" alt="WhaleWatch Logo" class="homepage-logo">
     <h1>WhaleWatch.Trade</h1>
-    <p>Real-time sonar on big money moves.</p>
+    <p>We track the whales so you can harvest the premium.</p>
+    <a href="harvesting.html" class="cta-button">What Is Premium Harvesting?</a>
   </div>
   <div class="section">
     <h2>🌊 Whale Meter</h2>
@@ -147,6 +163,7 @@
   <div class="section">
     <h2>📊 Latest Whale Trades</h2>
     <div id="whaleList">Loading...</div>
+    <p style="margin-top: 1em; color: #aaa;"><em>Want to simulate your own trades based on this flow? <a href="simulate.html" style="color: #00ffee; font-weight: bold;">Try the Premium Harvesting Simulator →</a></em></p>
   </div>
   <script>
     function updateLiveClock() {
