@@ -12,14 +12,12 @@
       --accent: #00ffee;
       --box: #f0f0f0;
     }
-
     body.dark {
       --bg: #001d2d;
       --text: #ffffff;
       --accent: #00ffee;
       --box: #002b3f;
     }
-
     body {
       background-color: var(--bg);
       color: var(--text);
@@ -29,12 +27,10 @@
       text-align: center;
       transition: background 0.3s, color 0.3s;
     }
-
     h1 {
       font-size: 2.5em;
       color: var(--accent);
     }
-
     a.back-home {
       position: absolute;
       top: 1em;
@@ -43,7 +39,6 @@
       color: var(--accent);
       text-decoration: none;
     }
-
     select, input, button {
       padding: 0.6em;
       margin: 0.5em;
@@ -53,7 +48,6 @@
       background: var(--box);
       color: var(--text);
     }
-
     .result-box {
       background: var(--box);
       color: var(--text);
@@ -63,12 +57,10 @@
       border: 2px solid var(--accent);
       box-shadow: 0 0 10px var(--accent);
     }
-
     .chart-container {
       max-width: 600px;
       margin: 2em auto;
     }
-
     .whisper-modal {
       display: none;
       position: fixed;
@@ -79,7 +71,6 @@
       align-items: center;
       z-index: 999;
     }
-
     .modal-content {
       background: var(--bg);
       color: var(--text);
@@ -90,13 +81,11 @@
       box-shadow: 0 0 15px var(--accent);
       text-align: left;
     }
-
     .modal-content input,
     .modal-content button {
       width: 100%;
       margin-top: 1em;
     }
-
     .close-modal {
       background: #e74c3c;
       color: #fff;
@@ -105,7 +94,6 @@
       padding: 0.4em 0.8em;
       border-radius: 8px;
     }
-
     .advanced-btn {
       margin-top: 1em;
       padding: 0.6em 1.2em;
@@ -115,7 +103,6 @@
       border: none;
       border-radius: 8px;
     }
-
     .hidden {
       display: none;
     }
@@ -155,169 +142,175 @@
     </div>
   </div>
 
-  <script>
-    let chart;
-    let trades = [];
+<script>
+let chart;
+let trades = [];
 
-    const symbolSelect = document.getElementById("symbolSelect");
-    const typeSelect = document.getElementById("typeSelect");
-    const strikeSelect = document.getElementById("strikeSelect");
-    const expirationSelect = document.getElementById("expirationSelect");
-    const resultBox = document.getElementById("resultBox");
+const symbolSelect = document.getElementById("symbolSelect");
+const typeSelect = document.getElementById("typeSelect");
+const strikeSelect = document.getElementById("strikeSelect");
+const expirationSelect = document.getElementById("expirationSelect");
+const resultBox = document.getElementById("resultBox");
 
-    const isPremium = () => localStorage.getItem("whisperPlus") === "true";
+const isPremium = () => localStorage.getItem("whisperPlus") === "true";
 
-    fetch("whales.json")
-      .then(res => res.json())
-      .then(data => {
-        trades = data.whale_trades;
-        const symbols = [...new Set(trades.map(t => t.symbol))];
-        symbolSelect.innerHTML = '<option value="">Select symbol</option>';
-        symbols.forEach(s => {
-          const opt = document.createElement("option");
-          opt.value = s;
-          opt.textContent = s;
-          symbolSelect.appendChild(opt);
-        });
+// ✅ Live data from deployed domain
+fetch("https://whalewatch-site.vercel.app/whales.json")
+  .then(res => {
+    if (!res.ok) throw new Error("Failed to load whales.json");
+    return res.json();
+  })
+  .then(data => {
+    trades = data.whale_trades;
+    const symbols = [...new Set(trades.map(t => t.symbol))];
+    symbolSelect.innerHTML = '<option value="">Select symbol</option>';
+    symbols.forEach(s => {
+      const opt = document.createElement("option");
+      opt.value = s;
+      opt.textContent = s;
+      symbolSelect.appendChild(opt);
+    });
+    symbolSelect.dispatchEvent(new Event("change"));
+  })
+  .catch(err => {
+    console.error("Fetch error:", err);
+    resultBox.textContent = "❌ Failed to load whale data.";
+  });
 
-        // ✅ Fix: force dropdown update
-        symbolSelect.dispatchEvent(new Event("change"));
-      });
+function updateOptions() {
+  const sym = symbolSelect.value;
+  const type = typeSelect.value;
+  const filtered = trades.filter(t => t.symbol === sym && t.type === type);
+  const strikes = [...new Set(filtered.map(t => t.strike))].sort((a, b) => a - b);
+  const exps = [...new Set(filtered.map(t => t.expiration))].sort();
 
-    function updateOptions() {
-      const sym = symbolSelect.value;
-      const type = typeSelect.value;
-      const filtered = trades.filter(t => t.symbol === sym && t.type === type);
-      const strikes = [...new Set(filtered.map(t => t.strike))].sort((a, b) => a - b);
-      const exps = [...new Set(filtered.map(t => t.expiration))].sort();
+  strikeSelect.innerHTML = "";
+  expirationSelect.innerHTML = "";
+  strikes.forEach(s => strikeSelect.appendChild(new Option(`$${s}`, s)));
+  exps.forEach(e => expirationSelect.appendChild(new Option(e, e)));
+}
 
-      strikeSelect.innerHTML = "";
-      expirationSelect.innerHTML = "";
-      strikes.forEach(s => strikeSelect.appendChild(new Option(`$${s}`, s)));
-      exps.forEach(e => expirationSelect.appendChild(new Option(e, e)));
-    }
+symbolSelect.addEventListener("change", updateOptions);
+typeSelect.addEventListener("change", updateOptions);
 
-    symbolSelect.addEventListener("change", updateOptions);
-    typeSelect.addEventListener("change", updateOptions);
+function simulateTrade() {
+  const sym = symbolSelect.value;
+  const type = typeSelect.value;
+  const strike = parseFloat(strikeSelect.value);
+  const exp = expirationSelect.value;
 
-    function simulateTrade() {
-      const sym = symbolSelect.value;
-      const type = typeSelect.value;
-      const strike = parseFloat(strikeSelect.value);
-      const exp = expirationSelect.value;
+  if (!sym || !type || !strike || !exp) {
+    resultBox.innerHTML = "⚠️ Please complete all fields.";
+    return;
+  }
 
-      if (!sym || !type || !strike || !exp) {
-        resultBox.innerHTML = "⚠️ Please complete all fields.";
-        return;
-      }
+  const match = trades.find(t =>
+    t.symbol === sym &&
+    t.type === type &&
+    t.strike == strike &&
+    t.expiration === exp
+  );
 
-      const match = trades.find(t =>
-        t.symbol === sym &&
-        t.type === type &&
-        t.strike == strike &&
-        t.expiration === exp
-      );
+  if (!match) {
+    resultBox.innerHTML = "❌ No matching trade found.";
+    return;
+  }
 
-      if (!match) {
-        resultBox.innerHTML = "❌ No matching trade found.";
-        return;
-      }
+  const premium = Number(match.premium);
+  const breakeven = type === "CALL" ? strike + premium : strike - premium;
+  const maxGain = type === "CALL" ? "Unlimited" : (premium * 100).toFixed(2);
+  const maxLoss = type === "CALL"
+    ? (premium * 100).toFixed(2)
+    : ((strike - 0) * 100 - premium * 100).toFixed(2);
 
-      const premium = Number(match.premium);
-      const breakeven = type === "CALL" ? strike + premium : strike - premium;
-      const maxGain = type === "CALL" ? "Unlimited" : (premium * 100).toFixed(2);
-      const maxLoss = type === "CALL"
-        ? (premium * 100).toFixed(2)
-        : ((strike - 0) * 100 - premium * 100).toFixed(2);
+  resultBox.innerHTML = `
+    ✅ <strong>${sym} ${type}</strong><br>
+    Strike: $${strike} | Exp: ${exp}<br>
+    Premium: $${premium.toFixed(2)} | Breakeven: $${breakeven.toFixed(2)}<br><br>
+    💵 Max Gain: ${maxGain} <br>
+    💣 Max Loss: $${maxLoss}
+    ${isPremium() ? "<br><br>💾 Trade saved to your Whisper+ history." : ""}
+  `;
 
-      resultBox.innerHTML = `
-        ✅ <strong>${sym} ${type}</strong><br>
-        Strike: $${strike} | Exp: ${exp}<br>
-        Premium: $${premium.toFixed(2)} | Breakeven: $${breakeven.toFixed(2)}<br><br>
-        💵 Max Gain: ${maxGain} <br>
-        💣 Max Loss: $${maxLoss}
-        ${isPremium() ? "<br><br>💾 Trade saved to your Whisper+ history." : ""}
-      `;
+  drawChart(strike, premium, type);
+  document.getElementById("chartSection").classList.remove("hidden");
 
-      drawChart(strike, premium, type);
-      document.getElementById("chartSection").classList.remove("hidden");
+  if (isPremium()) saveTrade(sym, type, strike, exp, premium);
+  history.replaceState(null, "", `?symbol=${sym}&type=${type}&strike=${strike}&expiration=${exp}`);
+}
 
-      if (isPremium()) saveTrade(sym, type, strike, exp, premium);
-      history.replaceState(null, "", `?symbol=${sym}&type=${type}&strike=${strike}&expiration=${exp}`);
-    }
-
-    function drawChart(strike, premium, type) {
-      const x = [], y = [];
-      for (let p = strike - 30; p <= strike + 30; p += 2) {
-        x.push(p);
-        let pl = 0;
-        if (type === "CALL") pl = (p > strike ? (p - strike) * 100 : 0) - premium * 100;
-        else pl = (p < strike ? (strike - p) * 100 : 0) - premium * 100;
-        y.push(pl);
-      }
-      if (chart) chart.destroy();
-      chart = new Chart(document.getElementById("profitChart"), {
-        type: "line",
-        data: {
-          labels: x,
-          datasets: [{
-            label: "P/L ($)",
-            data: y,
-            borderColor: "#00ffee",
-            tension: 0.3
-          }]
-        },
-        options: {
-          responsive: true,
-          plugins: {
-            legend: { display: false },
-            tooltip: {
-              callbacks: { label: ctx => `$${ctx.raw.toFixed(2)}` }
-            }
-          },
-          scales: {
-            x: { title: { display: true, text: "Price at Expiration" } },
-            y: { title: { display: true, text: "Profit/Loss" } }
-          }
+function drawChart(strike, premium, type) {
+  const x = [], y = [];
+  for (let p = strike - 30; p <= strike + 30; p += 2) {
+    x.push(p);
+    let pl = 0;
+    if (type === "CALL") pl = (p > strike ? (p - strike) * 100 : 0) - premium * 100;
+    else pl = (p < strike ? (strike - p) * 100 : 0) - premium * 100;
+    y.push(pl);
+  }
+  if (chart) chart.destroy();
+  chart = new Chart(document.getElementById("profitChart"), {
+    type: "line",
+    data: {
+      labels: x,
+      datasets: [{
+        label: "P/L ($)",
+        data: y,
+        borderColor: "#00ffee",
+        tension: 0.3
+      }]
+    },
+    options: {
+      responsive: true,
+      plugins: {
+        legend: { display: false },
+        tooltip: {
+          callbacks: { label: ctx => `$${ctx.raw.toFixed(2)}` }
         }
-      });
+      },
+      scales: {
+        x: { title: { display: true, text: "Price at Expiration" } },
+        y: { title: { display: true, text: "Profit/Loss" } }
+      }
     }
+  });
+}
 
-    function resetForm() {
-      symbolSelect.value = "";
-      typeSelect.value = "CALL";
-      strikeSelect.innerHTML = "";
-      expirationSelect.innerHTML = "";
-      resultBox.innerHTML = "📈 Select options and click Simulate.";
-      if (chart) chart.destroy();
-      document.getElementById("chartSection").classList.add("hidden");
-    }
+function resetForm() {
+  symbolSelect.value = "";
+  typeSelect.value = "CALL";
+  strikeSelect.innerHTML = "";
+  expirationSelect.innerHTML = "";
+  resultBox.innerHTML = "📈 Select options and click Simulate.";
+  if (chart) chart.destroy();
+  document.getElementById("chartSection").classList.add("hidden");
+}
 
-    function toggleTheme() {
-      document.body.classList.toggle("dark");
-    }
+function toggleTheme() {
+  document.body.classList.toggle("dark");
+}
 
-    function showModal() {
-      document.getElementById("whisperModal").style.display = "flex";
-    }
+function showModal() {
+  document.getElementById("whisperModal").style.display = "flex";
+}
 
-    function closeModal() {
-      document.getElementById("whisperModal").style.display = "none";
-    }
+function closeModal() {
+  document.getElementById("whisperModal").style.display = "none";
+}
 
-    function unlockPremium(e) {
-      e.preventDefault();
-      localStorage.setItem("whisperPlus", "true");
-      closeModal();
-      alert("✅ Whisper+ unlocked!");
-      return false;
-    }
+function unlockPremium(e) {
+  e.preventDefault();
+  localStorage.setItem("whisperPlus", "true");
+  closeModal();
+  alert("✅ Whisper+ unlocked!");
+  return false;
+}
 
-    function saveTrade(symbol, type, strike, exp, premium) {
-      const history = JSON.parse(localStorage.getItem("whisperTrades") || "[]");
-      history.push({ symbol, type, strike, exp, premium, date: new Date().toISOString() });
-      localStorage.setItem("whisperTrades", JSON.stringify(history));
-    }
-  </script>
+function saveTrade(symbol, type, strike, exp, premium) {
+  const history = JSON.parse(localStorage.getItem("whisperTrades") || "[]");
+  history.push({ symbol, type, strike, exp, premium, date: new Date().toISOString() });
+  localStorage.setItem("whisperTrades", JSON.stringify(history));
+}
+</script>
 </body>
 </html>
