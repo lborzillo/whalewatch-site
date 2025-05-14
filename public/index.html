@@ -2,171 +2,203 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>WhaleWatch | Simulator</title>
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>WhaleWatch | Home</title>
   <style>
-    :root {
-      --bg: #001d2d;
-      --text: #ffffff;
-      --accent: #00ffee;
-      --box: #002b3f;
-    }
     body {
-      background-color: var(--bg);
-      color: var(--text);
       font-family: 'Segoe UI', sans-serif;
+      background-color: #001d2d;
+      color: white;
       margin: 0;
       padding: 0;
     }
     nav {
       background-color: #001520;
-      padding: 1rem;
+      padding: 1em;
+      text-align: center;
+      display: flex;
+      justify-content: center;
+      gap: 1em;
+      flex-wrap: wrap;
+    }
+    nav a {
+      color: #00ffee;
+      font-weight: bold;
+      text-decoration: none;
+    }
+    .hero {
+      text-align: center;
+      padding: 4em 2em 2em;
+      background-color: #002b3f;
+    }
+    .whale-hero {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    .homepage-logo {
+      width: 100px;
+      height: auto;
+      margin-bottom: 1rem;
+      filter: drop-shadow(0 0 10px #00ffee);
+    }
+    .hero h1 {
+      font-size: 3em;
+      color: #00ffee;
+      margin-bottom: 0.3em;
+    }
+    .hero p {
+      font-size: 1.2em;
+      color: #ccc;
+    }
+    .section {
+      max-width: 800px;
+      margin: 3em auto;
+      padding: 2em;
+    }
+    .section h2 {
+      color: #00ffee;
+      margin-bottom: 0.5em;
+    }
+    .whale-meter-container {
+      background-color: #003850;
+      border-radius: 6px;
+      overflow: hidden;
+      height: 30px;
+      margin-bottom: 1em;
+    }
+    .whale-meter-fill {
+      background-color: #00ffee;
+      height: 100%;
+      width: 0;
+      transition: width 2s ease-in-out;
+    }
+    .whale-meter-flex {
       display: flex;
       justify-content: space-between;
       align-items: center;
+      flex-wrap: wrap;
+      gap: 1em;
+      margin-bottom: 1em;
     }
-    nav h1 {
-      margin: 0;
-      font-size: 1.8rem;
-      color: var(--accent);
-    }
-    nav a {
-      text-decoration: none;
-      color: #ffffff;
+    .whale-meter-text {
       font-weight: bold;
-      background-color: #005580;
-      padding: 0.5rem 1rem;
-      border-radius: 8px;
-      transition: background-color 0.3s;
+      color: #00ffee;
+      font-size: 1.1em;
     }
-    nav a:hover {
-      background-color: #0077a3;
+    .timestamp {
+      font-size: 0.9em;
+      color: #aaa;
     }
-    .whale-link {
-      display: flex;
-      align-items: center;
-      gap: 0.5rem;
+    .sentiment-bar {
+      background-color: #00425f;
+      border-radius: 6px;
+      height: 20px;
+      overflow: hidden;
+      margin-top: 10px;
     }
-    .whale-icon {
-      width: 40px;
-      height: auto;
+    .sentiment-fill-bullish {
+      background-color: #00ff88;
+      height: 100%;
+      width: 0;
+      float: left;
+      transition: width 1.5s ease-in-out;
     }
-    main {
-      padding: 2rem;
-      text-align: center;
-    }
-    h2 {
-      font-size: 2rem;
-      margin-bottom: 1rem;
-      color: var(--accent);
-    }
-    select, input, button {
-      padding: 0.6em;
-      margin: 0.5em;
-      font-size: 1em;
-      border-radius: 8px;
-      border: 1px solid var(--accent);
-      background: var(--box);
-      color: var(--text);
-    }
-    button {
-      cursor: pointer;
-      transition: background 0.3s;
-    }
-    button:hover {
-      background-color: #004c60;
-    }
-    .result-box {
-      background: var(--box);
-      color: var(--text);
-      padding: 1.5em;
-      margin-top: 2em;
-      border-radius: 12px;
-      border: 2px solid var(--accent);
-      box-shadow: 0 0 10px var(--accent);
-    }
-    .chart-container {
-      max-width: 600px;
-      margin: 2em auto;
-    }
-    .whisper-modal {
-      display: none;
-      position: fixed;
-      top: 0; left: 0;
-      width: 100%; height: 100%;
-      background: rgba(0,0,0,0.8);
-      justify-content: center;
-      align-items: center;
-      z-index: 999;
-    }
-    .modal-content {
-      background: var(--bg);
-      color: var(--text);
-      padding: 2em;
-      border-radius: 12px;
-      max-width: 400px;
-      width: 90%;
-      box-shadow: 0 0 15px var(--accent);
-      text-align: left;
-    }
-    .modal-content input,
-    .modal-content button {
-      width: 100%;
-      margin-top: 1em;
-    }
-    .close-modal {
-      background: #e74c3c;
-      color: #fff;
-      float: right;
-      border: none;
-      padding: 0.4em 0.8em;
-      border-radius: 8px;
-    }
-    .advanced-link {
-      display: block;
-      margin-top: 2em;
-      font-weight: bold;
-      color: var(--accent);
-      text-decoration: underline;
+    .sentiment-fill-bearish {
+      background-color: #ff0044;
+      height: 100%;
+      width: 0;
+      float: left;
+      transition: width 1.5s ease-in-out;
     }
   </style>
 </head>
 <body>
+  <div id="liveClockBanner">🕒 Market Clock: <span id="liveClock">Loading...</span></div>
   <nav>
-    <div class="whale-link">
-      <img src="/images/whale-whispers.png" alt="Whale Logo" class="whale-icon">
-      <a href="/index.html">Back to WhaleWatch</a>
-    </div>
-    <h1>Options Trade Simulator</h1>
+    <a href="index.html">Home</a>
+    <a href="learn.html">Learn</a>
+    <a href="simulate.html">Simulate</a>
+    <a href="whisper.html">Whispers</a>
   </nav>
-  <main>
-    <h2>Simulate a Whale Trade</h2>
-    <select id="symbolSelect"><option value="">Loading symbols...</option></select>
-    <select id="typeSelect"><option value="CALL">CALL</option><option value="PUT">PUT</option></select>
-    <select id="strikeSelect"></select>
-    <select id="expirationSelect"></select>
-    <div>
-      <button onclick="simulateTrade()">Simulate</button>
-      <button onclick="resetForm()">Reset</button>
-      <button onclick="showModal()">Unlock Whisper+</button>
+  <div class="hero whale-hero">
+    <img src="/images/whale-whispers.png" alt="WhaleWatch Logo" class="homepage-logo">
+    <h1>WhaleWatch.Trade</h1>
+    <p>Real-time sonar on big money moves.</p>
+  </div>
+  <div class="section">
+    <h2>🌊 Whale Meter</h2>
+    <div class="whale-meter-container">
+      <div id="whaleFill" class="whale-meter-fill"></div>
     </div>
-    <div id="resultBox" class="result-box">📈 Select options and click Simulate.</div>
-    <div class="chart-container" id="chartSection">
-      <canvas id="profitChart" width="400" height="200"></canvas>
-    </div>
-    <a class="advanced-link" href="/whisper.html">🔍 View My Whisper Trades</a>
-  </main>
-  <div class="whisper-modal" id="whisperModal">
-    <div class="modal-content">
-      <button class="close-modal" onclick="closeModal()">X</button>
-      <h2>Upgrade to Whisper+</h2>
-      <form onsubmit="return unlockPremium(event)">
-        <label>Email to unlock premium features:</label>
-        <input type="email" required />
-        <button type="submit">🚀 Upgrade & Unlock</button>
-      </form>
+    <div class="whale-meter-flex">
+      <div id="whaleMeterText" class="whale-meter-text">Loading...</div>
+      <div id="whaleTimestamp" class="timestamp">Loading...</div>
     </div>
   </div>
+  <div class="section">
+    <h2>📈 Bullish vs. Bearish Sentiment</h2>
+    <div class="sentiment-bar">
+      <div id="bullFill" class="sentiment-fill-bullish"></div>
+      <div id="bearFill" class="sentiment-fill-bearish"></div>
+    </div>
+    <div id="sentimentLabel" class="whale-meter-text" style="margin-top: 10px;">Loading...</div>
+  </div>
+  <div class="section">
+    <h2>📊 Latest Whale Trades</h2>
+    <div id="whaleList">Loading...</div>
+  </div>
+  <script>
+    function updateLiveClock() {
+      const now = new Date();
+      document.getElementById("liveClock").textContent = now.toLocaleTimeString();
+    }
+    setInterval(updateLiveClock, 1000);
+    updateLiveClock();
+
+    function updateWhaleData() {
+      fetch("whales.json")
+        .then(res => res.json())
+        .then(data => {
+          const trades = data.whale_trades;
+          document.getElementById("whaleList").innerHTML = trades.slice(0, 5).map(t => `
+            <div style="background:#003850; padding:1em; margin:1em 0; border-radius:8px">
+              <strong>${t.symbol}</strong> — ${t.type}<br>
+              Strike: $${t.strike}, Exp: ${t.expiration}, Premium: $${Number(t.premium).toFixed(2)}
+            </div>
+          `).join("");
+
+          const totalPremium = trades.reduce((sum, t) => sum + Number(t.premium) * 10000, 0);
+          document.getElementById("whaleMeterText").textContent =
+            `Total Premium Traded: $${totalPremium.toLocaleString()}`;
+
+          const percent = Math.min((totalPremium / 1000000) * 100, 100);
+          const whaleFill = document.getElementById("whaleFill");
+          whaleFill.style.width = percent + "%";
+          whaleFill.style.backgroundColor =
+            percent >= 90 ? "#ff0044" :
+            percent >= 60 ? "#ffaa00" :
+            percent >= 30 ? "#00ffee" : "#005577";
+
+          const bullishCount = trades.filter(t => t.type === "CALL").length;
+          const bearishCount = trades.filter(t => t.type === "PUT").length;
+          const totalCount = bullishCount + bearishCount;
+          const bullishPct = totalCount > 0 ? (bullishCount / totalCount) * 100 : 50;
+          const bearishPct = 100 - bullishPct;
+
+          document.getElementById("bullFill").style.width = `${bullishPct}%`;
+          document.getElementById("bearFill").style.width = `${bearishPct}%`;
+          document.getElementById("sentimentLabel").textContent =
+            `🐂 Bullish: ${bullishPct.toFixed(1)}% | 🐻 Bearish: ${bearishPct.toFixed(1)}%`;
+
+          const ts = new Date(data.timestamp);
+          document.getElementById("whaleTimestamp").textContent =
+            `Last updated: ${ts.toLocaleString()}`;
+        });
+    }
+
+    updateWhaleData();
+    setInterval(updateWhaleData, 60000);
+  </script>
 </body>
 </html>
