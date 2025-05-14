@@ -115,11 +115,8 @@
 <body>
   <h1>🎯 Options Trade Simulator</h1>
 
-  <select id="symbolSelect"></select>
-  <select id="typeSelect">
-    <option value="CALL">CALL</option>
-    <option value="PUT">PUT</option>
-  </select>
+  <select id="symbolSelect"><option value="">Loading symbols...</option></select>
+  <select id="typeSelect"><option value="CALL">CALL</option><option value="PUT">PUT</option></select>
   <select id="strikeSelect"></select>
   <select id="expirationSelect"></select>
 
@@ -140,84 +137,82 @@
     <div class="modal-content">
       <button class="close-modal" onclick="closeModal()">X</button>
       <h2>Upgrade to Whisper+</h2>
-      <p>🔍 Unlock advanced simulations</p>
-      <p>📈 Dark pool sentiment analysis</p>
-      <p>📦 Save and track your trades</p>
-      <input type="email" placeholder="Enter your email" />
+      <p>🔍 Unlock dark pool sentiment</p>
+      <p>📈 Save & share simulated trades</p>
+      <input type="email" placeholder="Enter your email to upgrade" />
       <button style="margin-top: 1em;">🚀 Upgrade Now</button>
     </div>
   </div>
 
   <script>
-    const whales = [
-      { symbol: "NVDA", strike: 120, type: "CALL", expiration: "2025-06-21", premium: 3.55 },
-      { symbol: "AAPL", strike: 190, type: "CALL", expiration: "2025-06-14", premium: 2.44 },
-      { symbol: "TSLA", strike: 250, type: "PUT", expiration: "2025-07-01", premium: 5.60 },
-      { symbol: "MSFT", strike: 330, type: "CALL", expiration: "2025-05-31", premium: 3.22 }
-    ];
-
+    const symbolEl = document.getElementById("symbolSelect");
+    const typeEl = document.getElementById("typeSelect");
+    const strikeEl = document.getElementById("strikeSelect");
+    const expEl = document.getElementById("expirationSelect");
+    const resultBox = document.getElementById("resultBox");
     let chart;
+    let trades = [];
 
-    const select = id => document.getElementById(id);
-
-    function populateDropdowns() {
-      const symbols = [...new Set(whales.map(w => w.symbol))];
-      symbols.forEach(s => {
-        const option = document.createElement("option");
-        option.text = s;
-        option.value = s;
-        select("symbolSelect").appendChild(option);
+    fetch("whales.json")
+      .then(res => res.json())
+      .then(data => {
+        trades = data.whale_trades;
+        const symbols = [...new Set(trades.map(t => t.symbol))];
+        symbolEl.innerHTML = '<option value="">Select symbol</option>';
+        symbols.forEach(s => {
+          const opt = document.createElement("option");
+          opt.value = s;
+          opt.textContent = s;
+          symbolEl.appendChild(opt);
+        });
       });
-    }
 
     function updateOptions() {
-      const symbol = select("symbolSelect").value;
-      const type = select("typeSelect").value;
+      const sym = symbolEl.value;
+      const type = typeEl.value;
+      const matches = trades.filter(t => t.symbol === sym && t.type === type);
+      const strikes = [...new Set(matches.map(t => t.strike))].sort((a, b) => a - b);
+      const exps = [...new Set(matches.map(t => t.expiration))].sort();
 
-      const filtered = whales.filter(w => w.symbol === symbol && w.type === type);
-
-      select("strikeSelect").innerHTML = "";
-      select("expirationSelect").innerHTML = "";
-
-      [...new Set(filtered.map(w => w.strike))].forEach(v => {
-        const o = new Option(v, v);
-        select("strikeSelect").appendChild(o);
-      });
-
-      [...new Set(filtered.map(w => w.expiration))].forEach(v => {
-        const o = new Option(v, v);
-        select("expirationSelect").appendChild(o);
-      });
+      strikeEl.innerHTML = '';
+      expEl.innerHTML = '';
+      strikes.forEach(s => strikeEl.appendChild(new Option(`$${s}`, s)));
+      exps.forEach(e => expEl.appendChild(new Option(e, e)));
     }
 
+    symbolEl.addEventListener("change", updateOptions);
+    typeEl.addEventListener("change", updateOptions);
+
     function simulateTrade() {
-      const symbol = select("symbolSelect").value;
-      const type = select("typeSelect").value;
-      const strike = parseFloat(select("strikeSelect").value);
-      const expiration = select("expirationSelect").value;
-
-      const match = whales.find(w =>
-        w.symbol === symbol &&
-        w.type === type &&
-        w.strike == strike &&
-        w.expiration === expiration
-      );
-
-      if (!match) {
-        select("resultBox").innerHTML = "⚠️ Incomplete or unmatched selection.";
+      const symbol = symbolEl.value;
+      const type = typeEl.value;
+      const strike = parseFloat(strikeEl.value);
+      const exp = expEl.value;
+      if (!symbol || !type || !strike || !exp) {
+        resultBox.innerHTML = "⚠️ Please complete all fields.";
         return;
       }
 
-      const premium = match.premium;
-      const result = select("resultBox");
-      const maxGain = type === "CALL" ? "Unlimited" : (premium * 100).toFixed(2);
-      const maxLoss = type === "CALL" ? (premium * 100).toFixed(2) : ((strike - 0) * 100 - premium * 100).toFixed(2);
-      const breakeven = type === "CALL" ? strike + premium : strike - premium;
+      const match = trades.find(t =>
+        t.symbol === symbol && t.type === type && t.strike == strike && t.expiration === exp
+      );
 
-      result.innerHTML = `
-        ✅ Trade: <strong>${symbol} ${type}</strong><br>
-        Strike: $${strike} | Exp: ${expiration}<br>
-        Premium: $${premium} | Breakeven: $${breakeven.toFixed(2)}<br><br>
+      if (!match) {
+        resultBox.innerHTML = "❌ No matching trade found.";
+        return;
+      }
+
+      const premium = Number(match.premium);
+      const breakeven = type === "CALL" ? strike + premium : strike - premium;
+      const maxGain = type === "CALL" ? "Unlimited" : (premium * 100).toFixed(2);
+      const maxLoss = type === "CALL"
+        ? (premium * 100).toFixed(2)
+        : ((strike - 0) * 100 - premium * 100).toFixed(2);
+
+      resultBox.innerHTML = `
+        ✅ <strong>${symbol} ${type}</strong><br>
+        Strike: $${strike} | Exp: ${exp}<br>
+        Premium: $${premium.toFixed(2)} | Breakeven: $${breakeven.toFixed(2)}<br><br>
         💵 Max Gain: ${maxGain} <br>
         💣 Max Loss: $${maxLoss}
       `;
@@ -226,55 +221,47 @@
     }
 
     function drawChart(strike, premium, type) {
-      const prices = [];
-      const profit = [];
-
+      const x = [];
+      const y = [];
       for (let p = strike - 30; p <= strike + 30; p += 2) {
-        prices.push(p);
+        x.push(p);
         let pl = 0;
-
         if (type === "CALL") {
           pl = (p > strike ? (p - strike) * 100 : 0) - premium * 100;
         } else {
           pl = (p < strike ? (strike - p) * 100 : 0) - premium * 100;
         }
-
-        profit.push(pl);
+        y.push(pl);
       }
 
       if (chart) chart.destroy();
 
       chart = new Chart(document.getElementById("profitChart"), {
-        type: 'line',
+        type: "line",
         data: {
-          labels: prices,
+          labels: x,
           datasets: [{
-            label: "Profit/Loss ($)",
-            data: profit,
+            label: "P/L ($)",
+            data: y,
             borderColor: "#00ffee",
             tension: 0.3
           }]
         },
         options: {
-          responsive: true,
-          plugins: {
-            legend: { display: false },
-            tooltip: { callbacks: { label: ctx => `$${ctx.raw.toFixed(2)}` } }
-          },
           scales: {
-            x: { title: { display: true, text: "Stock Price at Expiration" } },
-            y: { title: { display: true, text: "P/L ($)" } }
+            x: { title: { display: true, text: "Stock Price at Expiration" }},
+            y: { title: { display: true, text: "Profit/Loss" }}
           }
         }
       });
     }
 
     function resetForm() {
-      select("symbolSelect").value = "";
-      select("typeSelect").value = "CALL";
-      select("strikeSelect").innerHTML = "";
-      select("expirationSelect").innerHTML = "";
-      select("resultBox").innerHTML = "📈 Select options and click Simulate.";
+      symbolEl.value = "";
+      typeEl.value = "CALL";
+      strikeEl.innerHTML = "";
+      expEl.innerHTML = "";
+      resultBox.innerHTML = "📈 Select options and click Simulate.";
       if (chart) chart.destroy();
     }
 
@@ -283,17 +270,12 @@
     }
 
     function showModal() {
-      select("whisperModal").style.display = "flex";
+      document.getElementById("whisperModal").style.display = "flex";
     }
 
     function closeModal() {
-      select("whisperModal").style.display = "none";
+      document.getElementById("whisperModal").style.display = "none";
     }
-
-    // Populate on load + bind
-    populateDropdowns();
-    select("symbolSelect").addEventListener("change", updateOptions);
-    select("typeSelect").addEventListener("change", updateOptions);
   </script>
 </body>
 </html>
