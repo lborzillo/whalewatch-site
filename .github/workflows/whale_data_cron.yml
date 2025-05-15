@@ -13,7 +13,7 @@ jobs:
       - name: Checkout repo with full history
         uses: actions/checkout@v3
         with:
-          fetch-depth: 0  # FULL git history to enable pull/rebase
+          fetch-depth: 0
 
       - name: Set up Python
         uses: actions/setup-python@v4
@@ -34,5 +34,4 @@ jobs:
           git config user.email "github-actions@github.com"
           git add public/whales.json
           git commit -m "🔁 Update public/whales.json with live data" || echo "No changes to commit"
-          git pull --rebase
-          git push
+          git push --force
