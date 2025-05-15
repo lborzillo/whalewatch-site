@@ -197,7 +197,7 @@
     updateLiveClock();
 
     function updateWhaleData() {
-      fetch("whales.json")
+      fetch("/whales.json")
         .then(res => res.json())
         .then(data => {
           const trades = data.whale_trades || [];
