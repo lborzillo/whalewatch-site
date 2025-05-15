@@ -80,6 +80,7 @@
       overflow: hidden;
       height: 30px;
       margin-bottom: 1em;
+      position: relative;
     }
     .whale-meter-fill {
       background-color: #00ffee;
@@ -87,13 +88,22 @@
       width: 0;
       transition: width 2s ease-in-out;
     }
+    .whale-meter-label {
+      position: absolute;
+      width: 100%;
+      text-align: center;
+      font-weight: bold;
+      line-height: 30px;
+      color: #ffffff;
+      pointer-events: none;
+    }
     .whale-meter-flex {
       display: flex;
       justify-content: space-between;
       align-items: center;
       flex-wrap: wrap;
       gap: 1em;
-      margin-bottom: 1em;
+      margin-bottom: 0.5em;
     }
     .whale-meter-text {
       font-weight: bold;
@@ -146,12 +156,16 @@
     <h2>🌊 Whale Meter</h2>
     <div class="whale-meter-container">
       <div id="whaleFill" class="whale-meter-fill"></div>
+      <div id="whaleMeterLabel" class="whale-meter-label">Loading...</div>
     </div>
     <div class="whale-meter-flex">
       <div id="whaleMeterText" class="whale-meter-text">Loading...</div>
       <div id="whaleTimestamp" class="timestamp">Loading...</div>
     </div>
-    <p style="font-size: 0.95em; color: #aaa; margin-top: -1em; margin-bottom: 2em;">
+    <p style="font-size: 0.9em; color: #aaa; margin-top: -0.5em;">
+      <em>🟢 Green = Bullish (Calls) • 🔴 Red = Bearish (Puts) • 🎨 Gradient = Mixed Premium Flow</em>
+    </p>
+    <p style="font-size: 0.95em; color: #aaa; margin-top: 1em;">
       <em>The Whale Meter shows where the most capital is currently concentrated in the options market, based on open interest and last traded price. These are not necessarily trades placed today, but represent the largest active bets for the nearest expiration.</em>
     </p>
   </div>
@@ -202,19 +216,24 @@
           document.getElementById("whaleMeterText").textContent =
             `Total Premium Traded: $${(totalPremium * 10000).toLocaleString()}`;
 
-          const percent = Math.min((totalPremium * 10000 / 1000000) * 100, 100);
-          const whaleFill = document.getElementById("whaleFill");
-          whaleFill.style.width = percent + "%";
-          whaleFill.style.backgroundColor =
-            percent >= 90 ? "#ff0044" :
-            percent >= 60 ? "#ffaa00" :
-            percent >= 30 ? "#00ffee" : "#005577";
-
           const bullishCount = trades.filter(t => t.type === "CALL").length;
           const bearishCount = trades.filter(t => t.type === "PUT").length;
           const totalCount = bullishCount + bearishCount;
           const bullishPct = totalCount > 0 ? (bullishCount / totalCount) * 100 : 50;
           const bearishPct = 100 - bullishPct;
+
+          // Whale Meter fill
+          const whaleFill = document.getElementById("whaleFill");
+          whaleFill.style.width = Math.min((totalPremium * 10000 / 1000000) * 100, 100) + "%";
+          whaleFill.style.backgroundColor =
+            bullishPct >= 70 ? "#00ff88" :
+            bearishPct >= 70 ? "#ff0044" :
+            "linear-gradient(to right, #00ff88, #ffaa00, #ff0044)";
+          
+          document.getElementById("whaleMeterLabel").textContent =
+            bullishPct >= 70 ? "🐂 Whale Sentiment: Bullish" :
+            bearishPct >= 70 ? "🐻 Whale Sentiment: Bearish" :
+            "🎣 Whale Sentiment: Mixed";
 
           document.getElementById("bullFill").style.width = `${bullishPct}%`;
           document.getElementById("bearFill").style.width = `${bearishPct}%`;
