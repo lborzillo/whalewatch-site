@@ -13,7 +13,7 @@ jobs:
       - name: Checkout repo with full history
         uses: actions/checkout@v3
         with:
-          fetch-depth: 0  # Required to allow git pull/push
+          fetch-depth: 0
 
       - name: Set up Python
         uses: actions/setup-python@v4
@@ -32,7 +32,7 @@ jobs:
         run: |
           git config user.name "github-actions"
           git config user.email "github-actions@github.com"
-          git checkout main
+          git switch -C main
           git add public/whales.json
           git commit -m "🔁 Update public/whales.json with live data" || echo "No changes to commit"
-          git push --force
+          git push origin main --force
