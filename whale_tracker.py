@@ -14,11 +14,21 @@ def fetch_whale_trades(symbol, expiration_index=0):
     nearest_exp = expiration_dates[expiration_index]
     chain = ticker.option_chain(nearest_exp)
 
+    # Get live stock price
+    last_price = ticker.history(period="1d")["Close"].iloc[-1]
+
     all_options = pd.concat([
         chain.calls.assign(type='CALL'),
         chain.puts.assign(type='PUT')
     ])
 
+    # Filter unrealistic strikes (±50% of current price)
+    all_options = all_options[
+        (all_options['strike'] >= 0.5 * last_price) &
+        (all_options['strike'] <= 1.5 * last_price)
+    ]
+
+    # Calculate premium
     all_options['premium'] = all_options['openInterest'] * all_options['lastPrice']
     all_options = all_options.dropna(subset=['strike', 'premium'])
 
@@ -56,6 +66,5 @@ if __name__ == "__main__":
         except Exception as e:
             print(f"⚠️ Failed to fetch for {sym}: {e}")
 
-    # Sort all trades by premium and take top 10
     top_whales = sorted(all_trades, key=lambda x: x['premium'], reverse=True)[:10]
     save_whales_json(top_whales)
