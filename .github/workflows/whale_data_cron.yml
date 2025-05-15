@@ -2,7 +2,7 @@ name: Daily Whale Tracker
 
 on:
   schedule:
-    - cron: '0 12 * * *'  # Runs daily at 12:00 UTC
+    - cron: '0 12 * * *'
   workflow_dispatch:
 
 jobs:
@@ -34,7 +34,4 @@ jobs:
           git config user.email "github-actions@github.com"
           git add public/whales.json
           git commit -m "🔁 Update public/whales.json with live data" || echo "No changes to commit"
-          git stash
-          git pull origin main --rebase
-          git stash pop || true
-          git push origin main
+          git push origin HEAD:main --force
