@@ -151,6 +151,9 @@
       <div id="whaleMeterText" class="whale-meter-text">Loading...</div>
       <div id="whaleTimestamp" class="timestamp">Loading...</div>
     </div>
+    <p style="font-size: 0.95em; color: #aaa; margin-top: -1em; margin-bottom: 2em;">
+      <em>The Whale Meter shows where the most capital is currently concentrated in the options market, based on open interest and last traded price. These are not necessarily trades placed today, but represent the largest active bets for the nearest expiration.</em>
+    </p>
   </div>
   <div class="section">
     <h2>📈 Bullish vs. Bearish Sentiment</h2>
@@ -163,7 +166,13 @@
   <div class="section">
     <h2>📊 Latest Whale Trades</h2>
     <div id="whaleList">Loading...</div>
-    <p style="margin-top: 1em; color: #aaa;"><em>Want to simulate your own trades based on this flow? <a href="simulate.html" style="color: #00ffee; font-weight: bold;">Try the Premium Harvesting Simulator →</a></em></p>
+    <p style="font-size: 0.95em; color: #aaa; margin-top: 0.5em;">
+      <em>These are the top 5 high-premium options positions open right now — filtered by size, strike, and expiration. While they may not all be from today, they reflect the biggest current open interest whales are riding.</em>
+    </p>
+    <p style="margin-top: 1em; color: #aaa;">
+      <em>Want to simulate your own trades based on this flow? 
+      <a href="simulate.html" style="color: #00ffee; font-weight: bold;">Try the Premium Harvesting Simulator →</a></em>
+    </p>
   </div>
   <script>
     function updateLiveClock() {
@@ -177,7 +186,11 @@
       fetch("whales.json")
         .then(res => res.json())
         .then(data => {
-          const trades = data.whale_trades;
+          const trades = data.whale_trades || [];
+          const ts = new Date(data.timestamp);
+          document.getElementById("whaleTimestamp").textContent =
+            `Last updated: ${ts.toLocaleString()}`;
+
           document.getElementById("whaleList").innerHTML = trades.slice(0, 5).map(t => `
             <div style="background:#003850; padding:1em; margin:1em 0; border-radius:8px">
               <strong>${t.symbol}</strong> — ${t.type}<br>
@@ -185,11 +198,11 @@
             </div>
           `).join("");
 
-          const totalPremium = trades.reduce((sum, t) => sum + Number(t.premium) * 10000, 0);
+          const totalPremium = trades.reduce((sum, t) => sum + Number(t.premium), 0);
           document.getElementById("whaleMeterText").textContent =
-            `Total Premium Traded: $${totalPremium.toLocaleString()}`;
+            `Total Premium Traded: $${(totalPremium * 10000).toLocaleString()}`;
 
-          const percent = Math.min((totalPremium / 1000000) * 100, 100);
+          const percent = Math.min((totalPremium * 10000 / 1000000) * 100, 100);
           const whaleFill = document.getElementById("whaleFill");
           whaleFill.style.width = percent + "%";
           whaleFill.style.backgroundColor =
@@ -207,10 +220,10 @@
           document.getElementById("bearFill").style.width = `${bearishPct}%`;
           document.getElementById("sentimentLabel").textContent =
             `🐂 Bullish: ${bullishPct.toFixed(1)}% | 🐻 Bearish: ${bearishPct.toFixed(1)}%`;
-
-          const ts = new Date(data.timestamp);
-          document.getElementById("whaleTimestamp").textContent =
-            `Last updated: ${ts.toLocaleString()}`;
+        })
+        .catch(err => {
+          console.error("Failed to fetch whale data:", err);
+          document.getElementById("whaleTimestamp").textContent = "Failed to load whale data.";
         });
     }
 
