@@ -1,0 +1,11 @@
+{
+  "updated": "2025-05-15T18:00:00Z",
+  "daily_sentiment": [
+    { "date": "2025-05-10", "bullish": 70, "bearish": 30 },
+    { "date": "2025-05-11", "bullish": 65, "bearish": 35 },
+    { "date": "2025-05-12", "bullish": 80, "bearish": 20 },
+    { "date": "2025-05-13", "bullish": 75, "bearish": 25 },
+    { "date": "2025-05-14", "bullish": 85, "bearish": 15 },
+    { "date": "2025-05-15", "bullish": 90, "bearish": 10 }
+  ]
+}
