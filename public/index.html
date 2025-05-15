@@ -103,14 +103,14 @@
       font-size: 0.9em;
       color: #aaa;
     }
-    .sentiment-bar {
+    .sentiment-bar, .sentiment-timeline-bar {
       background-color: #00425f;
       border-radius: 6px;
       height: 20px;
       overflow: hidden;
       margin-top: 10px;
     }
-    .sentiment-fill-bullish {
+    .sentiment-fill-bullish, .sentiment-bar-fill {
       background-color: #00ff88;
       height: 100%;
       width: 0;
@@ -152,8 +152,12 @@
     #whaleBotBox li {
       margin-bottom: 0.4em;
     }
+    .sentiment-tip {
+      font-style: italic;
+      color: #aaa;
+      margin-top: 0.5em;
+    }
   </style>
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
   <div id="liveClockBanner">🕒 Market Clock: <span id="liveClock">Loading...</span></div>
@@ -180,10 +184,8 @@
       <div id="whaleMeterText" class="whale-meter-text">Loading...</div>
       <div id="whaleTimestamp" class="timestamp">Loading...</div>
     </div>
-    <p style="margin: 0.2em 0;"><span style="color: #00ff88;">🟢 Green = Bullish (Calls)</span> · <span style="color: #ff0044;">🔴 Red = Bearish (Puts)</span> · 🎨 Gradient = Mixed Premium Flow</p>
-    <p style="font-size: 0.95em; color: #aaa; margin-top: 0.5em;">
-      <em>The Whale Meter shows where the most capital is currently concentrated in the options market, based on open interest and last traded price. These are not necessarily trades placed today, but represent the largest active bets for the nearest expiration.</em>
-    </p>
+    <p><span style="color: #00ff88;">🟢 Green = Bullish (Calls)</span> · <span style="color: #ff0044;">🔴 Red = Bearish (Puts)</span> · 🎨 Gradient = Mixed Premium Flow</p>
+    <p style="font-size: 0.95em; color: #aaa;"><em>The Whale Meter shows where the most capital is currently concentrated in the options market, based on open interest and last traded price.</em></p>
   </div>
 
   <div class="section">
@@ -193,25 +195,19 @@
       <div id="bearFill" class="sentiment-fill-bearish"></div>
     </div>
     <div id="sentimentLabel" class="whale-meter-text" style="margin-top: 10px;">Loading...</div>
-    <p style="font-size: 0.95em; color: #aaa; margin-top: 0.4em;">
-      <em>This chart shows how many large option trades were bullish (calls) vs. bearish (puts). It helps gauge which direction the whales are leaning — not how much they spent, just how many bets were placed.</em>
-    </p>
+    <p class="sentiment-tip"><em>This chart shows how many large trades were calls vs. puts — not dollars, just number of trades.</em></p>
   </div>
 
   <div class="section">
     <h2>📉 Sentiment Timeline</h2>
-    <canvas id="sentimentChart" width="600" height="300"></canvas>
-    <p id="sentimentInsight" style="font-size: 0.95em; color: #aaa; margin-top: 0.5em;">
-      Loading insight...
-    </p>
+    <div class="sentiment-timeline-bar" id="sentimentTimeline"></div>
+    <p id="sentimentInsight" class="sentiment-tip">Loading whale confidence trend...</p>
   </div>
 
   <div class="section">
     <h2>📊 Latest Whale Trades</h2>
     <div id="whaleList">Loading...</div>
-    <p style="font-size: 0.95em; color: #aaa; margin-top: 0.5em;">
-      <em>These are the top 10 highest-premium options trades — filtered by size, strike, and expiration. Think of them as the largest foam trails left behind by whales. Watch for patterns and use them to guide your own simulated or real trades.</em>
-    </p>
+    <p style="font-size: 0.95em; color: #aaa;"><em>These are the top 10 highest-premium options trades — think of them as the largest foam trails left behind by whales.</em></p>
   </div>
 
   <div id="whaleBotBox">
@@ -240,8 +236,7 @@
         .then(data => {
           const trades = data.whale_trades || [];
           const ts = new Date(data.timestamp);
-          document.getElementById("whaleTimestamp").textContent =
-            `Last updated: ${ts.toLocaleString()}`;
+          document.getElementById("whaleTimestamp").textContent = `Last updated: ${ts.toLocaleString()}`;
 
           const listHTML = trades.map(t => `
             <div class="trade-card">
@@ -254,81 +249,50 @@
           const totalPremium = trades.reduce((sum, t) => sum + Number(t.premium), 0);
           document.getElementById("whaleMeterText").textContent =
             `Total Premium Traded: $${(totalPremium * 10000).toLocaleString()}`;
-
           const percent = Math.min((totalPremium * 10000 / 1000000) * 100, 100);
-          const whaleFill = document.getElementById("whaleFill");
-          whaleFill.style.width = percent + "%";
-          whaleFill.style.background = "linear-gradient(to right, #00ff88, #ffaa00, #ff0044)";
+          document.getElementById("whaleFill").style.width = percent + "%";
+          document.getElementById("whaleFill").style.background = "linear-gradient(to right, #00ff88, #ffaa00, #ff0044)";
 
           const bullishCount = trades.filter(t => t.type === "CALL").length;
           const bearishCount = trades.filter(t => t.type === "PUT").length;
           const totalCount = bullishCount + bearishCount;
           const bullishPct = totalCount > 0 ? (bullishCount / totalCount) * 100 : 50;
           const bearishPct = 100 - bullishPct;
-
           document.getElementById("bullFill").style.width = `${bullishPct}%`;
           document.getElementById("bearFill").style.width = `${bearishPct}%`;
           document.getElementById("sentimentLabel").textContent =
             `🐂 Bullish: ${bullishPct.toFixed(1)}% | 🐻 Bearish: ${bearishPct.toFixed(1)}%`;
-        })
-        .catch(err => {
-          console.error("Failed to fetch whale data:", err);
-          document.getElementById("whaleTimestamp").textContent = "Failed to load whale data.";
+        });
+    }
+
+    function updateSentimentTimeline() {
+      fetch("/sentiment.json")
+        .then(res => res.json())
+        .then(data => {
+          const timeline = data.sentiment_history || [];
+          const container = document.getElementById("sentimentTimeline");
+          const insight = document.getElementById("sentimentInsight");
+          if (timeline.length === 0) return;
+
+          const bars = timeline.map(day => {
+            return `<div style="float:left; width: 33%; background:#00ff88; height: 100%; opacity:${day.bullish_pct / 100};" title="${day.date}: ${day.bullish_pct.toFixed(1)}% bullish"></div>`;
+          }).join("");
+          container.innerHTML = bars;
+
+          const last = timeline[timeline.length - 1];
+          const prev = timeline[timeline.length - 2];
+          if (last && prev) {
+            const trend = last.bullish_pct > prev.bullish_pct
+              ? "The whales have been getting more confident. Watch for foam buildup before a possible wave."
+              : "Confidence is cooling slightly. Stay alert for shifts in sentiment.";
+            insight.textContent = trend;
+          }
         });
     }
 
     updateWhaleData();
+    updateSentimentTimeline();
     setInterval(updateWhaleData, 60000);
-
-    // Sentiment Timeline
-    const ctx = document.getElementById('sentimentChart').getContext('2d');
-    const sentimentData = {
-      labels: ["May 13", "May 14", "May 15"],
-      bullish: [60, 70, 100],
-      bearish: [40, 30, 0]
-    };
-
-    function generateInsight(bull, bear) {
-      const latest = bull[bull.length - 1];
-      const previous = bull[bull.length - 2];
-      if (latest > previous && latest > 70) return "🐋 Whales are getting more confident. Foam may be building before a wave.";
-      if (latest < previous && latest < 50) return "⚠️ Whale sentiment is cooling off. Consider reducing exposure.";
-      return "🤿 Sentiment is balanced. Keep watching for signs of foam.";
-    }
-
-    new Chart(ctx, {
-      type: 'line',
-      data: {
-        labels: sentimentData.labels,
-        datasets: [
-          {
-            label: "🐂 Bullish %",
-            data: sentimentData.bullish,
-            borderColor: "#00ff88",
-            backgroundColor: "rgba(0,255,136,0.1)",
-            fill: true,
-            tension: 0.4
-          },
-          {
-            label: "🐻 Bearish %",
-            data: sentimentData.bearish,
-            borderColor: "#ff0044",
-            backgroundColor: "rgba(255,0,68,0.1)",
-            fill: true,
-            tension: 0.4
-          }
-        ]
-      },
-      options: {
-        plugins: { legend: { labels: { color: "#fff" } } },
-        scales: {
-          x: { ticks: { color: "#ccc" } },
-          y: { ticks: { color: "#ccc" }, min: 0, max: 100 }
-        }
-      }
-    });
-
-    document.getElementById("sentimentInsight").textContent = generateInsight(sentimentData.bullish, sentimentData.bearish);
   </script>
 </body>
 </html>
