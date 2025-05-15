@@ -2,62 +2,63 @@ import yfinance as yf
 import json
 import pandas as pd
 from datetime import datetime
+import os
 
-# Choose your stock symbol
-symbol = "NVDA"
+def fetch_whale_trades(symbol="NVDA", top_n=5):
+    # Load ticker
+    ticker = yf.Ticker(symbol)
 
-# Load the ticker
-ticker = yf.Ticker(symbol)
+    # Get expiration dates
+    expiration_dates = ticker.options
+    if not expiration_dates:
+        raise ValueError(f"No options data found for {symbol}")
+    
+    nearest_exp = expiration_dates[0]
+    print(f"Using nearest expiration: {nearest_exp}")
 
-# Get available options expiration dates
-expiration_dates = ticker.options
-if not expiration_dates:
-    raise ValueError(f"No options data found for {symbol}")
+    # Fetch option chain
+    opt_chain = ticker.option_chain(nearest_exp)
 
-print(f"Found expiration dates: {expiration_dates}")
+    # Combine calls and puts
+    all_options = pd.concat([
+        opt_chain.calls.assign(type='CALL'),
+        opt_chain.puts.assign(type='PUT')
+    ])
 
-# Pick the nearest expiration date
-nearest_exp = expiration_dates[0]
-print(f"Using nearest expiration: {nearest_exp}")
+    # Calculate premium
+    all_options['premium'] = all_options['openInterest'] * all_options['lastPrice']
+    all_options = all_options.dropna(subset=['strike', 'premium'])
 
-# Fetch the option chain
-opt_chain = ticker.option_chain(nearest_exp)
+    # Sort by biggest premiums
+    biggest_whales = all_options.sort_values(by='premium', ascending=False).head(top_n)
 
-# Combine calls and puts into a single DataFrame using pd.concat
-all_options = pd.concat([
-    opt_chain.calls.assign(type='CALL'),
-    opt_chain.puts.assign(type='PUT')
-])
+    whale_trades = []
+    for _, row in biggest_whales.iterrows():
+        whale_trades.append({
+            "symbol": symbol,
+            "type": row['type'],
+            "strike": float(row['strike']),
+            "expiration": nearest_exp,
+            "premium": float(row['premium']),
+            "open_interest": int(row['openInterest']),
+            "last_price": float(row['lastPrice'])
+        })
 
-# Add a 'premium' column (open interest * last price)
-all_options['premium'] = all_options['openInterest'] * all_options['lastPrice']
+    return whale_trades
 
-# Filter out rows where data might be missing
-all_options = all_options.dropna(subset=['strike', 'premium'])
+def save_whales_json(data, output_path="public/whales.json"):
+    os.makedirs(os.path.dirname(output_path), exist_ok=True)
+    output = {
+        "timestamp": datetime.utcnow().isoformat(),
+        "whale_trades": data
+    }
+    with open(output_path, "w") as f:
+        json.dump(output, f, indent=2)
+    print(f"✅ Whale data saved to {output_path}")
 
-# Sort by biggest premium first
-biggest_whales = all_options.sort_values(by='premium', ascending=False).head(5)
-
-# Prepare data for saving
-whale_trades = []
-for _, row in biggest_whales.iterrows():
-    whale_trades.append({
-        "symbol": symbol,
-        "type": row['type'],
-        "strike": float(row['strike']),
-        "expiration": nearest_exp,
-        "premium": float(row['premium']),
-        "open_interest": int(row['openInterest']),
-        "last_price": float(row['lastPrice'])
-    })
-
-# Save to whales.json in the repo root
-output = {
-    "timestamp": datetime.utcnow().isoformat(),
-    "whale_trades": whale_trades
-}
-
-with open("whales.json", "w") as f:
-    json.dump(output, f, indent=2)
-
-print("✅ Whale data saved to whales.json")
+if __name__ == "__main__":
+    try:
+        whale_data = fetch_whale_trades("NVDA")
+        save_whales_json(whale_data)
+    except Exception as e:
+        print(f"❌ Error: {e}")
