@@ -54,7 +54,7 @@ def save_whales_json(data, output_path="public/whales.json"):
     }
     with open(output_path, "w") as f:
         json.dump(output, f, indent=2)
-    print(f"✅ Whale data saved to {output_path}")
+    print(f"✅ whales.json updated at {output['timestamp']}")
 
 if __name__ == "__main__":
     try:
