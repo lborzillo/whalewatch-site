@@ -28,20 +28,23 @@ jobs:
       - name: Run whale tracker script
         run: python whale_tracker.py
 
-      - name: Configure Git and disable GPG
+      - name: Configure Git
         run: |
           git config --global user.name "github-actions"
           git config --global user.email "github-actions@github.com"
-          git config --global commit.gpgsign false
+          git config --global pull.rebase true
 
-      - name: Stash uncommitted changes
-        run: |
-          git status
-          git stash
+      - name: Stash local changes before pulling
+        run: git stash --include-untracked
 
-      - name: Commit updated whales.json
+      - name: Pull latest from main
+        run: git pull origin main
+
+      - name: Reapply local changes
+        run: git stash pop || true
+
+      - name: Commit updated whales.json if changed
         run: |
-          git pull origin main --rebase
-          git stash pop || true
           git add public/whales.json
-          git diff --cached --quiet && echo "No changes
+          git diff --cached --quiet && echo "No changes to commit" || git commit -m "🔁 Update whales.json with latest whale data"
+          git push origin main
