@@ -1,11 +1,20 @@
 {
-  "updated": "2025-05-15T18:00:00Z",
-  "daily_sentiment": [
-    { "date": "2025-05-10", "bullish": 70, "bearish": 30 },
-    { "date": "2025-05-11", "bullish": 65, "bearish": 35 },
-    { "date": "2025-05-12", "bullish": 80, "bearish": 20 },
-    { "date": "2025-05-13", "bullish": 75, "bearish": 25 },
-    { "date": "2025-05-14", "bullish": 85, "bearish": 15 },
-    { "date": "2025-05-15", "bullish": 90, "bearish": 10 }
-  ]
+  "sentiment_history": [
+    {
+      "date": "2025-05-13",
+      "bullish_pct": 60.2,
+      "bearish_pct": 39.8
+    },
+    {
+      "date": "2025-05-14",
+      "bullish_pct": 73.5,
+      "bearish_pct": 26.5
+    },
+    {
+      "date": "2025-05-15",
+      "bullish_pct": 84.1,
+      "bearish_pct": 15.9
+    }
+  ],
+  "last_updated": "2025-05-15T14:15:00Z"
 }
