@@ -12,6 +12,7 @@
       margin: 0;
       padding: 0;
     }
+
     nav {
       background-color: #001520;
       padding: 1em;
@@ -21,38 +22,39 @@
       gap: 1em;
       flex-wrap: wrap;
     }
+
     nav a {
       color: #00ffee;
       font-weight: bold;
       text-decoration: none;
     }
+
     .hero {
       text-align: center;
       padding: 4em 2em 2em;
       background-color: #002b3f;
     }
-    .whale-hero {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-    }
+
     .homepage-logo {
       width: 100px;
       height: auto;
       margin-bottom: 1rem;
       filter: drop-shadow(0 0 10px #00ffee);
     }
+
     .hero h1 {
       font-size: 3em;
       color: #00ffee;
       margin-bottom: 0.3em;
     }
+
     .hero p {
       font-size: 1.2em;
       color: #ccc;
       margin-bottom: 1.5em;
     }
-    .hero a.cta-button {
+
+    .cta-button {
       display: inline-block;
       padding: 0.75em 1.5em;
       background-color: #00ffee;
@@ -62,58 +64,65 @@
       text-decoration: none;
       transition: background-color 0.2s ease-in-out;
     }
-    .hero a.cta-button:hover {
+
+    .cta-button:hover {
       background-color: #00ddcc;
     }
+
     .section {
       max-width: 800px;
       margin: 3em auto;
       padding: 2em;
     }
+
     .section h2 {
       color: #00ffee;
       margin-bottom: 0.5em;
     }
+
+    .explain-box {
+      background: #012634;
+      color: #ccc;
+      padding: 1em;
+      border-radius: 8px;
+      margin-bottom: 2em;
+    }
+
     .whale-meter-container {
       background-color: #003850;
       border-radius: 6px;
       overflow: hidden;
       height: 30px;
       margin-bottom: 1em;
-      position: relative;
     }
+
     .whale-meter-fill {
       background-color: #00ffee;
       height: 100%;
       width: 0;
       transition: width 2s ease-in-out;
     }
-    .whale-meter-label {
-      position: absolute;
-      width: 100%;
-      text-align: center;
-      font-weight: bold;
-      line-height: 30px;
-      color: #ffffff;
-      pointer-events: none;
-    }
+
     .whale-meter-flex {
       display: flex;
       justify-content: space-between;
       align-items: center;
       flex-wrap: wrap;
       gap: 1em;
-      margin-bottom: 0.5em;
+      margin-bottom: 1em;
     }
+
     .whale-meter-text {
       font-weight: bold;
       color: #00ffee;
       font-size: 1.1em;
     }
+
     .timestamp {
       font-size: 0.9em;
       color: #aaa;
     }
+
     .sentiment-bar {
       background-color: #00425f;
       border-radius: 6px;
@@ -121,6 +130,7 @@
       overflow: hidden;
       margin-top: 10px;
     }
+
     .sentiment-fill-bullish {
       background-color: #00ff88;
       height: 100%;
@@ -128,6 +138,7 @@
       float: left;
       transition: width 1.5s ease-in-out;
     }
+
     .sentiment-fill-bearish {
       background-color: #ff0044;
       height: 100%;
@@ -146,29 +157,38 @@
     <a href="harvesting.html">Premium Harvesting</a>
     <a href="whisper.html">Whispers</a>
   </nav>
-  <div class="hero whale-hero">
+
+  <div class="hero">
     <img src="/whale.png" alt="WhaleWatch Logo" class="homepage-logo">
     <h1>WhaleWatch.Trade</h1>
     <p>We track the whales so you can harvest the premium.</p>
     <a href="harvesting.html" class="cta-button">What Is Premium Harvesting?</a>
   </div>
+
+  <div class="section explain-box">
+    <h3 style="color:#00ffee;">📘 How to Read This Page</h3>
+    <p><strong>Whale Meter</strong> shows where the most money is currently concentrated in options trades. Green = bullish (calls), red = bearish (puts), gradient = mixed.</p>
+    <p><strong>Bullish vs. Bearish Sentiment</strong> shows the percentage of call vs put trades.</p>
+    <p><strong>Latest Whale Trades</strong> are the top 10 biggest options bets right now — across all tickers.</p>
+  </div>
+
   <div class="section">
     <h2>🌊 Whale Meter</h2>
     <div class="whale-meter-container">
       <div id="whaleFill" class="whale-meter-fill"></div>
-      <div id="whaleMeterLabel" class="whale-meter-label">Loading...</div>
     </div>
     <div class="whale-meter-flex">
       <div id="whaleMeterText" class="whale-meter-text">Loading...</div>
       <div id="whaleTimestamp" class="timestamp">Loading...</div>
     </div>
-    <p style="font-size: 0.9em; color: #aaa; margin-top: -0.5em;">
-      <em>🟢 Green = Bullish (Calls) • 🔴 Red = Bearish (Puts) • 🎨 Gradient = Mixed Premium Flow</em>
+    <p style="color: #ccc; font-size: 0.9em;">
+      🟢 Green = Bullish (Calls) · 🔴 Red = Bearish (Puts) · 🎨 Gradient = Mixed Premium Flow
     </p>
-    <p style="font-size: 0.95em; color: #aaa; margin-top: 1em;">
-      <em>The Whale Meter shows where the most capital is currently concentrated in the options market, based on open interest and last traded price. These are not necessarily trades placed today, but represent the largest active bets for the nearest expiration.</em>
+    <p style="font-size: 0.95em; color: #aaa;">
+      <em>The Whale Meter shows where the most capital is currently concentrated in the options market, based on open interest and last traded price.</em>
     </p>
   </div>
+
   <div class="section">
     <h2>📈 Bullish vs. Bearish Sentiment</h2>
     <div class="sentiment-bar">
@@ -177,17 +197,19 @@
     </div>
     <div id="sentimentLabel" class="whale-meter-text" style="margin-top: 10px;">Loading...</div>
   </div>
+
   <div class="section">
     <h2>📊 Latest Whale Trades</h2>
     <div id="whaleList">Loading...</div>
     <p style="font-size: 0.95em; color: #aaa; margin-top: 0.5em;">
-      <em>These are the top 5 high-premium options positions open right now — filtered by size, strike, and expiration. While they may not all be from today, they reflect the biggest current open interest whales are riding.</em>
+      <em>Top 10 highest-premium options trades across all stocks. These are active positions whales are currently riding — not necessarily placed today.</em>
     </p>
     <p style="margin-top: 1em; color: #aaa;">
       <em>Want to simulate your own trades based on this flow? 
       <a href="simulate.html" style="color: #00ffee; font-weight: bold;">Try the Premium Harvesting Simulator →</a></em>
     </p>
   </div>
+
   <script>
     function updateLiveClock() {
       const now = new Date();
@@ -197,7 +219,7 @@
     updateLiveClock();
 
     function updateWhaleData() {
-      fetch("/whales.json")
+      fetch("whales.json")
         .then(res => res.json())
         .then(data => {
           const trades = data.whale_trades || [];
@@ -205,7 +227,7 @@
           document.getElementById("whaleTimestamp").textContent =
             `Last updated: ${ts.toLocaleString()}`;
 
-          document.getElementById("whaleList").innerHTML = trades.slice(0, 5).map(t => `
+          document.getElementById("whaleList").innerHTML = trades.map(t => `
             <div style="background:#003850; padding:1em; margin:1em 0; border-radius:8px">
               <strong>${t.symbol}</strong> — ${t.type}<br>
               Strike: $${t.strike}, Exp: ${t.expiration}, Premium: $${Number(t.premium).toFixed(2)}
@@ -216,24 +238,21 @@
           document.getElementById("whaleMeterText").textContent =
             `Total Premium Traded: $${(totalPremium * 10000).toLocaleString()}`;
 
+          const percent = Math.min((totalPremium * 10000 / 1000000) * 100, 100);
+          const whaleFill = document.getElementById("whaleFill");
+          whaleFill.style.width = percent + "%";
+
+          const callRatio = trades.filter(t => t.type === "CALL").length / trades.length;
+          whaleFill.style.background =
+            callRatio === 1 ? "#00ff88" :
+            callRatio === 0 ? "#ff0044" :
+            "linear-gradient(to right, #00ff88, #ff0044)";
+
           const bullishCount = trades.filter(t => t.type === "CALL").length;
           const bearishCount = trades.filter(t => t.type === "PUT").length;
           const totalCount = bullishCount + bearishCount;
           const bullishPct = totalCount > 0 ? (bullishCount / totalCount) * 100 : 50;
           const bearishPct = 100 - bullishPct;
-
-          // Whale Meter fill
-          const whaleFill = document.getElementById("whaleFill");
-          whaleFill.style.width = Math.min((totalPremium * 10000 / 1000000) * 100, 100) + "%";
-          whaleFill.style.backgroundColor =
-            bullishPct >= 70 ? "#00ff88" :
-            bearishPct >= 70 ? "#ff0044" :
-            "linear-gradient(to right, #00ff88, #ffaa00, #ff0044)";
-          
-          document.getElementById("whaleMeterLabel").textContent =
-            bullishPct >= 70 ? "🐂 Whale Sentiment: Bullish" :
-            bearishPct >= 70 ? "🐻 Whale Sentiment: Bearish" :
-            "🎣 Whale Sentiment: Mixed";
 
           document.getElementById("bullFill").style.width = `${bullishPct}%`;
           document.getElementById("bearFill").style.width = `${bearishPct}%`;
