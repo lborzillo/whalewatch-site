@@ -32,19 +32,15 @@ jobs:
         run: |
           git config --global user.name "github-actions"
           git config --global user.email "github-actions@github.com"
-          git config --global pull.rebase true
+          git config pull.rebase false
 
-      - name: Stash local changes before pulling
-        run: git stash --include-untracked
-
-      - name: Pull latest from main
-        run: git pull origin main
-
-      - name: Reapply local changes
-        run: git stash pop || true
-
-      - name: Commit updated whales.json if changed
+      - name: Add updated JSON if it exists
         run: |
-          git add public/whales.json
+          git add public/whales.json || echo "No whales.json to add"
+
+      - name: Commit changes if any
+        run: |
           git diff --cached --quiet && echo "No changes to commit" || git commit -m "🔁 Update whales.json with latest whale data"
-          git push origin main
+
+      - name: Push changes to main
+        run: git push origin main
