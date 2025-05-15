@@ -1,86 +1,50 @@
 {
-  "timestamp": "2025-05-13T14:00:00Z",
+  "timestamp": "2025-05-15T13:38:00.678831",
   "whale_trades": [
     {
       "symbol": "NVDA",
       "type": "CALL",
-      "strike": 120.0,
-      "expiration": "2025-05-17",
-      "premium": 6.66,
-      "open_interest": 9730,
-      "last_price": 111.58
+      "strike": 95.0,
+      "expiration": "2025-05-16",
+      "premium": 1713364.2000000002,
+      "open_interest": 42621,
+      "last_price": 40.2
     },
     {
       "symbol": "NVDA",
       "type": "CALL",
-      "strike": 125.0,
-      "expiration": "2025-05-17",
-      "premium": 5.88,
-      "open_interest": 8500,
-      "last_price": 112.23
+      "strike": 110.0,
+      "expiration": "2025-05-16",
+      "premium": 1698199.76,
+      "open_interest": 67096,
+      "last_price": 25.31
     },
     {
-      "symbol": "AAPL",
+      "symbol": "NVDA",
       "type": "CALL",
-      "strike": 210.0,
-      "expiration": "2025-05-17",
-      "premium": 4.40,
-      "open_interest": 6300,
-      "last_price": 189.10
+      "strike": 100.0,
+      "expiration": "2025-05-16",
+      "premium": 1568574.0,
+      "open_interest": 44310,
+      "last_price": 35.4
     },
     {
-      "symbol": "AAPL",
-      "type": "PUT",
-      "strike": 200.0,
-      "expiration": "2025-05-17",
-      "premium": 2.85,
-      "open_interest": 5100,
-      "last_price": 188.55
-    },
-    {
-      "symbol": "TSLA",
+      "symbol": "NVDA",
       "type": "CALL",
-      "strike": 200.0,
-      "expiration": "2025-05-17",
-      "premium": 6.10,
-      "open_interest": 3100,
-      "last_price": 185.21
+      "strike": 5.0,
+      "expiration": "2025-05-16",
+      "premium": 1263830.05,
+      "open_interest": 9733,
+      "last_price": 129.85
     },
     {
-      "symbol": "TSLA",
-      "type": "PUT",
-      "strike": 180.0,
-      "expiration": "2025-05-17",
-      "premium": 2.95,
-      "open_interest": 3200,
-      "last_price": 185.21
-    },
-    {
-      "symbol": "MSFT",
+      "symbol": "NVDA",
       "type": "CALL",
-      "strike": 455.0,
-      "expiration": "2025-05-17",
-      "premium": 3.20,
-      "open_interest": 3700,
-      "last_price": 445.50
-    },
-    {
-      "symbol": "AMZN",
-      "type": "CALL",
-      "strike": 190.0,
-      "expiration": "2025-05-17",
-      "premium": 5.80,
-      "open_interest": 3750,
-      "last_price": 182.45
-    },
-    {
-      "symbol": "AMZN",
-      "type": "PUT",
-      "strike": 175.0,
-      "expiration": "2025-05-17",
-      "premium": 3.35,
-      "open_interest": 2800,
-      "last_price": 182.45
+      "strike": 115.0,
+      "expiration": "2025-05-16",
+      "premium": 1073325.5999999999,
+      "open_interest": 52614,
+      "last_price": 20.4
     }
   ]
 }
