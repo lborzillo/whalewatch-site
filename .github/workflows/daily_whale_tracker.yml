@@ -28,23 +28,14 @@ jobs:
       - name: Run whale tracker script
         run: python whale_tracker.py
 
-      - name: Configure Git
+      - name: Commit updated whales.json if changed
         run: |
-          git config --global user.name "github-actions"
-          git config --global user.email "github-actions@github.com"
-          git config pull.rebase true
-
-      - name: Stash changes
-        run: git stash --include-untracked
-
-      - name: Pull latest changes
-        run: git pull origin main
-
-      - name: Reapply changes
-        run: git stash pop || true
-
-      - name: Commit and push if whales.json changed
-        run: |
-          git add public/whales.json
-          git diff --cached --quiet && echo "No changes to commit" || git commit -m "🔁 Update whales.json with latest whale data"
-          git push origin main
+          git config user.name "github-actions"
+          git config user.email "github-actions@github.com"
+          git fetch origin main
+          git diff --quiet public/whales.json || (
+            git add public/whales.json
+            git commit -m "🔁 Update whales.json with latest whale data" || echo "No changes to commit"
+            git pull --rebase || echo "⚠️ Pull failed, skipping push"
+            git push origin main || echo "⚠️ Push failed, but workflow completed"
+          )
