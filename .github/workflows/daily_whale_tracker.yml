@@ -28,14 +28,20 @@ jobs:
       - name: Run whale tracker script
         run: python whale_tracker.py
 
-      - name: Disable GPG signing for CI commits
-        run: git config --global commit.gpgsign false
+      - name: Configure Git and disable GPG
+        run: |
+          git config --global user.name "github-actions"
+          git config --global user.email "github-actions@github.com"
+          git config --global commit.gpgsign false
+
+      - name: Stash uncommitted changes
+        run: |
+          git status
+          git stash
 
       - name: Commit updated whales.json
         run: |
-          git config user.name "github-actions"
-          git config user.email "github-actions@github.com"
+          git pull origin main --rebase
+          git stash pop || true
           git add public/whales.json
-          git diff --cached --quiet && echo "No changes to commit" || git commit -m "🔁 Update whales.json with latest whale data"
-          git pull --rebase --autostash
-          git push
+          git diff --cached --quiet && echo "No changes
