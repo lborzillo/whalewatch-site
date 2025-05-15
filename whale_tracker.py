@@ -4,36 +4,26 @@ import pandas as pd
 from datetime import datetime
 import os
 
-def fetch_whale_trades(symbol="NVDA", top_n=5):
-    # Load ticker
+def fetch_whale_trades(symbol, expiration_index=0):
     ticker = yf.Ticker(symbol)
-
-    # Get expiration dates
     expiration_dates = ticker.options
+
     if not expiration_dates:
-        raise ValueError(f"No options data found for {symbol}")
-    
-    nearest_exp = expiration_dates[0]
-    print(f"Using nearest expiration: {nearest_exp}")
+        return []
 
-    # Fetch option chain
-    opt_chain = ticker.option_chain(nearest_exp)
+    nearest_exp = expiration_dates[expiration_index]
+    chain = ticker.option_chain(nearest_exp)
 
-    # Combine calls and puts
     all_options = pd.concat([
-        opt_chain.calls.assign(type='CALL'),
-        opt_chain.puts.assign(type='PUT')
+        chain.calls.assign(type='CALL'),
+        chain.puts.assign(type='PUT')
     ])
 
-    # Calculate premium
     all_options['premium'] = all_options['openInterest'] * all_options['lastPrice']
     all_options = all_options.dropna(subset=['strike', 'premium'])
 
-    # Sort by biggest premiums
-    biggest_whales = all_options.sort_values(by='premium', ascending=False).head(top_n)
-
     whale_trades = []
-    for _, row in biggest_whales.iterrows():
+    for _, row in all_options.iterrows():
         whale_trades.append({
             "symbol": symbol,
             "type": row['type'],
@@ -46,19 +36,26 @@ def fetch_whale_trades(symbol="NVDA", top_n=5):
 
     return whale_trades
 
-def save_whales_json(data, output_path="public/whales.json"):
-    os.makedirs(os.path.dirname(output_path), exist_ok=True)
+def save_whales_json(trades, output_path="public/whales.json"):
     output = {
         "timestamp": datetime.utcnow().isoformat(),
-        "whale_trades": data
+        "whale_trades": trades
     }
+    os.makedirs(os.path.dirname(output_path), exist_ok=True)
     with open(output_path, "w") as f:
         json.dump(output, f, indent=2)
-    print(f"✅ whales.json updated at {output['timestamp']}")
+    print(f"✅ whales.json updated with {len(trades)} trades.")
 
 if __name__ == "__main__":
-    try:
-        whale_data = fetch_whale_trades("NVDA")
-        save_whales_json(whale_data)
-    except Exception as e:
-        print(f"❌ Error: {e}")
+    symbols = ["NVDA", "AAPL", "TSLA", "AMD", "AMZN", "GOOGL", "MSFT", "META"]
+    all_trades = []
+
+    for sym in symbols:
+        try:
+            all_trades.extend(fetch_whale_trades(sym))
+        except Exception as e:
+            print(f"⚠️ Failed to fetch for {sym}: {e}")
+
+    # Sort all trades by premium and take top 10
+    top_whales = sorted(all_trades, key=lambda x: x['premium'], reverse=True)[:10]
+    save_whales_json(top_whales)
