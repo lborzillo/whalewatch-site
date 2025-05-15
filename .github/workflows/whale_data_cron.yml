@@ -2,7 +2,7 @@ name: Daily Whale Tracker
 
 on:
   schedule:
-    - cron: '0 12 * * *'
+    - cron: '0 12 * * *'  # Runs daily at 12:00 UTC
   workflow_dispatch:
 
 jobs:
