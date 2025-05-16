@@ -1,95 +1,95 @@
 {
-  "timestamp": "2025-05-16T13:37:36.703035",
+  "timestamp": "2025-05-16T18:25:28.482566+00:00",
   "whale_trades": [
     {
       "symbol": "TSLA",
       "type": "CALL",
       "strike": 225.0,
       "expiration": "2025-05-16",
-      "premium": 3908496.12,
+      "premium": 4070977.84,
       "open_interest": 33092,
-      "last_price": 118.11
+      "last_price": 123.02
     },
     {
       "symbol": "NVDA",
       "type": "CALL",
       "strike": 95.0,
       "expiration": "2025-05-16",
-      "premium": 1673516.1500000001,
+      "premium": 1734757.91,
       "open_interest": 42529,
-      "last_price": 39.35
+      "last_price": 40.79
     },
     {
       "symbol": "NVDA",
       "type": "CALL",
       "strike": 110.0,
       "expiration": "2025-05-16",
-      "premium": 1604092.2000000002,
+      "premium": 1662778.5,
       "open_interest": 65207,
-      "last_price": 24.6
+      "last_price": 25.5
     },
     {
       "symbol": "NVDA",
       "type": "CALL",
       "strike": 100.0,
       "expiration": "2025-05-16",
-      "premium": 1517388.43,
+      "premium": 1557147.24,
       "open_interest": 43691,
-      "last_price": 34.73
+      "last_price": 35.64
     },
     {
       "symbol": "TSLA",
       "type": "CALL",
       "strike": 260.0,
       "expiration": "2025-05-16",
-      "premium": 1196995.56,
+      "premium": 1264747.3,
       "open_interest": 14446,
-      "last_price": 82.86
-    },
-    {
-      "symbol": "NVDA",
-      "type": "CALL",
-      "strike": 105.0,
-      "expiration": "2025-05-16",
-      "premium": 959681.5499999999,
-      "open_interest": 32367,
-      "last_price": 29.65
+      "last_price": 87.55
     },
     {
       "symbol": "NVDA",
       "type": "CALL",
       "strike": 115.0,
       "expiration": "2025-05-16",
-      "premium": 952606.1599999999,
+      "premium": 1002231.2000000001,
       "open_interest": 48652,
-      "last_price": 19.58
+      "last_price": 20.6
+    },
+    {
+      "symbol": "NVDA",
+      "type": "CALL",
+      "strike": 105.0,
+      "expiration": "2025-05-16",
+      "premium": 992048.5499999999,
+      "open_interest": 32367,
+      "last_price": 30.65
     },
     {
       "symbol": "TSLA",
       "type": "CALL",
       "strike": 250.0,
       "expiration": "2025-05-16",
-      "premium": 897033.15,
+      "premium": 947110.9500000001,
       "open_interest": 9705,
-      "last_price": 92.43
+      "last_price": 97.59
     },
     {
       "symbol": "TSLA",
       "type": "CALL",
       "strike": 280.0,
       "expiration": "2025-05-16",
-      "premium": 831500.34,
+      "premium": 892403.0499999999,
       "open_interest": 13211,
-      "last_price": 62.94
+      "last_price": 67.55
     },
     {
-      "symbol": "NVDA",
+      "symbol": "TSLA",
       "type": "CALL",
-      "strike": 120.0,
+      "strike": 300.0,
       "expiration": "2025-05-16",
-      "premium": 807721.2,
-      "open_interest": 54392,
-      "last_price": 14.85
+      "premium": 864432.0,
+      "open_interest": 18009,
+      "last_price": 48.0
     }
   ]
 }
