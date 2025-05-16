@@ -1,5 +1,186 @@
+
 <!DOCTYPE html>
-<!-- Full HTML content already constructed above -->
-<!-- Skipping repeating it for brevity in this example -->
-<!-- Assume it's the same as in the previous cell -->
-<!-- For final version: see that cell's content -->
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>WhaleWatch.Trade</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background-color: #001d2d;
+      color: white;
+      margin: 0;
+      padding: 0;
+    }
+    nav {
+      background-color: #001520;
+      padding: 1em;
+      text-align: center;
+      display: flex;
+      justify-content: center;
+      flex-wrap: wrap;
+      gap: 1em;
+    }
+    nav a {
+      color: #00ffee;
+      font-weight: bold;
+      text-decoration: none;
+    }
+    .hero {
+      text-align: center;
+      padding: 3em 2em 2em;
+      background-color: #002b3f;
+    }
+    .homepage-logo {
+      width: 100px;
+      margin-bottom: 1rem;
+      filter: drop-shadow(0 0 12px #00ffeecc);
+    }
+    h1 {
+      font-size: 3em;
+      color: #00ffee;
+    }
+    .cta-button {
+      background-color: #00ffee;
+      color: #001520;
+      padding: 0.75em 1.5em;
+      border-radius: 8px;
+      text-decoration: none;
+      font-weight: bold;
+      transition: background-color 0.2s ease-in-out;
+    }
+    .cta-button:hover {
+      background-color: #00ddcc;
+    }
+    .section {
+      max-width: 850px;
+      margin: 3em auto;
+      padding: 1em;
+    }
+    .whale-meter-container, .sentiment-bar, .timeline-bar {
+      background-color: #003850;
+      border-radius: 6px;
+      height: 24px;
+      overflow: hidden;
+      margin-bottom: 1em;
+    }
+    .whale-meter-fill {
+      height: 100%;
+      width: 0;
+      background: linear-gradient(to right, #00ff88, #ffaa00, #ff0044);
+      transition: width 2s ease-in-out;
+    }
+    .sentiment-fill-bullish, .sentiment-fill-bearish {
+      height: 100%;
+      float: left;
+      width: 0;
+      transition: width 1s ease-in-out;
+    }
+    .sentiment-fill-bullish { background-color: #00ff88; }
+    .sentiment-fill-bearish { background-color: #ff0044; }
+    .timeline-fill {
+      height: 100%;
+      width: 0;
+      background: linear-gradient(to right, #00ff88, #66ff99, #00cc88);
+    }
+    .whale-meter-text, .timestamp, .tip {
+      font-size: 0.95em;
+    }
+    .whale-meter-text { color: #00ffee; font-weight: bold; }
+    .timestamp { color: #aaa; }
+    .tip { color: #aaa; font-style: italic; margin-top: 0.4em; }
+    .trade-card, .shark-card {
+      background: #0c344a;
+      padding: 1em;
+      border-radius: 8px;
+      margin-bottom: 1em;
+    }
+    .shark-explainer {
+      font-size: 0.85em;
+      color: #99ddff;
+      margin-top: 0.5em;
+      font-style: italic;
+    }
+    #whaleBotBox {
+      position: fixed;
+      bottom: 1em;
+      right: 1em;
+      background: #002b3f;
+      border: 2px solid #00ffee;
+      padding: 1em;
+      border-radius: 12px;
+      width: 240px;
+      box-shadow: 0 0 20px #00ffee88;
+    }
+    #whaleBotBox h3 {
+      margin-top: 0;
+      color: #00ffee;
+    }
+    #whaleBotBox ul {
+      padding-left: 1.2em;
+    }
+    #whaleBotBox li {
+      margin-bottom: 0.4em;
+    }
+  </style>
+</head>
+<body>
+  <div class="hero">
+    <img src="whale.png" alt="WhaleWatch Logo" class="homepage-logo" />
+    <h1>WhaleWatch.Trade</h1>
+    <p>We track the whales so you can harvest the premium.</p>
+    <a href="harvesting.html" class="cta-button">What Is Premium Harvesting?</a>
+  </div>
+
+  <nav>
+    <a href="index.html">Home</a>
+    <a href="learn.html">Learn</a>
+    <a href="simulate.html">Simulate</a>
+    <a href="harvesting.html">Premium Harvesting</a>
+    <a href="whisper.html">Whispers</a>
+  </nav>
+
+  <div class="section"><h2>🌊 Whale Meter</h2><div class="whale-meter-container"><div id="whaleFill" class="whale-meter-fill"></div></div><div class="whale-meter-text" id="whaleMeterText">Loading...</div><div class="timestamp" id="whaleTimestamp">Loading...</div></div>
+  <div class="section"><h2>📈 Bullish vs. Bearish Sentiment</h2><div class="sentiment-bar"><div id="bullFill" class="sentiment-fill-bullish"></div><div id="bearFill" class="sentiment-fill-bearish"></div></div><div class="whale-meter-text" id="sentimentLabel">Loading...</div></div>
+  <div class="section"><h2>📉 Sentiment Timeline</h2><div class="timeline-bar"><div id="timelineFill" class="timeline-fill"></div></div><p class="tip" id="timelineTip">Loading whale confidence trend...</p></div>
+  <div class="section"><h2>📊 Latest Whale Trades</h2><div id="whaleList">Loading...</div></div>
+  <div class="section"><h2>🦈 Shark Meter</h2><div id="sharkList">Loading...</div></div>
+  <div id="whaleBotBox"><h3>🤖 WhaleBot</h3><p>Ask me about:</p><ul><li>• Covered calls</li><li>• Put selling</li><li>• Whale trades</li><li>• Premium harvesting</li></ul><p style="color: #aaa; font-size: 0.8em;">(Coming soon!)</p></div>
+  <script>
+    async function updateData() {
+      const whales = await fetch("whales.json").then(r => r.json());
+      const sharks = await fetch("sharks.json").then(r => r.json());
+      const sentiment = await fetch("sentiment.json").then(r => r.json());
+
+      const trades = whales.whale_trades;
+      const ts = new Date(whales.timestamp);
+      const total = trades.reduce((sum, t) => sum + Number(t.premium), 0);
+      document.getElementById("whaleFill").style.width = Math.min(total * 10000 / 1000000 * 100, 100) + "%";
+      document.getElementById("whaleMeterText").textContent = `Total Premium: $${(total * 10000).toLocaleString()}`;
+      document.getElementById("whaleTimestamp").textContent = `Last updated: ${ts.toLocaleString()}`;
+      const bull = trades.filter(t => t.type === "CALL").length;
+      const bear = trades.filter(t => t.type === "PUT").length;
+      const bpct = (bull / (bull + bear)) * 100;
+      document.getElementById("bullFill").style.width = `${bpct}%`;
+      document.getElementById("bearFill").style.width = `${100 - bpct}%`;
+      document.getElementById("sentimentLabel").textContent = `🐂 Bullish: ${bpct.toFixed(1)}% | 🐻 Bearish: ${(100 - bpct).toFixed(1)}%`;
+      const timeline = sentiment.sentiment_timeline;
+      document.getElementById("timelineFill").style.width = timeline[timeline.length - 1].bullish_pct + "%";
+      document.getElementById("timelineTip").textContent = timeline[timeline.length - 1].bullish_pct > 60 ? "The whales have been getting more confident. Watch for foam buildup before a possible wave." : "Sentiment is neutral to cautious.";
+      document.getElementById("whaleList").innerHTML = trades.slice(0, 6).map(t => `<div class="trade-card"><strong>${t.symbol}</strong> — ${t.type}<br>Strike: $${t.strike} | Exp: ${t.expiration}<br>Premium: $${Number(t.premium).toLocaleString()}</div>`).join("");
+      const sharkHTML = sharks.shark_trades.map(s => {
+        const match = trades.find(t => t.symbol === s.symbol && Math.abs(t.strike - s.avg_price) <= 3);
+        const whaleMatch = match ? `🧠 Whale trade also detected near $${s.avg_price}. Confidence zone.` : `🫧 No matching whale trade. Could be stealth accumulation.`;
+        const priceRelation = trades.find(t => t.symbol === s.symbol && t.last_price > s.avg_price)
+          ? "📈 Price has risen since this shark swam in."
+          : "📉 Price is near or below the shark's level.";
+        return `<div class="shark-card"><strong>${s.symbol}</strong><br>Volume: ${s.volume.toLocaleString()} @ $${s.avg_price}<br>Date: ${s.date} | Venue: ${s.venue}<div class="shark-explainer">${priceRelation}<br>${whaleMatch}</div></div>`;
+      }).join("");
+      document.getElementById("sharkList").innerHTML = sharkHTML;
+    }
+    updateData();
+    setInterval(updateData, 60000);
+  </script>
+</body>
+</html>
