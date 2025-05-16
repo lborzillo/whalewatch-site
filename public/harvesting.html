@@ -1,28 +1,67 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>What is Premium Harvesting? | WhaleWatch</title>
   <style>
     body {
       font-family: 'Segoe UI', sans-serif;
       background-color: #001d2d;
       color: #ffffff;
       margin: 0;
-      padding: 2em;
-      line-height: 1.6;
+      padding: 0;
     }
 
-    h1, h2 {
+    nav {
+      background-color: #001520;
+      padding: 1em;
+      text-align: center;
+      display: flex;
+      justify-content: center;
+      gap: 1em;
+      flex-wrap: wrap;
+    }
+
+    nav a {
       color: #00ffee;
+      font-weight: bold;
+      text-decoration: none;
+    }
+
+    .hero {
+      text-align: center;
+      padding: 3em 2em 2em;
+      background-color: #002b3f;
+    }
+
+    .whale-hero {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .homepage-logo {
+      width: 100px;
+      height: auto;
+      margin-bottom: 1rem;
+      filter: drop-shadow(0 0 12px #00ffeecc);
     }
 
     h1 {
       font-size: 2.5em;
+      color: #00ffee;
       margin-bottom: 0.5em;
     }
 
     h2 {
       font-size: 1.75em;
       margin-top: 2em;
+      color: #00ffee;
+    }
+
+    main {
+      padding: 2em;
     }
 
     p, ul {
@@ -67,21 +106,56 @@
       text-align: center;
       font-size: 0.9em;
       color: #888;
+      padding-bottom: 2em;
+    }
+
+    #whaleBotBox {
+      position: fixed;
+      bottom: 1em;
+      right: 1em;
+      background: #002b3f;
+      border: 2px solid #00ffee;
+      padding: 1em;
+      border-radius: 12px;
+      font-size: 0.9em;
+      width: 240px;
+      box-shadow: 0 0 20px #00ffee88;
+    }
+
+    #whaleBotBox h3 {
+      margin-top: 0;
+      color: #00ffee;
+    }
+
+    #whaleBotBox ul {
+      padding-left: 1.2em;
+    }
+
+    #whaleBotBox li {
+      margin-bottom: 0.4em;
     }
   </style>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>What is Premium Harvesting? | WhaleWatch</title>
 </head>
 <body>
-  <header>
+
+  <div class="hero whale-hero">
+    <img src="/whale.png" alt="Whale Logo" class="homepage-logo">
     <h1>What Is Premium Harvesting?</h1>
     <p>Premium Harvesting is the strategy of collecting consistent weekly income by selling options — not by predicting big market moves, but by using structure and discipline.</p>
-    <img src="/whale.png" alt="Whale Logo" class="whale-image">
-  </header>
+  </div>
+
+  <nav>
+    <a href="index.html">Home</a>
+    <a href="learn.html">Learn</a>
+    <a href="simulate.html">Simulate</a>
+    <a href="harvesting.html">Premium Harvesting</a>
+    <a href="whisper.html">Whispers</a>
+  </nav>
 
   <main>
     <section>
+      <img src="/whale.png" alt="Whale Logo" class="whale-image">
+
       <h2>Why Premium Harvesting Works</h2>
       <p>Most traders try to predict which direction a stock will go — up or down — and often get it wrong. Premium harvesting flips that mindset. Instead of predicting, you sell options and get paid up front, using volatility and time decay to your advantage. It’s a low-risk, repeatable way to generate income from stocks you believe in.</p>
 
@@ -117,6 +191,18 @@
       <a href="/simulate.html" class="cta-button">Start Simulating</a>
     </section>
   </main>
+
+  <div id="whaleBotBox">
+    <h3>🤖 WhaleBot</h3>
+    <p>Ask me anything about:</p>
+    <ul>
+      <li>• Covered calls</li>
+      <li>• Put selling</li>
+      <li>• Whale trades</li>
+      <li>• Premium harvesting</li>
+    </ul>
+    <p style="color: #aaa; font-size: 0.8em;">(Coming soon: live chat!)</p>
+  </div>
 
   <footer>
     <p>&copy; 2025 WhaleWatch. All rights reserved.</p>
