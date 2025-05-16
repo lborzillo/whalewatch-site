@@ -12,6 +12,7 @@
       --accent: #00ffee;
       --box: #002b3f;
     }
+
     body {
       background-color: var(--bg);
       color: var(--text);
@@ -19,48 +20,53 @@
       margin: 0;
       padding: 0;
     }
+
     nav {
       background-color: #001520;
-      padding: 1rem;
+      padding: 1em;
+      text-align: center;
       display: flex;
-      justify-content: space-between;
-      align-items: center;
+      justify-content: center;
+      gap: 1em;
+      flex-wrap: wrap;
     }
-    nav h1 {
-      margin: 0;
-      font-size: 1.8rem;
-      color: var(--accent);
-    }
+
     nav a {
-      text-decoration: none;
-      color: #ffffff;
+      color: var(--accent);
       font-weight: bold;
-      background-color: #005580;
-      padding: 0.5rem 1rem;
-      border-radius: 8px;
-      transition: background-color 0.3s;
+      text-decoration: none;
     }
-    nav a:hover {
-      background-color: #0077a3;
+
+    .hero {
+      text-align: center;
+      padding: 3em 2em 2em;
+      background-color: #002b3f;
     }
-    .whale-link {
+
+    .whale-hero {
       display: flex;
+      flex-direction: column;
       align-items: center;
-      gap: 0.5rem;
     }
-    .whale-icon {
-      width: 40px;
+
+    .homepage-logo {
+      width: 100px;
       height: auto;
+      margin-bottom: 1rem;
+      filter: drop-shadow(0 0 12px #00ffeecc);
     }
+
     main {
       padding: 2rem;
       text-align: center;
     }
+
     h2 {
       font-size: 2rem;
       margin-bottom: 1rem;
       color: var(--accent);
     }
+
     select, input, button {
       padding: 0.6em;
       margin: 0.5em;
@@ -70,13 +76,16 @@
       background: var(--box);
       color: var(--text);
     }
+
     button {
       cursor: pointer;
       transition: background 0.3s;
     }
+
     button:hover {
       background-color: #004c60;
     }
+
     .result-box {
       background: var(--box);
       color: var(--text);
@@ -86,10 +95,12 @@
       border: 2px solid var(--accent);
       box-shadow: 0 0 10px var(--accent);
     }
+
     .chart-container {
       max-width: 600px;
       margin: 2em auto;
     }
+
     .whisper-modal {
       display: none;
       position: fixed;
@@ -100,6 +111,7 @@
       align-items: center;
       z-index: 999;
     }
+
     .modal-content {
       background: var(--bg);
       color: var(--text);
@@ -110,11 +122,13 @@
       box-shadow: 0 0 15px var(--accent);
       text-align: left;
     }
+
     .modal-content iframe {
       border: none;
       width: 100%;
       height: 250px;
     }
+
     .close-modal {
       background: #e74c3c;
       color: #fff;
@@ -123,6 +137,7 @@
       padding: 0.4em 0.8em;
       border-radius: 8px;
     }
+
     .advanced-link {
       display: block;
       margin-top: 2em;
@@ -130,16 +145,49 @@
       color: var(--accent);
       text-decoration: underline;
     }
+
+    #whaleBotBox {
+      position: fixed;
+      bottom: 1em;
+      right: 1em;
+      background: #002b3f;
+      border: 2px solid #00ffee;
+      padding: 1em;
+      border-radius: 12px;
+      font-size: 0.9em;
+      width: 240px;
+      box-shadow: 0 0 20px #00ffee88;
+    }
+
+    #whaleBotBox h3 {
+      margin-top: 0;
+      color: #00ffee;
+    }
+
+    #whaleBotBox ul {
+      padding-left: 1.2em;
+    }
+
+    #whaleBotBox li {
+      margin-bottom: 0.4em;
+    }
   </style>
 </head>
 <body>
+  <div class="hero whale-hero">
+    <img src="whale.png" alt="Whale Logo" class="homepage-logo" />
+    <h1>WhaleWatch.Trade</h1>
+    <p>We track the whales so you can harvest the premium.</p>
+  </div>
+
   <nav>
-    <div class="whale-link">
-      <img src="/whale.png" alt="Whale Logo" class="whale-icon">
-      <a href="/index.html">Back to WhaleWatch</a>
-    </div>
-    <h1>Options Trade Simulator</h1>
+    <a href="index.html">Home</a>
+    <a href="learn.html">Learn</a>
+    <a href="simulate.html">Simulate</a>
+    <a href="harvesting.html">Premium Harvesting</a>
+    <a href="whisper.html">Whispers</a>
   </nav>
+
   <main>
     <h2>Simulate a Whale Trade</h2>
     <select id="symbolSelect"><option value="">Loading symbols...</option></select>
@@ -158,7 +206,6 @@
     <a class="advanced-link" href="/whisper.html">🔍 View My Whisper Trades</a>
   </main>
 
-  <!-- Modal for MailerLite Embed -->
   <div class="whisper-modal" id="whisperModal">
     <div class="modal-content">
       <button class="close-modal" onclick="closeModal()">X</button>
@@ -166,6 +213,18 @@
       <p>Enter your email to access premium insights from the whales:</p>
       <iframe src="https://assets.mailerlite.com/embed/form/25994972" scrolling="no"></iframe>
     </div>
+  </div>
+
+  <div id="whaleBotBox">
+    <h3>🤖 WhaleBot</h3>
+    <p>Ask me anything about:</p>
+    <ul>
+      <li>• Covered calls</li>
+      <li>• Put selling</li>
+      <li>• Whale trades</li>
+      <li>• Premium harvesting</li>
+    </ul>
+    <p style="color: #aaa; font-size: 0.8em;">(Coming soon: live chat!)</p>
   </div>
 
   <script>
@@ -189,7 +248,7 @@
       }
 
       resultBox.textContent = `🧠 Simulating: ${type} on ${symbol} at $${strike} expiring ${expiration}...`;
-      // Example chart render
+
       const ctx = document.getElementById("profitChart").getContext("2d");
       new Chart(ctx, {
         type: "line",
@@ -225,7 +284,6 @@
       chartCanvas.getContext("2d").clearRect(0, 0, chartCanvas.width, chartCanvas.height);
     }
 
-    // Dummy whale data loader
     window.onload = function() {
       const symbols = ["AAPL", "NVDA", "KO"];
       const strikes = ["100", "110", "120"];
