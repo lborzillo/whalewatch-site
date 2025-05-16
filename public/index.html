@@ -15,11 +15,10 @@
     nav {
       background-color: #001520;
       padding: 1em;
-      text-align: center;
       display: flex;
+      flex-wrap: wrap;
       justify-content: center;
       gap: 1em;
-      flex-wrap: wrap;
     }
     nav a {
       color: #00ffee;
@@ -33,7 +32,6 @@
     }
     .homepage-logo {
       width: 100px;
-      height: auto;
       margin-bottom: 1rem;
       filter: drop-shadow(0 0 12px #00ffee);
     }
@@ -43,45 +41,96 @@
       margin-bottom: 0.3em;
     }
     .cta-button {
-      display: inline-block;
-      padding: 0.75em 1.5em;
       background-color: #00ffee;
       color: #001520;
-      font-weight: bold;
+      padding: 0.75em 1.5em;
       border-radius: 8px;
+      font-weight: bold;
       text-decoration: none;
-      margin-top: 1em;
     }
     .section {
       max-width: 800px;
-      margin: 3em auto;
-      padding: 2em;
+      margin: 2em auto;
+      padding: 1em;
     }
-    .section h2 {
-      color: #00ffee;
+    .whale-meter-fill,
+    .sentiment-fill-bullish,
+    .sentiment-fill-bearish,
+    .timeline-fill {
+      height: 20px;
+      border-radius: 6px;
+      transition: width 1s ease-in-out;
+    }
+    .whale-meter-fill {
+      background: linear-gradient(to right, #00ff88, #ffaa00, #ff0044);
+    }
+    .sentiment-fill-bullish { background: #00ff88; float: left; }
+    .sentiment-fill-bearish { background: #ff0044; float: left; }
+    .timeline-fill {
+      background: repeating-linear-gradient(to right, #00ff88, #00cc88 10%, #00ff88 20%);
+    }
+    .bar {
+      background-color: #003850;
+      height: 20px;
+      border-radius: 6px;
+      overflow: hidden;
+    }
+    .tip {
+      font-size: 0.95em;
+      color: #aaa;
+      font-style: italic;
+    }
+    .shark-ping {
+      background: radial-gradient(circle at center, #00ffee22, #001d2d 80%);
+      border: 1px solid #00ffee99;
+      padding: 1em;
+      border-radius: 12px;
+      margin-bottom: 1em;
     }
     .trade-card {
       background-color: #0c344a;
       padding: 1em;
-      border-radius: 10px;
+      border-radius: 8px;
       margin-bottom: 1em;
-      border: 1px solid #00ffee33;
+      border: 1px solid #00ffee44;
     }
+    .preview-box {
+      background-color: #012634;
+      padding: 1em;
+      border-radius: 8px;
+      margin-top: 1em;
+    }
+    .whaleBot {
+      position: fixed;
+      bottom: 1em;
+      right: 1em;
+      width: 240px;
+      background: #002b3f;
+      padding: 1em;
+      border-radius: 12px;
+      border: 2px solid #00ffee;
+      box-shadow: 0 0 16px #00ffeeaa;
+      font-size: 0.9em;
+    }
+    .whaleBot h3 { margin-top: 0; color: #00ffee; }
+    .whaleBot ul { padding-left: 1.2em; }
     .teaser {
+      font-style: italic;
       color: #aaa;
       font-size: 0.9em;
-      font-style: italic;
     }
   </style>
 </head>
 <body>
+  <!-- Hero -->
   <div class="hero">
-    <img src="whale.png" alt="Whale Logo" class="homepage-logo" />
+    <img src="whale.png" class="homepage-logo" alt="Whale Logo" />
     <h1>WhaleWatch.Trade</h1>
     <p>We track the whales so you can harvest the premium.</p>
     <a href="harvesting.html" class="cta-button">What Is Premium Harvesting?</a>
   </div>
 
+  <!-- Navigation -->
   <nav>
     <a href="index.html">Home</a>
     <a href="learn.html">Learn</a>
@@ -90,38 +139,157 @@
     <a href="harvesting.html">Premium Harvesting</a>
   </nav>
 
-  <!-- 📒 Live Trader Log -->
+  <!-- Whale Meter -->
+  <div class="section">
+    <h2>🌊 Whale Meter</h2>
+    <div class="bar"><div id="whaleFill" class="whale-meter-fill"></div></div>
+    <div id="whaleMeterText" style="font-weight: bold; margin-top: 0.5em;"></div>
+    <div id="whaleTimestamp" class="tip"></div>
+    <p class="tip">🟢 Green = Bullish (Calls) · 🔴 Red = Bearish (Puts) · 🎨 Gradient = Mixed Flow</p>
+  </div>
+
+  <!-- Sentiment -->
+  <div class="section">
+    <h2>📈 Bullish vs. Bearish Sentiment</h2>
+    <div class="bar">
+      <div id="bullFill" class="sentiment-fill-bullish"></div>
+      <div id="bearFill" class="sentiment-fill-bearish"></div>
+    </div>
+    <div id="sentimentLabel" class="tip" style="margin-top: 0.5em;">Loading...</div>
+  </div>
+
+  <!-- Timeline -->
+  <div class="section">
+    <h2>📉 Sentiment Timeline</h2>
+    <div class="bar"><div id="timelineFill" class="timeline-fill"></div></div>
+    <p class="tip" id="timelineTip">Loading whale confidence trend...</p>
+  </div>
+
+  <!-- Suggested Trade -->
+  <div class="section">
+    <h2>💡 Suggested Trade Based on Whale + Shark Signals <span style="color: gold;">(🔒 Premium Preview)</span></h2>
+    <div class="preview-box" id="suggestedTrade">Analyzing flow data...</div>
+  </div>
+
+  <!-- Shark Meter -->
+  <div class="section">
+    <h2>🦈 Shark Meter</h2>
+    <p class="tip">Sharks swim in dark pools. These trades are hidden from the public tape but show up later on FINRA reports.</p>
+    <div id="sharkList">Loading...</div>
+    <div class="tip" style="margin-top: 2em;">
+      <strong>What does confidence mean?</strong><br />
+      Confidence is our best guess at how likely shark activity signals a real move.
+      <ul>
+        <li><strong>LOW</strong> = 1 trade or low volume — may be noise.</li>
+        <li><strong>MODERATE</strong> = several trades or repeat activity — could be positioning.</li>
+        <li><strong>HIGH</strong> = multiple hits + volume — likely real positioning.</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- Live Trader Log -->
   <div class="section">
     <h2>📒 Live Trader Log</h2>
     <div id="liveTrade">Loading latest trade...</div>
     <p class="teaser">Want to see all my trades, win or lose? <a href="whisper.html">Unlock Premium Access</a>.</p>
   </div>
 
+  <!-- WhaleBot -->
+  <div class="whaleBot">
+    <h3>🤖 WhaleBot</h3>
+    <p>Ask me anything about:</p>
+    <ul>
+      <li>• Covered calls</li>
+      <li>• Put selling</li>
+      <li>• Whale trades</li>
+      <li>• Premium harvesting</li>
+    </ul>
+    <p class="tip">(Coming soon: live chat!)</p>
+  </div>
+
   <script>
-    fetch("trades.json")
-      .then(res => res.json())
-      .then(data => {
-        const trades = data.trades || [];
-        if (!trades.length) {
-          document.getElementById("liveTrade").textContent = "No trades logged yet.";
-          return;
+    function updateAll() {
+      // WHALE DATA
+      fetch("whales.json").then(res => res.json()).then(data => {
+        const t = data.whale_trades || [];
+        const ts = new Date(data.timestamp);
+        document.getElementById("whaleTimestamp").textContent = "Last updated: " + ts.toLocaleString();
+
+        const sum = t.reduce((acc, trade) => acc + (Number(trade.premium) || 0), 0);
+        document.getElementById("whaleMeterText").textContent = "Total Premium Traded: $" + (sum * 10000).toLocaleString();
+        document.getElementById("whaleFill").style.width = Math.min((sum * 10000 / 1000000) * 100, 100) + "%";
+
+        const bulls = t.filter(x => x.type === "CALL").length;
+        const bears = t.filter(x => x.type === "PUT").length;
+        const bPct = bulls + bears > 0 ? (bulls / (bulls + bears)) * 100 : 50;
+        document.getElementById("bullFill").style.width = bPct + "%";
+        document.getElementById("bearFill").style.width = (100 - bPct) + "%";
+        document.getElementById("sentimentLabel").textContent = `🐂 Bullish: ${bPct.toFixed(1)}% | 🐻 Bearish: ${(100 - bPct).toFixed(1)}%`;
+      });
+
+      // TIMELINE
+      fetch("sentiment.json").then(res => res.json()).then(data => {
+        const timeline = data.sentiment_timeline || [];
+        const last = timeline[timeline.length - 1];
+        if (last) {
+          document.getElementById("timelineFill").style.width = last.bullish_pct + "%";
+          document.getElementById("timelineTip").textContent = "The whales have been getting more confident. Watch for foam buildup before a possible wave.";
         }
+      });
+
+      // SHARK METER
+      fetch("sharks.json").then(res => res.json()).then(data => {
+        const sharks = data.shark_summary || [];
+        document.getElementById("sharkList").innerHTML = sharks.map(s => `
+          <div class="shark-ping">
+            <strong>${s.symbol}</strong> has appeared in dark pool trades <strong>${s.frequency}x</strong> this week.<br>
+            Total volume: <strong>${s.total_volume.toLocaleString()}</strong><br>
+            Most recent activity: <strong>${s.last_seen}</strong> @ <strong>$${s.average_price}</strong><br>
+            🧭 Confidence Level: <strong>${s.confidence}</strong>
+          </div>
+        `).join("");
+      });
+
+      // SUGGESTED TRADE
+      Promise.all([
+        fetch("sharks.json").then(r => r.json()),
+        fetch("whales.json").then(r => r.json())
+      ]).then(([shark, whale]) => {
+        const suggestion = document.getElementById("suggestedTrade");
+        const whales = whale.whale_trades;
+        const sharks = shark.shark_summary;
+
+        const match = sharks.find(s => whales.some(w => w.symbol === s.symbol));
+        if (match) {
+          suggestion.innerHTML = `
+            📌 Based on recent dark pool and whale activity in <strong>${match.symbol}</strong>, a beginner-friendly strategy could be:<br><br>
+            ✅ <strong>Sell a cash-secured put</strong> near <strong>$${match.average_price}</strong>.<br>
+            <span class="tip">This lets you collect premium while potentially buying ${match.symbol} near the level sharks are swimming.</span>
+          `;
+        } else {
+          suggestion.textContent = "No clear alignment found right now.";
+        }
+      });
+
+      // LIVE TRADES
+      fetch("trades.json").then(res => res.json()).then(data => {
+        const trades = data.trades || [];
+        if (!trades.length) return document.getElementById("liveTrade").textContent = "No trades yet.";
         const last = trades[trades.length - 1];
-        const premiumTotal = (last.premium * last.size).toFixed(2);
-        const result = `
+        const total = (last.premium * last.size).toFixed(2);
+        const statusColor = last.status === "OPEN" ? "#00ff88" : "#aaa";
+        document.getElementById("liveTrade").innerHTML = `
           <div class="trade-card">
             <strong>${last.symbol}</strong> — ${last.type}<br>
             Strike: $${last.strike}, Exp: ${last.expiration}<br>
-            Premium: $${last.premium} × ${last.size} = <strong>$${premiumTotal}</strong><br>
-            Status: <span style="color:${last.status === "OPEN" ? "#00ff88" : "#aaa"}">${last.status}</span> (Date: ${last.date})
-          </div>
-        `;
-        document.getElementById("liveTrade").innerHTML = result;
-      })
-      .catch(err => {
-        document.getElementById("liveTrade").textContent = "Failed to load trade log.";
-        console.error("Trade load error:", err);
+            Premium: $${last.premium} × ${last.size} = <strong>$${total}</strong><br>
+            Status: <span style="color:${statusColor}">${last.status}</span> (Date: ${last.date})
+          </div>`;
       });
+    }
+
+    updateAll();
+    setInterval(updateAll, 60000);
   </script>
 </body>
 </html>
