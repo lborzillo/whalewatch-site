@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Whale Whispers | Premium Flow</title>
+  <title>WhaleWatch | Whisper+</title>
   <style>
     :root {
       --bg: #001d2d;
@@ -12,31 +12,60 @@
       --box: #002b3f;
     }
     body {
-      font-family: 'Segoe UI', sans-serif;
       background-color: var(--bg);
       color: var(--text);
-      padding: 2rem;
+      font-family: 'Segoe UI', sans-serif;
       margin: 0;
+      padding: 0;
     }
-    a {
-      color: var(--accent);
-      text-decoration: none;
-      font-weight: bold;
-    }
-    .back-button {
-      display: inline-block;
-      background-color: #005580;
-      color: white;
-      padding: 0.5rem 1rem;
-      border-radius: 8px;
-      margin-bottom: 1rem;
-    }
-    h1 {
-      color: var(--accent);
+
+    nav {
+      background-color: #001520;
+      padding: 1em;
+      text-align: center;
       display: flex;
-      align-items: center;
-      gap: 0.5rem;
+      justify-content: center;
+      gap: 1em;
+      flex-wrap: wrap;
     }
+
+    nav a {
+      color: var(--accent);
+      font-weight: bold;
+      text-decoration: none;
+    }
+
+    .hero {
+      text-align: center;
+      padding: 3em 2em 2em;
+      background-color: #002b3f;
+    }
+
+    .whale-hero {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .homepage-logo {
+      width: 100px;
+      height: auto;
+      margin-bottom: 1rem;
+      filter: drop-shadow(0 0 12px #00ffeecc);
+    }
+
+    h1 {
+      font-size: 2.2em;
+      color: var(--accent);
+      margin-bottom: 0.2em;
+    }
+
+    .section {
+      max-width: 800px;
+      margin: 2em auto;
+      padding: 1em;
+    }
+
     .whisper {
       background: var(--box);
       padding: 1rem;
@@ -45,10 +74,12 @@
       border-radius: 8px;
       cursor: pointer;
     }
+
     .blurred {
       filter: blur(5px);
       user-select: none;
     }
+
     .modal {
       display: none;
       position: fixed;
@@ -59,6 +90,7 @@
       align-items: center;
       z-index: 999;
     }
+
     .modal-content {
       background: var(--bg);
       padding: 2rem;
@@ -69,14 +101,17 @@
       color: white;
       box-shadow: 0 0 15px var(--accent);
     }
+
     .modal-content h2 {
       color: var(--accent);
     }
+
     .modal-content iframe {
       width: 100%;
       height: 250px;
       border: none;
     }
+
     .modal-content button {
       margin-top: 1rem;
       padding: 0.5rem 1rem;
@@ -85,27 +120,70 @@
       border-radius: 5px;
       cursor: pointer;
     }
+
+    #whaleBotBox {
+      position: fixed;
+      bottom: 1em;
+      right: 1em;
+      background: #002b3f;
+      border: 2px solid #00ffee;
+      padding: 1em;
+      border-radius: 12px;
+      font-size: 0.9em;
+      width: 240px;
+      box-shadow: 0 0 20px #00ffee88;
+    }
+
+    #whaleBotBox h3 {
+      margin-top: 0;
+      color: #00ffee;
+    }
+
+    #whaleBotBox ul {
+      padding-left: 1.2em;
+    }
+
+    #whaleBotBox li {
+      margin-bottom: 0.4em;
+    }
+
+    .tip {
+      font-style: italic;
+      color: #aaa;
+    }
   </style>
 </head>
 <body>
 
-  <a href="/index.html" class="back-button">← Back to Home</a>
-  <h1>🐳 Whale Whispers</h1>
-  <p>Get early access to the most aggressive whale trades and dark pool activity. Upgrade to Whisper+ for full visibility.</p>
-
-  <div class="whisper" onclick="showModal()">
-    <p><strong>Time:</strong> 10:03 AM</p>
-    <p><strong>Type:</strong> CALL Sweep</p>
-    <p><strong>Ticker:</strong> <span class="blurred">AAPL</span></p>
-    <p><strong>Premium:</strong> $2.8M</p>
-    <p><strong>Expiration:</strong> <span class="blurred">2025-06-14</span></p>
+  <div class="hero whale-hero">
+    <img src="whale.png" alt="WhaleWatch Logo" class="homepage-logo" />
+    <h1>🐳 Whale Whispers</h1>
+    <p>Get early access to the most aggressive whale trades and dark pool activity.<br/>Upgrade to Whisper+ for full visibility.</p>
   </div>
 
-  <div class="whisper" onclick="showModal()">
-    <p><strong>Time:</strong> 9:42 AM</p>
-    <p><strong>Type:</strong> Dark Pool Buy</p>
-    <p><strong>Ticker:</strong> <span class="blurred">NVDA</span></p>
-    <p><strong>Size:</strong> 180,000 shares</p>
+  <nav>
+    <a href="index.html">Home</a>
+    <a href="learn.html">Learn</a>
+    <a href="simulate.html">Simulate</a>
+    <a href="harvesting.html">Premium Harvesting</a>
+    <a href="whisper.html">Whispers</a>
+  </nav>
+
+  <div class="section">
+    <div class="whisper" onclick="showModal()">
+      <p><strong>Time:</strong> 10:03 AM</p>
+      <p><strong>Type:</strong> CALL Sweep</p>
+      <p><strong>Ticker:</strong> <span class="blurred">AAPL</span></p>
+      <p><strong>Premium:</strong> $2.8M</p>
+      <p><strong>Expiration:</strong> <span class="blurred">2025-06-14</span></p>
+    </div>
+
+    <div class="whisper" onclick="showModal()">
+      <p><strong>Time:</strong> 9:42 AM</p>
+      <p><strong>Type:</strong> Dark Pool Buy</p>
+      <p><strong>Ticker:</strong> <span class="blurred">NVDA</span></p>
+      <p><strong>Size:</strong> 180,000 shares</p>
+    </div>
   </div>
 
   <!-- Modal -->
@@ -116,6 +194,18 @@
       <iframe src="https://assets.mailerlite.com/embed/form/25994972" scrolling="no"></iframe>
       <button onclick="hideModal()">Close</button>
     </div>
+  </div>
+
+  <div id="whaleBotBox">
+    <h3>🤖 WhaleBot</h3>
+    <p>Ask me anything about:</p>
+    <ul>
+      <li>• Covered calls</li>
+      <li>• Put selling</li>
+      <li>• Whale trades</li>
+      <li>• Premium harvesting</li>
+    </ul>
+    <p style="color: #aaa; font-size: 0.8em;">(Coming soon: live chat!)</p>
   </div>
 
   <script>
