@@ -1,34 +1,37 @@
-import json
-from datetime import datetime, timezone
-import os
-import random
+name: Update Sharks Hourly
 
-# Simulated dark pool data (replace this later with real source like FINRA or paid feed)
-symbols = ["AAPL", "NVDA", "TSLA", "AMD", "META", "MSFT", "AMZN", "GOOG"]
-shark_trades = []
+on:
+  schedule:
+    - cron: '5 * * * *'  # 5 minutes past the hour
+  workflow_dispatch:      # Allow manual trigger too
 
-for symbol in symbols:
-    trades_today = random.randint(1, 3)
-    for _ in range(trades_today):
-        avg_price = round(random.uniform(100, 500), 2)
-        volume = random.randint(50000, 500000)
-        confidence = random.choice(["Low", "Medium", "High"])
-        shark_trades.append({
-            "symbol": symbol,
-            "average_price": avg_price,
-            "total_volume": volume,
-            "average_volume": volume // 2,
-            "last_seen": datetime.now(timezone.utc).isoformat(),
-            "confidence": confidence
-        })
+jobs:
+  update:
+    runs-on: ubuntu-latest
 
-output = {
-    "timestamp": datetime.now(timezone.utc).isoformat(),
-    "shark_trades": shark_trades
-}
+    steps:
+      - name: Checkout repository (full history)
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0  # Required for pushing back to main
 
-os.makedirs("public", exist_ok=True)
-with open("public/sharks.json", "w") as f:
-    json.dump(output, f, indent=2)
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.10'
 
-print(f"✅ sharks.json updated with {len(shark_trades)} trades.")
+      - name: Install dependencies
+        run: pip install pandas
+
+      - name: Run shark update script
+        working-directory: ${{ github.workspace }}
+        run: python shark_tracker.py
+
+      - name: Commit and push updated sharks.json
+        run: |
+          git config user.name "whalewatch-bot"
+          git config user.email "actions@github.com"
+          git pull origin main --rebase || echo "No remote changes to rebase"
+          git add public/sharks.json
+          git commit -m "🦈 Update sharks.json (hourly sync)" || echo "No changes to commit"
+          git push --force
