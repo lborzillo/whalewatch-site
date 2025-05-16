@@ -13,7 +13,7 @@ jobs:
       - name: Checkout repository (full history)
         uses: actions/checkout@v3
         with:
-          fetch-depth: 0  # Needed for pushing updates
+          fetch-depth: 0  # Needed to push changes
 
       - name: Set up Python
         uses: actions/setup-python@v4
@@ -24,7 +24,7 @@ jobs:
         run: pip install pandas
 
       - name: Run shark update script
-        run: python sharks_tracker.py
+        run: python sharks_tracker.py  # ✅ fixed filename and path
 
       - name: Commit and push updated sharks.json
         run: |
