@@ -1,95 +1,977 @@
 {
-  "timestamp": "2025-05-16T18:25:28.482566+00:00",
+  "timestamp": "2025-05-16T19:22:58.618287+00:00",
   "whale_trades": [
     {
-      "symbol": "TSLA",
+      "symbol": "NVDA",
       "type": "CALL",
-      "strike": 225.0,
+      "strike": 80.0,
       "expiration": "2025-05-16",
-      "premium": 4070977.84,
-      "open_interest": 33092,
-      "last_price": 123.02
+      "premium": 612060.3,
+      "open_interest": 11058,
+      "last_price": 55.35
+    },
+    {
+      "symbol": "NVDA",
+      "type": "CALL",
+      "strike": 85.0,
+      "expiration": "2025-05-16",
+      "premium": 636215.25,
+      "open_interest": 12661,
+      "last_price": 50.25
+    },
+    {
+      "symbol": "NVDA",
+      "type": "CALL",
+      "strike": 90.0,
+      "expiration": "2025-05-16",
+      "premium": 330317.60000000003,
+      "open_interest": 7295,
+      "last_price": 45.28
     },
     {
       "symbol": "NVDA",
       "type": "CALL",
       "strike": 95.0,
       "expiration": "2025-05-16",
-      "premium": 1734757.91,
+      "premium": 1713493.41,
       "open_interest": 42529,
-      "last_price": 40.79
+      "last_price": 40.29
     },
     {
       "symbol": "NVDA",
       "type": "CALL",
-      "strike": 110.0,
+      "strike": 96.0,
       "expiration": "2025-05-16",
-      "premium": 1662778.5,
-      "open_interest": 65207,
-      "last_price": 25.5
+      "premium": 255143.77,
+      "open_interest": 6377,
+      "last_price": 40.01
+    },
+    {
+      "symbol": "NVDA",
+      "type": "CALL",
+      "strike": 97.0,
+      "expiration": "2025-05-16",
+      "premium": 108527.04,
+      "open_interest": 2844,
+      "last_price": 38.16
     },
     {
       "symbol": "NVDA",
       "type": "CALL",
       "strike": 100.0,
       "expiration": "2025-05-16",
-      "premium": 1557147.24,
+      "premium": 1539670.84,
       "open_interest": 43691,
-      "last_price": 35.64
-    },
-    {
-      "symbol": "TSLA",
-      "type": "CALL",
-      "strike": 260.0,
-      "expiration": "2025-05-16",
-      "premium": 1264747.3,
-      "open_interest": 14446,
-      "last_price": 87.55
+      "last_price": 35.24
     },
     {
       "symbol": "NVDA",
       "type": "CALL",
-      "strike": 115.0,
+      "strike": 104.0,
       "expiration": "2025-05-16",
-      "premium": 1002231.2000000001,
-      "open_interest": 48652,
-      "last_price": 20.6
+      "premium": 130197.87,
+      "open_interest": 4169,
+      "last_price": 31.23
     },
     {
       "symbol": "NVDA",
       "type": "CALL",
       "strike": 105.0,
       "expiration": "2025-05-16",
-      "premium": 992048.5499999999,
+      "premium": 981367.4400000001,
       "open_interest": 32367,
-      "last_price": 30.65
+      "last_price": 30.32
+    },
+    {
+      "symbol": "NVDA",
+      "type": "CALL",
+      "strike": 107.0,
+      "expiration": "2025-05-16",
+      "premium": 171262.91,
+      "open_interest": 6071,
+      "last_price": 28.21
+    },
+    {
+      "symbol": "NVDA",
+      "type": "CALL",
+      "strike": 108.0,
+      "expiration": "2025-05-16",
+      "premium": 119077.20000000001,
+      "open_interest": 4365,
+      "last_price": 27.28
+    },
+    {
+      "symbol": "NVDA",
+      "type": "CALL",
+      "strike": 110.0,
+      "expiration": "2025-05-16",
+      "premium": 1643216.4,
+      "open_interest": 65207,
+      "last_price": 25.2
+    },
+    {
+      "symbol": "NVDA",
+      "type": "CALL",
+      "strike": 111.0,
+      "expiration": "2025-05-16",
+      "premium": 115167.8,
+      "open_interest": 4759,
+      "last_price": 24.2
+    },
+    {
+      "symbol": "NVDA",
+      "type": "CALL",
+      "strike": 112.0,
+      "expiration": "2025-05-16",
+      "premium": 123902.99999999999,
+      "open_interest": 5295,
+      "last_price": 23.4
+    },
+    {
+      "symbol": "NVDA",
+      "type": "CALL",
+      "strike": 113.0,
+      "expiration": "2025-05-16",
+      "premium": 144760.95,
+      "open_interest": 6477,
+      "last_price": 22.35
+    },
+    {
+      "symbol": "NVDA",
+      "type": "CALL",
+      "strike": 114.0,
+      "expiration": "2025-05-16",
+      "premium": 180930.75,
+      "open_interest": 8435,
+      "last_price": 21.45
+    },
+    {
+      "symbol": "NVDA",
+      "type": "CALL",
+      "strike": 115.0,
+      "expiration": "2025-05-16",
+      "premium": 982770.4,
+      "open_interest": 48652,
+      "last_price": 20.2
+    },
+    {
+      "symbol": "NVDA",
+      "type": "CALL",
+      "strike": 116.0,
+      "expiration": "2025-05-16",
+      "premium": 250214.4,
+      "open_interest": 13032,
+      "last_price": 19.2
+    },
+    {
+      "symbol": "NVDA",
+      "type": "CALL",
+      "strike": 117.0,
+      "expiration": "2025-05-16",
+      "premium": 224123.24000000002,
+      "open_interest": 12274,
+      "last_price": 18.26
+    },
+    {
+      "symbol": "NVDA",
+      "type": "CALL",
+      "strike": 118.0,
+      "expiration": "2025-05-16",
+      "premium": 192932.4,
+      "open_interest": 11217,
+      "last_price": 17.2
+    },
+    {
+      "symbol": "NVDA",
+      "type": "CALL",
+      "strike": 119.0,
+      "expiration": "2025-05-16",
+      "premium": 318946.35,
+      "open_interest": 19749,
+      "last_price": 16.15
+    },
+    {
+      "symbol": "NVDA",
+      "type": "CALL",
+      "strike": 120.0,
+      "expiration": "2025-05-16",
+      "premium": 827302.3200000001,
+      "open_interest": 54392,
+      "last_price": 15.21
+    },
+    {
+      "symbol": "NVDA",
+      "type": "CALL",
+      "strike": 121.0,
+      "expiration": "2025-05-16",
+      "premium": 323077.12,
+      "open_interest": 22784,
+      "last_price": 14.18
+    },
+    {
+      "symbol": "NVDA",
+      "type": "CALL",
+      "strike": 122.0,
+      "expiration": "2025-05-16",
+      "premium": 178345.0,
+      "open_interest": 13460,
+      "last_price": 13.25
+    },
+    {
+      "symbol": "NVDA",
+      "type": "CALL",
+      "strike": 123.0,
+      "expiration": "2025-05-16",
+      "premium": 156634.8,
+      "open_interest": 12860,
+      "last_price": 12.18
+    },
+    {
+      "symbol": "NVDA",
+      "type": "CALL",
+      "strike": 124.0,
+      "expiration": "2025-05-16",
+      "premium": 314652.8,
+      "open_interest": 28094,
+      "last_price": 11.2
+    },
+    {
+      "symbol": "NVDA",
+      "type": "CALL",
+      "strike": 125.0,
+      "expiration": "2025-05-16",
+      "premium": 621416.5,
+      "open_interest": 60626,
+      "last_price": 10.25
+    },
+    {
+      "symbol": "NVDA",
+      "type": "CALL",
+      "strike": 126.0,
+      "expiration": "2025-05-16",
+      "premium": 138475.25999999998,
+      "open_interest": 14938,
+      "last_price": 9.27
+    },
+    {
+      "symbol": "NVDA",
+      "type": "CALL",
+      "strike": 127.0,
+      "expiration": "2025-05-16",
+      "premium": 261439.36000000002,
+      "open_interest": 31423,
+      "last_price": 8.32
+    },
+    {
+      "symbol": "NVDA",
+      "type": "CALL",
+      "strike": 128.0,
+      "expiration": "2025-05-16",
+      "premium": 112205.18,
+      "open_interest": 15434,
+      "last_price": 7.27
+    },
+    {
+      "symbol": "NVDA",
+      "type": "CALL",
+      "strike": 130.0,
+      "expiration": "2025-05-16",
+      "premium": 265319.25,
+      "open_interest": 50537,
+      "last_price": 5.25
+    },
+    {
+      "symbol": "NVDA",
+      "type": "CALL",
+      "strike": 132.0,
+      "expiration": "2025-05-16",
+      "premium": 136121.69999999998,
+      "open_interest": 41249,
+      "last_price": 3.3
+    },
+    {
+      "symbol": "AAPL",
+      "type": "CALL",
+      "strike": 185.0,
+      "expiration": "2025-05-16",
+      "premium": 134311.69999999998,
+      "open_interest": 4993,
+      "last_price": 26.9
+    },
+    {
+      "symbol": "AAPL",
+      "type": "CALL",
+      "strike": 195.0,
+      "expiration": "2025-05-16",
+      "premium": 153456.0,
+      "open_interest": 9200,
+      "last_price": 16.68
+    },
+    {
+      "symbol": "AAPL",
+      "type": "CALL",
+      "strike": 200.0,
+      "expiration": "2025-05-16",
+      "premium": 173292.4,
+      "open_interest": 14939,
+      "last_price": 11.6
+    },
+    {
+      "symbol": "TSLA",
+      "type": "CALL",
+      "strike": 200.0,
+      "expiration": "2025-05-16",
+      "premium": 514583.55000000005,
+      "open_interest": 3497,
+      "last_price": 147.15
+    },
+    {
+      "symbol": "TSLA",
+      "type": "CALL",
+      "strike": 205.0,
+      "expiration": "2025-05-16",
+      "premium": 141052.16999999998,
+      "open_interest": 987,
+      "last_price": 142.91
+    },
+    {
+      "symbol": "TSLA",
+      "type": "CALL",
+      "strike": 210.0,
+      "expiration": "2025-05-16",
+      "premium": 122574.87,
+      "open_interest": 891,
+      "last_price": 137.57
+    },
+    {
+      "symbol": "TSLA",
+      "type": "CALL",
+      "strike": 215.0,
+      "expiration": "2025-05-16",
+      "premium": 165539.44,
+      "open_interest": 1252,
+      "last_price": 132.22
+    },
+    {
+      "symbol": "TSLA",
+      "type": "CALL",
+      "strike": 220.0,
+      "expiration": "2025-05-16",
+      "premium": 213003.6,
+      "open_interest": 1668,
+      "last_price": 127.7
+    },
+    {
+      "symbol": "TSLA",
+      "type": "CALL",
+      "strike": 225.0,
+      "expiration": "2025-05-16",
+      "premium": 4061712.0799999996,
+      "open_interest": 33092,
+      "last_price": 122.74
+    },
+    {
+      "symbol": "TSLA",
+      "type": "CALL",
+      "strike": 230.0,
+      "expiration": "2025-05-16",
+      "premium": 216535.8,
+      "open_interest": 1846,
+      "last_price": 117.3
+    },
+    {
+      "symbol": "TSLA",
+      "type": "CALL",
+      "strike": 235.0,
+      "expiration": "2025-05-16",
+      "premium": 276135.0,
+      "open_interest": 2460,
+      "last_price": 112.25
+    },
+    {
+      "symbol": "TSLA",
+      "type": "CALL",
+      "strike": 240.0,
+      "expiration": "2025-05-16",
+      "premium": 384988.03,
+      "open_interest": 3569,
+      "last_price": 107.87
+    },
+    {
+      "symbol": "TSLA",
+      "type": "CALL",
+      "strike": 245.0,
+      "expiration": "2025-05-16",
+      "premium": 411154.32,
+      "open_interest": 3998,
+      "last_price": 102.84
     },
     {
       "symbol": "TSLA",
       "type": "CALL",
       "strike": 250.0,
       "expiration": "2025-05-16",
-      "premium": 947110.9500000001,
+      "premium": 950507.7,
       "open_interest": 9705,
-      "last_price": 97.59
+      "last_price": 97.94
+    },
+    {
+      "symbol": "TSLA",
+      "type": "CALL",
+      "strike": 255.0,
+      "expiration": "2025-05-16",
+      "premium": 412252.0,
+      "open_interest": 4481,
+      "last_price": 92.0
+    },
+    {
+      "symbol": "TSLA",
+      "type": "CALL",
+      "strike": 257.5,
+      "expiration": "2025-05-16",
+      "premium": 105866.86,
+      "open_interest": 1178,
+      "last_price": 89.87
+    },
+    {
+      "symbol": "TSLA",
+      "type": "CALL",
+      "strike": 260.0,
+      "expiration": "2025-05-16",
+      "premium": 1269947.8599999999,
+      "open_interest": 14446,
+      "last_price": 87.91
+    },
+    {
+      "symbol": "TSLA",
+      "type": "CALL",
+      "strike": 265.0,
+      "expiration": "2025-05-16",
+      "premium": 240936.46,
+      "open_interest": 2906,
+      "last_price": 82.91
+    },
+    {
+      "symbol": "TSLA",
+      "type": "CALL",
+      "strike": 270.0,
+      "expiration": "2025-05-16",
+      "premium": 521407.66,
+      "open_interest": 6683,
+      "last_price": 78.02
+    },
+    {
+      "symbol": "TSLA",
+      "type": "CALL",
+      "strike": 275.0,
+      "expiration": "2025-05-16",
+      "premium": 368796.0,
+      "open_interest": 5052,
+      "last_price": 73.0
+    },
+    {
+      "symbol": "TSLA",
+      "type": "CALL",
+      "strike": 277.5,
+      "expiration": "2025-05-16",
+      "premium": 105059.70000000001,
+      "open_interest": 1503,
+      "last_price": 69.9
     },
     {
       "symbol": "TSLA",
       "type": "CALL",
       "strike": 280.0,
       "expiration": "2025-05-16",
-      "premium": 892403.0499999999,
+      "premium": 897026.9,
       "open_interest": 13211,
-      "last_price": 67.55
+      "last_price": 67.9
+    },
+    {
+      "symbol": "TSLA",
+      "type": "CALL",
+      "strike": 282.5,
+      "expiration": "2025-05-16",
+      "premium": 186892.83000000002,
+      "open_interest": 2859,
+      "last_price": 65.37
+    },
+    {
+      "symbol": "TSLA",
+      "type": "CALL",
+      "strike": 285.0,
+      "expiration": "2025-05-16",
+      "premium": 591732.09,
+      "open_interest": 9433,
+      "last_price": 62.73
+    },
+    {
+      "symbol": "TSLA",
+      "type": "CALL",
+      "strike": 287.5,
+      "expiration": "2025-05-16",
+      "premium": 155126.56,
+      "open_interest": 2582,
+      "last_price": 60.08
+    },
+    {
+      "symbol": "TSLA",
+      "type": "CALL",
+      "strike": 290.0,
+      "expiration": "2025-05-16",
+      "premium": 328104.56,
+      "open_interest": 5656,
+      "last_price": 58.01
+    },
+    {
+      "symbol": "TSLA",
+      "type": "CALL",
+      "strike": 292.5,
+      "expiration": "2025-05-16",
+      "premium": 137372.97,
+      "open_interest": 2481,
+      "last_price": 55.37
+    },
+    {
+      "symbol": "TSLA",
+      "type": "CALL",
+      "strike": 295.0,
+      "expiration": "2025-05-16",
+      "premium": 552872.75,
+      "open_interest": 10481,
+      "last_price": 52.75
+    },
+    {
+      "symbol": "TSLA",
+      "type": "CALL",
+      "strike": 297.5,
+      "expiration": "2025-05-16",
+      "premium": 317414.60000000003,
+      "open_interest": 6323,
+      "last_price": 50.2
     },
     {
       "symbol": "TSLA",
       "type": "CALL",
       "strike": 300.0,
       "expiration": "2025-05-16",
-      "premium": 864432.0,
+      "premium": 864071.82,
       "open_interest": 18009,
-      "last_price": 48.0
+      "last_price": 47.98
+    },
+    {
+      "symbol": "TSLA",
+      "type": "CALL",
+      "strike": 302.5,
+      "expiration": "2025-05-16",
+      "premium": 185220.25,
+      "open_interest": 4139,
+      "last_price": 44.75
+    },
+    {
+      "symbol": "TSLA",
+      "type": "CALL",
+      "strike": 305.0,
+      "expiration": "2025-05-16",
+      "premium": 324776.1,
+      "open_interest": 7590,
+      "last_price": 42.79
+    },
+    {
+      "symbol": "TSLA",
+      "type": "CALL",
+      "strike": 307.5,
+      "expiration": "2025-05-16",
+      "premium": 108712.0,
+      "open_interest": 2675,
+      "last_price": 40.64
+    },
+    {
+      "symbol": "TSLA",
+      "type": "CALL",
+      "strike": 310.0,
+      "expiration": "2025-05-16",
+      "premium": 561242.55,
+      "open_interest": 14789,
+      "last_price": 37.95
+    },
+    {
+      "symbol": "TSLA",
+      "type": "CALL",
+      "strike": 312.5,
+      "expiration": "2025-05-16",
+      "premium": 361194.42000000004,
+      "open_interest": 10209,
+      "last_price": 35.38
+    },
+    {
+      "symbol": "TSLA",
+      "type": "CALL",
+      "strike": 315.0,
+      "expiration": "2025-05-16",
+      "premium": 358927.4,
+      "open_interest": 10870,
+      "last_price": 33.02
+    },
+    {
+      "symbol": "TSLA",
+      "type": "CALL",
+      "strike": 317.5,
+      "expiration": "2025-05-16",
+      "premium": 234311.0,
+      "open_interest": 7700,
+      "last_price": 30.43
+    },
+    {
+      "symbol": "TSLA",
+      "type": "CALL",
+      "strike": 320.0,
+      "expiration": "2025-05-16",
+      "premium": 417471.0,
+      "open_interest": 15044,
+      "last_price": 27.75
+    },
+    {
+      "symbol": "TSLA",
+      "type": "CALL",
+      "strike": 322.5,
+      "expiration": "2025-05-16",
+      "premium": 133710.5,
+      "open_interest": 5285,
+      "last_price": 25.3
+    },
+    {
+      "symbol": "TSLA",
+      "type": "CALL",
+      "strike": 325.0,
+      "expiration": "2025-05-16",
+      "premium": 357034.09,
+      "open_interest": 15503,
+      "last_price": 23.03
+    },
+    {
+      "symbol": "TSLA",
+      "type": "CALL",
+      "strike": 327.5,
+      "expiration": "2025-05-16",
+      "premium": 202925.94,
+      "open_interest": 9962,
+      "last_price": 20.37
+    },
+    {
+      "symbol": "TSLA",
+      "type": "CALL",
+      "strike": 330.0,
+      "expiration": "2025-05-16",
+      "premium": 350607.11,
+      "open_interest": 19489,
+      "last_price": 17.99
+    },
+    {
+      "symbol": "TSLA",
+      "type": "CALL",
+      "strike": 340.0,
+      "expiration": "2025-05-16",
+      "premium": 108290.75,
+      "open_interest": 13795,
+      "last_price": 7.85
+    },
+    {
+      "symbol": "AMD",
+      "type": "CALL",
+      "strike": 85.0,
+      "expiration": "2025-05-16",
+      "premium": 134789.55,
+      "open_interest": 4141,
+      "last_price": 32.55
+    },
+    {
+      "symbol": "AMD",
+      "type": "CALL",
+      "strike": 90.0,
+      "expiration": "2025-05-16",
+      "premium": 260491.5,
+      "open_interest": 9630,
+      "last_price": 27.05
+    },
+    {
+      "symbol": "AMD",
+      "type": "CALL",
+      "strike": 95.0,
+      "expiration": "2025-05-16",
+      "premium": 401421.6,
+      "open_interest": 18288,
+      "last_price": 21.95
+    },
+    {
+      "symbol": "AMD",
+      "type": "CALL",
+      "strike": 100.0,
+      "expiration": "2025-05-16",
+      "premium": 333812.0,
+      "open_interest": 19636,
+      "last_price": 17.0
+    },
+    {
+      "symbol": "AMD",
+      "type": "CALL",
+      "strike": 105.0,
+      "expiration": "2025-05-16",
+      "premium": 188678.22,
+      "open_interest": 15842,
+      "last_price": 11.91
+    },
+    {
+      "symbol": "AMD",
+      "type": "CALL",
+      "strike": 110.0,
+      "expiration": "2025-05-16",
+      "premium": 142009.35,
+      "open_interest": 20433,
+      "last_price": 6.95
+    },
+    {
+      "symbol": "AMZN",
+      "type": "CALL",
+      "strike": 120.0,
+      "expiration": "2025-05-16",
+      "premium": 280075.0,
+      "open_interest": 3295,
+      "last_price": 85.0
+    },
+    {
+      "symbol": "AMZN",
+      "type": "CALL",
+      "strike": 130.0,
+      "expiration": "2025-05-16",
+      "premium": 231183.68,
+      "open_interest": 3094,
+      "last_price": 74.72
+    },
+    {
+      "symbol": "AMZN",
+      "type": "CALL",
+      "strike": 140.0,
+      "expiration": "2025-05-16",
+      "premium": 170429.31,
+      "open_interest": 2637,
+      "last_price": 64.63
+    },
+    {
+      "symbol": "AMZN",
+      "type": "CALL",
+      "strike": 155.0,
+      "expiration": "2025-05-16",
+      "premium": 103545.93000000001,
+      "open_interest": 2083,
+      "last_price": 49.71
+    },
+    {
+      "symbol": "AMZN",
+      "type": "CALL",
+      "strike": 160.0,
+      "expiration": "2025-05-16",
+      "premium": 208826.90999999997,
+      "open_interest": 4617,
+      "last_price": 45.23
+    },
+    {
+      "symbol": "AMZN",
+      "type": "CALL",
+      "strike": 170.0,
+      "expiration": "2025-05-16",
+      "premium": 173480.42,
+      "open_interest": 4958,
+      "last_price": 34.99
+    },
+    {
+      "symbol": "AMZN",
+      "type": "CALL",
+      "strike": 175.0,
+      "expiration": "2025-05-16",
+      "premium": 129219.3,
+      "open_interest": 4293,
+      "last_price": 30.1
+    },
+    {
+      "symbol": "AMZN",
+      "type": "CALL",
+      "strike": 180.0,
+      "expiration": "2025-05-16",
+      "premium": 146481.48,
+      "open_interest": 5897,
+      "last_price": 24.84
+    },
+    {
+      "symbol": "AMZN",
+      "type": "CALL",
+      "strike": 182.5,
+      "expiration": "2025-05-16",
+      "premium": 118353.54000000001,
+      "open_interest": 5286,
+      "last_price": 22.39
+    },
+    {
+      "symbol": "AMZN",
+      "type": "CALL",
+      "strike": 190.0,
+      "expiration": "2025-05-16",
+      "premium": 313845.0,
+      "open_interest": 20580,
+      "last_price": 15.25
+    },
+    {
+      "symbol": "AMZN",
+      "type": "CALL",
+      "strike": 195.0,
+      "expiration": "2025-05-16",
+      "premium": 172680.0,
+      "open_interest": 17268,
+      "last_price": 10.0
+    },
+    {
+      "symbol": "AMZN",
+      "type": "CALL",
+      "strike": 200.0,
+      "expiration": "2025-05-16",
+      "premium": 115336.01999999999,
+      "open_interest": 21927,
+      "last_price": 5.26
+    },
+    {
+      "symbol": "GOOGL",
+      "type": "CALL",
+      "strike": 125.0,
+      "expiration": "2025-05-16",
+      "premium": 357868.63,
+      "open_interest": 8309,
+      "last_price": 43.07
+    },
+    {
+      "symbol": "GOOGL",
+      "type": "CALL",
+      "strike": 130.0,
+      "expiration": "2025-05-16",
+      "premium": 174052.55000000002,
+      "open_interest": 4885,
+      "last_price": 35.63
+    },
+    {
+      "symbol": "GOOGL",
+      "type": "CALL",
+      "strike": 150.0,
+      "expiration": "2025-05-16",
+      "premium": 150333.4,
+      "open_interest": 9002,
+      "last_price": 16.7
+    },
+    {
+      "symbol": "META",
+      "type": "CALL",
+      "strike": 450.0,
+      "expiration": "2025-05-16",
+      "premium": 120825.0,
+      "open_interest": 675,
+      "last_price": 179.0
+    },
+    {
+      "symbol": "META",
+      "type": "CALL",
+      "strike": 500.0,
+      "expiration": "2025-05-16",
+      "premium": 186622.02,
+      "open_interest": 1383,
+      "last_price": 134.94
+    },
+    {
+      "symbol": "META",
+      "type": "CALL",
+      "strike": 510.0,
+      "expiration": "2025-05-16",
+      "premium": 152558.0,
+      "open_interest": 1190,
+      "last_price": 128.2
+    },
+    {
+      "symbol": "META",
+      "type": "CALL",
+      "strike": 520.0,
+      "expiration": "2025-05-16",
+      "premium": 214774.12,
+      "open_interest": 1826,
+      "last_price": 117.62
+    },
+    {
+      "symbol": "META",
+      "type": "CALL",
+      "strike": 540.0,
+      "expiration": "2025-05-16",
+      "premium": 104762.0,
+      "open_interest": 1069,
+      "last_price": 98.0
+    },
+    {
+      "symbol": "META",
+      "type": "CALL",
+      "strike": 550.0,
+      "expiration": "2025-05-16",
+      "premium": 118845.31999999999,
+      "open_interest": 1364,
+      "last_price": 87.13
+    },
+    {
+      "symbol": "META",
+      "type": "CALL",
+      "strike": 560.0,
+      "expiration": "2025-05-16",
+      "premium": 128968.8,
+      "open_interest": 1744,
+      "last_price": 73.95
+    },
+    {
+      "symbol": "META",
+      "type": "CALL",
+      "strike": 565.0,
+      "expiration": "2025-05-16",
+      "premium": 139941.0,
+      "open_interest": 1971,
+      "last_price": 71.0
+    },
+    {
+      "symbol": "META",
+      "type": "CALL",
+      "strike": 570.0,
+      "expiration": "2025-05-16",
+      "premium": 117979.45,
+      "open_interest": 1745,
+      "last_price": 67.61
+    },
+    {
+      "symbol": "META",
+      "type": "CALL",
+      "strike": 585.0,
+      "expiration": "2025-05-16",
+      "premium": 256261.5,
+      "open_interest": 5115,
+      "last_price": 50.1
+    },
+    {
+      "symbol": "META",
+      "type": "CALL",
+      "strike": 590.0,
+      "expiration": "2025-05-16",
+      "premium": 100340.12000000001,
+      "open_interest": 2074,
+      "last_price": 48.38
+    },
+    {
+      "symbol": "META",
+      "type": "CALL",
+      "strike": 600.0,
+      "expiration": "2025-05-16",
+      "premium": 298472.56,
+      "open_interest": 7661,
+      "last_price": 38.96
     }
   ]
 }
