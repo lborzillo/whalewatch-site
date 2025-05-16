@@ -13,7 +13,7 @@ jobs:
       - name: Checkout repository (full history)
         uses: actions/checkout@v3
         with:
-          fetch-depth: 0  # Needed to allow git push/pull/reset
+          fetch-depth: 0  # Required for pushing back to main
 
       - name: Set up Python
         uses: actions/setup-python@v4
@@ -32,6 +32,7 @@ jobs:
           git config user.email "actions@github.com"
           git fetch origin
           git reset --hard origin/main
+          git restore --staged .github/workflows/*.yml || true
           git add public/whales.json
           git commit -m "🤖 Update whales.json (hourly sync)" || echo "No changes to commit"
           git push --force
