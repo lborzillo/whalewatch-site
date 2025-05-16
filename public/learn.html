@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>WhaleWatch | Learn</title>
   <style>
     body {
@@ -16,28 +16,11 @@
     nav {
       background-color: #001520;
       padding: 1em;
+      text-align: center;
       display: flex;
-      flex-wrap: wrap;
-      justify-content: space-between;
-      align-items: center;
-    }
-
-    .whale-link {
-      display: flex;
-      align-items: center;
-      gap: 0.5rem;
-    }
-
-    .whale-icon {
-      width: 40px;
-      height: auto;
-    }
-
-    .nav-links {
-      display: flex;
+      justify-content: center;
       gap: 1em;
       flex-wrap: wrap;
-      justify-content: center;
     }
 
     nav a {
@@ -48,12 +31,25 @@
 
     .hero {
       text-align: center;
-      padding: 3em 1.5em 1.5em;
+      padding: 3em 2em 2em;
       background-color: #002b3f;
     }
 
-    .hero h1 {
-      font-size: 2.5em;
+    .whale-hero {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .homepage-logo {
+      width: 100px;
+      height: auto;
+      margin-bottom: 1rem;
+      filter: drop-shadow(0 0 12px #00ffeecc);
+    }
+
+    h1 {
+      font-size: 3em;
       color: #00ffee;
       margin-bottom: 0.3em;
     }
@@ -99,7 +95,7 @@
     }
 
     @media (max-width: 600px) {
-      .hero h1 {
+      h1 {
         font-size: 1.8em;
       }
       .section {
@@ -107,27 +103,52 @@
         margin: 1em;
       }
     }
+
+    #whaleBotBox {
+      position: fixed;
+      bottom: 1em;
+      right: 1em;
+      background: #002b3f;
+      border: 2px solid #00ffee;
+      padding: 1em;
+      border-radius: 12px;
+      font-size: 0.9em;
+      width: 240px;
+      box-shadow: 0 0 20px #00ffee88;
+    }
+
+    #whaleBotBox h3 {
+      margin-top: 0;
+      color: #00ffee;
+    }
+
+    #whaleBotBox ul {
+      padding-left: 1.2em;
+    }
+
+    #whaleBotBox li {
+      margin-bottom: 0.4em;
+    }
   </style>
 </head>
 <body>
-  <nav>
-    <div class="whale-link">
-      <img src="/whale.png" alt="Whale Logo" class="whale-icon">
-    </div>
-    <div class="nav-links">
-      <a href="index.html">Home</a>
-      <a href="learn.html">Learn</a>
-      <a href="simulate.html">Simulate</a>
-      <a href="whisper.html">Whispers</a>
-      <a href="harvesting.html">Premium Harvesting</a>
-    </div>
-  </nav>
-
-  <div class="hero">
-    <h1>📘 Learn to Read Whale Data and Harvest Premium</h1>
+  <div class="hero whale-hero">
+    <img src="whale.png" alt="WhaleWatch Logo" class="homepage-logo" />
+    <h1>WhaleWatch.Trade</h1>
+    <p>We track the whales so you can harvest the premium.</p>
   </div>
 
+  <nav>
+    <a href="index.html">Home</a>
+    <a href="learn.html">Learn</a>
+    <a href="simulate.html">Simulate</a>
+    <a href="harvesting.html">Premium Harvesting</a>
+    <a href="whisper.html">Whispers</a>
+  </nav>
+
   <div class="section">
+    <h2>📘 Learn to Read Whale Data and Harvest Premium</h2>
+
     <p><strong>Whale trades</strong> are large, high-volume options positions placed by institutions or high-net-worth traders. Tracking them reveals where volatility — and opportunity — is building.</p>
 
     <p>But <strong>premium harvesting</strong> isn’t about mimicking those trades. It’s about watching their wake, then placing smarter, safer, income-producing positions based on the activity.</p>
@@ -172,6 +193,18 @@
 
     <h2>🔍 Why Whale Data Can Help</h2>
     <p>Big trades don’t tell you what to do — they tell you where to look. When whales show up in NVDA, AAPL, or KO, we don’t chase. We <strong>strategically harvest</strong> volatility premiums in safer ranges using real option selling techniques.</p>
+  </div>
+
+  <div id="whaleBotBox">
+    <h3>🤖 WhaleBot</h3>
+    <p>Ask me anything about:</p>
+    <ul>
+      <li>• Covered calls</li>
+      <li>• Put selling</li>
+      <li>• Whale trades</li>
+      <li>• Premium harvesting</li>
+    </ul>
+    <p style="color: #aaa; font-size: 0.8em;">(Coming soon: live chat!)</p>
   </div>
 </body>
 </html>
