@@ -182,5 +182,43 @@
     updateData();
     setInterval(updateData, 60000);
   </script>
+
+  <div class="section">
+    <h2>💡 Suggested Trade Based on Whale + Shark Signals <span style='font-size:0.6em; color:#ffaa00;'>(🔒 Premium Preview)</span></h2>
+    <div id="tradeSuggestion" class="trade-card">Loading suggestion...</div>
+  </div>
+
+  <script>
+    async function updateTradeSuggestion(trades, sharks) {
+      let suggestion = "No clear alignment found right now.";
+      for (let shark of sharks) {
+        let whale = trades.find(w =>
+          w.symbol === shark.symbol &&
+          Math.abs(w.strike - shark.avg_price) <= 3 &&
+          w.type === "PUT"
+        );
+        if (whale && whale.last_price > shark.avg_price) {
+          suggestion = `
+            <strong>${shark.symbol}</strong> shows dark pool activity around <strong>$${shark.avg_price}</strong>.<br>
+            Whales sold puts near this level too.<br><br>
+            🧠 <strong>Idea:</strong> Sell the <strong>$${whale.strike}</strong> PUT expiring soon.<br>
+            You collect premium, and only buy if price dips into the shark zone.`;
+          break;
+        }
+      }
+      document.getElementById("tradeSuggestion").innerHTML = suggestion;
+    }
+
+    async function refreshDashboard() {
+      const whales = await fetch("whales.json").then(r => r.json());
+      const sharks = await fetch("sharks.json").then(r => r.json());
+      const trades = whales.whale_trades;
+      updateTradeSuggestion(trades, sharks.shark_trades);
+    }
+
+    refreshDashboard();
+    setInterval(refreshDashboard, 60000);
+  </script>
+
 </body>
 </html>
