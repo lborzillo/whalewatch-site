@@ -1,7 +1,7 @@
 import yfinance as yf
 import json
 import pandas as pd
-from datetime import datetime
+from datetime import datetime, timezone
 import os
 
 def fetch_whale_trades(symbol, expiration_index=0):
@@ -15,7 +15,10 @@ def fetch_whale_trades(symbol, expiration_index=0):
     chain = ticker.option_chain(nearest_exp)
 
     # Get live stock price
-    last_price = ticker.history(period="1d")["Close"].iloc[-1]
+    try:
+        last_price = ticker.history(period="1d")["Close"].iloc[-1]
+    except:
+        last_price = None
 
     all_options = pd.concat([
         chain.calls.assign(type='CALL'),
@@ -23,38 +26,40 @@ def fetch_whale_trades(symbol, expiration_index=0):
     ])
 
     # Filter unrealistic strikes (±50% of current price)
-    all_options = all_options[
-        (all_options['strike'] >= 0.5 * last_price) &
-        (all_options['strike'] <= 1.5 * last_price)
-    ]
+    if last_price:
+        all_options = all_options[
+            (all_options['strike'] >= 0.5 * last_price) &
+            (all_options['strike'] <= 1.5 * last_price)
+        ]
 
-    # Calculate premium
+    # Calculate premium and drop rows with missing data
+    all_options = all_options.dropna(subset=['strike', 'lastPrice', 'openInterest'])
     all_options['premium'] = all_options['openInterest'] * all_options['lastPrice']
-    all_options = all_options.dropna(subset=['strike', 'premium'])
 
     whale_trades = []
     for _, row in all_options.iterrows():
-        whale_trades.append({
-            "symbol": symbol,
-            "type": row['type'],
-            "strike": float(row['strike']),
-            "expiration": nearest_exp,
-            "premium": float(row['premium']),
-            "open_interest": int(row['openInterest']),
-            "last_price": float(row['lastPrice'])
-        })
+        if row['premium'] > 100000:  # Only include trades with meaningful size
+            whale_trades.append({
+                "symbol": symbol,
+                "type": row['type'],
+                "strike": float(row['strike']),
+                "expiration": nearest_exp,
+                "premium": float(row['premium']),
+                "open_interest": int(row['openInterest']),
+                "last_price": float(row['lastPrice'])
+            })
 
     return whale_trades
 
 def save_whales_json(trades, output_path="public/whales.json"):
     output = {
-        "timestamp": datetime.utcnow().isoformat(),
+        "timestamp": datetime.now(timezone.utc).isoformat(),
         "whale_trades": trades
     }
     os.makedirs(os.path.dirname(output_path), exist_ok=True)
     with open(output_path, "w") as f:
         json.dump(output, f, indent=2)
-    print(f"✅ whales.json updated with {len(trades)} trades.")
+    print(f"✅ whales.json updated with {len(trades)} trades at {output['timestamp']}")
 
 if __name__ == "__main__":
     symbols = ["NVDA", "AAPL", "TSLA", "AMD", "AMZN", "GOOGL", "MSFT", "META"]
@@ -62,6 +67,7 @@ if __name__ == "__main__":
 
     for sym in symbols:
         try:
+            print(f"🔍 Fetching: {sym}")
             all_trades.extend(fetch_whale_trades(sym))
         except Exception as e:
             print(f"⚠️ Failed to fetch for {sym}: {e}")
