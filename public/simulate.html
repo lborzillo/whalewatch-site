@@ -56,7 +56,13 @@
     h2 {
       font-size: 2rem;
       color: var(--accent);
-      margin-bottom: 1rem;
+      margin-bottom: 0.5rem;
+    }
+
+    #timestampNotice {
+      font-size: 0.9rem;
+      color: #aaa;
+      margin-bottom: 1.5rem;
     }
 
     select, button {
@@ -187,15 +193,19 @@
 
   <main>
     <h2>Simulate a Whale Trade</h2>
+    <div id="timestampNotice">📡 Loading data...</div>
+
     <select id="symbolSelect"><option value="">Select Symbol</option></select>
     <select id="typeSelect"><option value="">Select Type</option></select>
     <select id="strikeSelect"><option value="">Select Strike</option></select>
     <select id="expirationSelect"><option value="">Select Expiration</option></select>
+
     <div>
       <button onclick="simulateTrade()">Simulate</button>
       <button onclick="resetForm()">Reset</button>
       <button onclick="showModal()">Unlock Whisper+</button>
     </div>
+
     <div id="resultBox" class="result-box">📈 Select options and click Simulate.</div>
     <div class="chart-container"><canvas id="profitChart" width="400" height="200"></canvas></div>
     <a class="advanced-link" href="/whisper.html">🔍 View My Whisper Trades</a>
@@ -230,8 +240,9 @@
         const res = await fetch("whales.json");
         const data = await res.json();
 
-        whaleTrades = {};
+        displayTimestamp(data.timestamp);
 
+        whaleTrades = {};
         data.whale_trades.forEach(({ symbol, type, strike, expiration }) => {
           if (!whaleTrades[symbol]) whaleTrades[symbol] = {};
           if (!whaleTrades[symbol][type]) whaleTrades[symbol][type] = [];
@@ -242,6 +253,16 @@
       } catch (error) {
         document.getElementById("resultBox").textContent = "❌ Failed to load whale data.";
       }
+    }
+
+    function displayTimestamp(timestampStr) {
+      const timestampNotice = document.getElementById("timestampNotice");
+      const date = new Date(timestampStr);
+      const formatted = date.toLocaleString("en-US", {
+        dateStyle: "medium",
+        timeStyle: "short"
+      });
+      timestampNotice.textContent = `📡 Data updates hourly. Last updated: ${formatted}`;
     }
 
     function populateSymbols() {
