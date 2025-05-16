@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>WhaleWatch.Trade</title>
   <style>
     body {
@@ -35,7 +35,7 @@
       width: 100px;
       height: auto;
       margin-bottom: 1rem;
-      filter: drop-shadow(0 0 10px #00ffee);
+      filter: drop-shadow(0 0 12px #00ffee);
     }
     h1 {
       font-size: 3em;
@@ -90,9 +90,7 @@
     <a href="harvesting.html">Premium Harvesting</a>
   </nav>
 
-  <!-- All previous Whale, Sentiment, Shark Meters, and Suggestion code would be here -->
-
-  <!-- 📒 Live Trader Log Section -->
+  <!-- 📒 Live Trader Log -->
   <div class="section">
     <h2>📒 Live Trader Log</h2>
     <div id="liveTrade">Loading latest trade...</div>
@@ -108,7 +106,6 @@
           document.getElementById("liveTrade").textContent = "No trades logged yet.";
           return;
         }
-
         const last = trades[trades.length - 1];
         const premiumTotal = (last.premium * last.size).toFixed(2);
         const result = `
