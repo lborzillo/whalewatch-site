@@ -1,0 +1,33 @@
+name: Update Whales Hourly
+
+on:
+  schedule:
+    - cron: '0 * * * *'  # Runs every hour
+  workflow_dispatch:      # Allow manual trigger too
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: 3.10
+
+      - name: Install dependencies
+        run: pip install yfinance pandas
+
+      - name: Run whale update script
+        run: python whale_tracker.py
+
+      - name: Commit and push updated whales.json
+        run: |
+          git config user.name "whalewatch-bot"
+          git config user.email "actions@github.com"
+          git add public/whales.json
+          git commit -m "🤖 Update whales.json (hourly sync)" || echo "No changes to commit"
+          git push
