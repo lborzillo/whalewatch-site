@@ -2,8 +2,8 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>WhaleWatch | Home</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>WhaleWatch.Trade</title>
   <style>
     body {
       font-family: 'Segoe UI', sans-serif;
@@ -12,108 +12,130 @@
       margin: 0;
       padding: 0;
     }
+
     nav {
       background-color: #001520;
       padding: 1em;
       text-align: center;
       display: flex;
       justify-content: center;
-      flex-wrap: wrap;
       gap: 1em;
+      flex-wrap: wrap;
     }
+
     nav a {
       color: #00ffee;
       font-weight: bold;
       text-decoration: none;
     }
+
     .hero {
       text-align: center;
-      padding: 4em 2em 2em;
+      padding: 3em 2em 2em;
       background-color: #002b3f;
     }
-    .hero img {
-      width: 100px;
-      filter: drop-shadow(0 0 12px #00ffee);
+
+    .whale-hero {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
     }
+
+    .homepage-logo {
+      width: 100px;
+      height: auto;
+      margin-bottom: 1rem;
+      filter: drop-shadow(0 0 12px #00ffeecc);
+    }
+
     h1 {
       font-size: 3em;
       color: #00ffee;
-      margin: 0.3em 0;
+      margin-bottom: 0.3em;
     }
+
     .cta-button {
-      background: #00ffee;
-      color: #001520;
+      display: inline-block;
       padding: 0.75em 1.5em;
+      background-color: #00ffee;
+      color: #001520;
+      font-weight: bold;
       border-radius: 8px;
       text-decoration: none;
-      font-weight: bold;
-      transition: 0.2s;
+      transition: background-color 0.2s ease-in-out;
     }
+
     .cta-button:hover {
-      background: #00ddcc;
+      background-color: #00ddcc;
     }
+
     .section {
-      max-width: 900px;
-      margin: 2.5em auto;
-      padding: 0 1em;
+      max-width: 800px;
+      margin: 3em auto;
+      padding: 2em;
     }
-    h2 {
+
+    .section h2 {
       color: #00ffee;
-      display: flex;
-      align-items: center;
-      gap: 0.5em;
+      margin-bottom: 0.5em;
     }
-    .bar-container {
-      background: #08394f;
-      height: 26px;
+
+    .whale-meter-container,
+    .sentiment-bar,
+    .timeline-bar,
+    .shark-meter {
+      background-color: #003850;
       border-radius: 6px;
       overflow: hidden;
-      margin: 0.5em 0;
+      height: 24px;
+      margin-bottom: 1em;
     }
-    .fill {
-      height: 100%;
-      transition: width 1s ease-in-out;
-    }
-    .whale-fill {
-      background: linear-gradient(to right, #00ff88, #ffaa00, #ff0044);
-    }
-    .bull-fill {
-      background-color: #00ff88;
-      float: left;
-    }
-    .bear-fill {
-      background-color: #ff0044;
-      float: left;
-    }
-    .sentiment-bar-segment {
-      float: left;
-      height: 100%;
-      background-color: #00ff88;
-    }
-    .timestamp, .tip {
-      font-size: 0.95em;
-      color: #aaa;
-    }
-    .legend {
-      margin-top: 0.5em;
-      font-size: 0.9em;
-    }
-    .legend span {
-      margin-right: 1em;
-    }
-    .legend span::before {
-      content: '●';
-      margin-right: 0.3em;
-    }
-    .legend .bullish { color: #00ff88; }
-    .legend .bearish { color: #ff0044; }
-    .legend .mixed { color: #ffaa00; }
 
-    .card {
+    .whale-meter-fill,
+    .sentiment-fill-bullish,
+    .sentiment-fill-bearish,
+    .timeline-fill {
+      height: 100%;
+      transition: width 1.5s ease-in-out;
+    }
+
+    .sentiment-fill-bullish { background-color: #00ff88; float: left; width: 0; }
+    .sentiment-fill-bearish { background-color: #ff0044; float: left; width: 0; }
+
+    .timeline-fill {
+      background: repeating-linear-gradient(to right, #00ff88, #00cc88 10%, #00ff88 20%);
+      width: 0;
+    }
+
+    .shark-radar {
+      display: flex;
+      flex-direction: column;
+      gap: 0.8em;
+      margin-top: 1em;
+    }
+
+    .shark-ping {
+      background: radial-gradient(circle at center, #00ffee44 0%, #001d2d 80%);
+      border: 1px solid #00ffee99;
+      padding: 1em;
+      border-radius: 12px;
+    }
+
+    .whale-meter-text,
+    .timestamp,
+    .tip {
+      font-size: 0.95em;
+    }
+
+    .whale-meter-text { color: #00ffee; font-weight: bold; }
+    .timestamp { color: #aaa; }
+    .tip { font-style: italic; color: #aaa; }
+
+    .trade-card {
       background: #0c344a;
       padding: 1em;
-      margin-top: 1em;
       border-radius: 8px;
+      margin-bottom: 1em;
     }
 
     #whaleBotBox {
@@ -122,39 +144,35 @@
       right: 1em;
       background: #002b3f;
       border: 2px solid #00ffee;
-      border-radius: 12px;
       padding: 1em;
-      width: 240px;
-      box-shadow: 0 0 18px #00ffee;
+      border-radius: 12px;
       font-size: 0.9em;
+      width: 240px;
+      box-shadow: 0 0 20px #00ffee88;
     }
+
     #whaleBotBox h3 {
-      color: #00ffee;
       margin-top: 0;
+      color: #00ffee;
     }
+
     #whaleBotBox ul {
       padding-left: 1.2em;
     }
+
     #whaleBotBox li {
       margin-bottom: 0.4em;
-    }
-
-    @media (max-width: 600px) {
-      .hero img {
-        width: 80px;
-      }
-      h1 {
-        font-size: 2em;
-      }
-      #whaleBotBox {
-        width: auto;
-        bottom: 0.5em;
-        right: 0.5em;
-      }
     }
   </style>
 </head>
 <body>
+  <div class="hero whale-hero">
+    <img src="whale.png" alt="WhaleWatch Logo" class="homepage-logo" />
+    <h1>WhaleWatch.Trade</h1>
+    <p>We track the whales so you can harvest the premium.</p>
+    <a href="harvesting.html" class="cta-button">What Is Premium Harvesting?</a>
+  </div>
+
   <nav>
     <a href="index.html">Home</a>
     <a href="learn.html">Learn</a>
@@ -162,48 +180,42 @@
     <a href="harvesting.html">Premium Harvesting</a>
     <a href="whisper.html">Whispers</a>
   </nav>
-  <div class="hero">
-    <img src="whale.png" alt="Whale Logo">
-    <h1>WhaleWatch.Trade</h1>
-    <p>We track the whales so you can harvest the premium.</p>
-    <a href="harvesting.html" class="cta-button">What Is Premium Harvesting?</a>
-  </div>
 
   <div class="section">
     <h2>🌊 Whale Meter</h2>
-    <div class="bar-container">
-      <div id="whaleFill" class="fill whale-fill" style="width: 0%;"></div>
-    </div>
-    <div><strong id="whaleMeterText">Loading...</strong></div>
+    <div class="whale-meter-container"><div id="whaleFill" class="whale-meter-fill"></div></div>
+    <div class="whale-meter-text" id="whaleMeterText">Loading...</div>
     <div class="timestamp" id="whaleTimestamp">Loading...</div>
-    <div class="legend">
-      <span class="bullish">Green = Bullish (Calls)</span>
-      <span class="bearish">Red = Bearish (Puts)</span>
-      <span class="mixed">🎨 Gradient = Mixed Premium Flow</span>
-    </div>
-    <p class="tip"><em>The Whale Meter shows where the most capital is flowing in the options market — based on open interest and last traded price. Not all trades are from today, but they reflect current positioning.</em></p>
+    <p>🟢 Green = Bullish (Calls) · 🔴 Red = Bearish (Puts) · 🎨 Gradient = Mixed Premium Flow</p>
+    <p class="tip">The Whale Meter shows where the most capital is currently concentrated in the options market, based on open interest and last traded price.</p>
   </div>
 
   <div class="section">
     <h2>📈 Bullish vs. Bearish Sentiment</h2>
-    <div class="bar-container">
-      <div id="bullFill" class="fill bull-fill" style="width: 0%;"></div>
-      <div id="bearFill" class="fill bear-fill" style="width: 0%;"></div>
+    <div class="sentiment-bar">
+      <div id="bullFill" class="sentiment-fill-bullish"></div>
+      <div id="bearFill" class="sentiment-fill-bearish"></div>
     </div>
-    <div id="sentimentLabel"><strong>Loading...</strong></div>
-    <p class="tip"><em>This shows how many whale trades were bullish vs. bearish — not dollars, just number of trades.</em></p>
+    <div class="whale-meter-text" id="sentimentLabel">Loading...</div>
+    <p class="tip">This chart shows how many large option trades were bullish (calls) vs. bearish (puts) — not dollars, just number of trades.</p>
   </div>
 
   <div class="section">
     <h2>📉 Sentiment Timeline</h2>
-    <div class="bar-container" id="sentimentTimeline"></div>
-    <p class="tip" id="timelineInsight">Loading whale confidence trend...</p>
+    <div class="timeline-bar"><div id="timelineFill" class="timeline-fill"></div></div>
+    <p class="tip" id="timelineTip">Loading whale confidence trend...</p>
   </div>
 
   <div class="section">
-    <h2>🦈 Shark Meter (Dark Pool)</h2>
-    <div id="sharkList">Loading...</div>
-    <p class="tip"><em>Dark pool activity is shown here based on off-exchange trading volume. These trades are not always predictive — but can show where institutional money might be moving. Powered by FINRA ATS.</em></p>
+    <h2>📊 Latest Whale Trades</h2>
+    <div id="whaleList">Loading...</div>
+    <p class="tip">These are the largest open-interest trades — think of them as the foam trails whales leave before a wave.</p>
+  </div>
+
+  <div class="section">
+    <h2>🦈 Shark Meter</h2>
+    <p class="tip">Sharks swim in dark pools. These trades are hidden from the public tape but show up on FINRA reports the next day. While not real-time, they offer hints of deep interest and accumulation.</p>
+    <div class="shark-radar" id="sharkList">Loading...</div>
   </div>
 
   <div id="whaleBotBox">
@@ -219,72 +231,66 @@
   </div>
 
   <script>
-    function fetchJSON(file) {
-      return fetch(file).then(res => res.ok ? res.json() : Promise.reject(res.status));
-    }
+    function updateLiveData() {
+      fetch("whales.json")
+        .then(res => res.json())
+        .then(data => {
+          const trades = data.whale_trades;
+          const ts = new Date(data.timestamp);
+          document.getElementById("whaleTimestamp").textContent = `Last updated: ${ts.toLocaleString()}`;
 
-    function updateWhaleData() {
-      fetchJSON("whales.json").then(data => {
-        const trades = data.whale_trades || [];
-        const ts = new Date(data.timestamp);
-        document.getElementById("whaleTimestamp").textContent = `Last updated: ${ts.toLocaleString()}`;
-        const total = trades.reduce((sum, t) => sum + Number(t.premium), 0);
-        document.getElementById("whaleMeterText").textContent = `Total Premium Traded: $${(total * 10000).toLocaleString()}`;
-        document.getElementById("whaleFill").style.width = Math.min((total * 10000 / 1000000) * 100, 100) + "%";
-        const bull = trades.filter(t => t.type === "CALL").length;
-        const bear = trades.filter(t => t.type === "PUT").length;
-        const all = bull + bear;
-        const bullPct = all ? (bull / all * 100) : 50;
-        const bearPct = 100 - bullPct;
-        document.getElementById("bullFill").style.width = bullPct + "%";
-        document.getElementById("bearFill").style.width = bearPct + "%";
-        document.getElementById("sentimentLabel").textContent = `🐂 Bullish: ${bullPct.toFixed(1)}% | 🐻 Bearish: ${bearPct.toFixed(1)}%`;
-      }).catch(() => {
-        document.getElementById("whaleMeterText").textContent = "Failed to load whale data.";
-      });
-    }
+          const premium = trades.reduce((sum, t) => sum + Number(t.premium), 0);
+          document.getElementById("whaleMeterText").textContent = `Total Premium Traded: $${(premium * 10000).toLocaleString()}`;
+          document.getElementById("whaleFill").style.width = Math.min((premium * 10000 / 1000000) * 100, 100) + "%";
+          document.getElementById("whaleFill").style.background = "linear-gradient(to right, #00ff88, #ffaa00, #ff0044)";
 
-    function updateTimeline() {
-      fetchJSON("sentiment.json").then(data => {
-        const timeline = data.sentiment_timeline || [];
-        const timelineContainer = document.getElementById("sentimentTimeline");
-        timelineContainer.innerHTML = '';
-        let prev = 0;
-        timeline.forEach((point, i) => {
-          const bar = document.createElement('div');
-          bar.className = "sentiment-bar-segment";
-          bar.style.width = `${100 / timeline.length}%`;
-          const green = Math.round(100 - point.bearish_pct * 2);
-          bar.style.backgroundColor = `hsl(${green}, 90%, 55%)`;
-          timelineContainer.appendChild(bar);
-          prev = point.bullish_pct;
+          const bull = trades.filter(t => t.type === "CALL").length;
+          const bear = trades.filter(t => t.type === "PUT").length;
+          const total = bull + bear;
+          const bullPct = total ? (bull / total * 100) : 50;
+          const bearPct = 100 - bullPct;
+
+          document.getElementById("bullFill").style.width = `${bullPct}%`;
+          document.getElementById("bearFill").style.width = `${bearPct}%`;
+          document.getElementById("sentimentLabel").textContent = `🐂 Bullish: ${bullPct.toFixed(1)}% | 🐻 Bearish: ${bearPct.toFixed(1)}%`;
+
+          document.getElementById("whaleList").innerHTML = trades.map(t => `
+            <div class="trade-card">
+              <strong>${t.symbol}</strong> — ${t.type}<br>
+              Strike: $${t.strike}, Exp: ${t.expiration}, Premium: $${Number(t.premium).toLocaleString()}
+            </div>
+          `).join("");
         });
-        const trend = timeline[timeline.length - 1].bullish_pct - timeline[0].bullish_pct;
-        document.getElementById("timelineInsight").textContent =
-          trend > 10
-            ? "The whales have been getting more confident. Watch for foam buildup before a possible wave."
-            : trend < -10
-              ? "Whale confidence is fading. Be cautious — a pullback might follow."
-              : "Confidence has been steady. No clear shift in momentum… yet.";
-      });
+
+      fetch("sentiment.json")
+        .then(res => res.json())
+        .then(data => {
+          const timeline = data.sentiment_timeline || [];
+          const tip = document.getElementById("timelineTip");
+          const container = document.getElementById("timelineFill");
+          const last = timeline[timeline.length - 1]?.bullish_pct || 0;
+          container.style.width = last + "%";
+          tip.textContent = "The whales have been getting more confident. Watch for foam buildup before a possible wave.";
+        });
+
+      fetch("sharks.json")
+        .then(res => res.json())
+        .then(data => {
+          const sharks = data.shark_trades || [];
+          const box = document.getElementById("sharkList");
+          box.innerHTML = sharks.map(s => `
+            <div class="shark-ping">
+              <strong>${s.symbol}</strong> — ${s.venue}<br>
+              Volume: ${(s.volume).toLocaleString()}<br>
+              Avg. Price: $${s.avg_price} <br>
+              Date: ${s.date}
+            </div>
+          `).join("");
+        });
     }
 
-    function updateSharkData() {
-      fetchJSON("sharks.json").then(data => {
-        const list = document.getElementById("sharkList");
-        list.innerHTML = data.shark_trades.map(trade => `
-          <div class="card">
-            <strong>${trade.symbol}</strong> — Volume: ${trade.volume.toLocaleString()} @ $${trade.avg_price.toFixed(2)}<br>
-            <small>${trade.date} | Venue: ${trade.venue}</small>
-          </div>
-        `).join('');
-      });
-    }
-
-    updateWhaleData();
-    updateTimeline();
-    updateSharkData();
-    setInterval(updateWhaleData, 60000);
+    updateLiveData();
+    setInterval(updateLiveData, 60000);
   </script>
 </body>
 </html>
