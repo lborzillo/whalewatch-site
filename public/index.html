@@ -52,7 +52,7 @@
       color: #ccc;
       margin-bottom: 1.5em;
     }
-    .cta-button {
+    .hero a.cta-button {
       display: inline-block;
       padding: 0.75em 1.5em;
       background-color: #00ffee;
@@ -62,11 +62,11 @@
       text-decoration: none;
       transition: background-color 0.2s ease-in-out;
     }
-    .cta-button:hover {
+    .hero a.cta-button:hover {
       background-color: #00ddcc;
     }
     .section {
-      max-width: 900px;
+      max-width: 800px;
       margin: 3em auto;
       padding: 2em;
     }
@@ -75,48 +75,20 @@
       margin-bottom: 0.5em;
     }
     .whale-meter-container,
-    .sentiment-timeline-bar {
+    .sentiment-bar,
+    .sentiment-timeline-bar,
+    .shark-meter {
       background-color: #003850;
       border-radius: 6px;
       overflow: hidden;
       height: 30px;
       margin-bottom: 1em;
     }
-    .whale-meter-fill,
-    .timeline-fill {
+    .whale-meter-fill {
       height: 100%;
       width: 0;
-      transition: width 2s ease-in-out;
-    }
-    .whale-meter-fill {
       background: linear-gradient(to right, #00ff88, #ffaa00, #ff0044);
-    }
-    .timeline-fill {
-      background: linear-gradient(to right, #00ff88, #66ff99, #88ffaa);
-    }
-    .whale-meter-flex {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      flex-wrap: wrap;
-      gap: 1em;
-      margin-bottom: 1em;
-    }
-    .whale-meter-text {
-      font-weight: bold;
-      color: #00ffee;
-      font-size: 1.1em;
-    }
-    .timestamp {
-      font-size: 0.9em;
-      color: #aaa;
-    }
-    .sentiment-bar {
-      background-color: #00425f;
-      border-radius: 6px;
-      height: 20px;
-      overflow: hidden;
-      margin-top: 10px;
+      transition: width 2s ease-in-out;
     }
     .sentiment-fill-bullish {
       background-color: #00ff88;
@@ -131,6 +103,27 @@
       width: 0;
       float: left;
       transition: width 1.5s ease-in-out;
+    }
+    .sentiment-timeline-fill {
+      height: 100%;
+      display: flex;
+    }
+    .sentiment-block {
+      flex: 1;
+    }
+    .whale-meter-text {
+      font-weight: bold;
+      color: #00ffee;
+      font-size: 1.1em;
+    }
+    .timestamp {
+      font-size: 0.9em;
+      color: #aaa;
+    }
+    .tip {
+      color: #aaa;
+      font-style: italic;
+      margin-top: 0.5em;
     }
     .trade-card {
       background: #0c344a;
@@ -148,7 +141,7 @@
       border-radius: 12px;
       font-size: 0.9em;
       width: 240px;
-      box-shadow: 0 0 15px #00ffeecc;
+      box-shadow: 0 0 16px #00ffeeaa;
     }
     #whaleBotBox h3 {
       margin-top: 0;
@@ -163,7 +156,12 @@
   </style>
 </head>
 <body>
-  <div id="liveClockBanner">🕒 Market Clock: <span id="liveClock">Loading...</span></div>
+  <div class="hero whale-hero">
+    <img src="/whale.png" alt="WhaleWatch Logo" class="homepage-logo">
+    <h1>WhaleWatch.Trade</h1>
+    <p>We track the whales so you can harvest the premium.</p>
+    <a href="harvesting.html" class="cta-button">What Is Premium Harvesting?</a>
+  </div>
   <nav>
     <a href="index.html">Home</a>
     <a href="learn.html">Learn</a>
@@ -171,12 +169,6 @@
     <a href="harvesting.html">Premium Harvesting</a>
     <a href="whisper.html">Whispers</a>
   </nav>
-  <div class="hero whale-hero">
-    <img src="/whale.png" alt="WhaleWatch Logo" class="homepage-logo">
-    <h1>WhaleWatch.Trade</h1>
-    <p>We track the whales so you can harvest the premium.</p>
-    <a href="harvesting.html" class="cta-button">What Is Premium Harvesting?</a>
-  </div>
 
   <div class="section">
     <h2>🌊 Whale Meter</h2>
@@ -187,10 +179,8 @@
       <div id="whaleMeterText" class="whale-meter-text">Loading...</div>
       <div id="whaleTimestamp" class="timestamp">Loading...</div>
     </div>
-    <p style="margin: 0.2em 0;"><span style="color: #00ff88;">🟢 Green = Bullish (Calls)</span> · <span style="color: #ff0044;">🔴 Red = Bearish (Puts)</span> · 🎨 Gradient = Mixed Premium Flow</p>
-    <p style="font-size: 0.95em; color: #aaa; margin-top: 0.5em;">
-      <em>The Whale Meter shows where the most capital is currently concentrated in the options market, based on open interest and last traded price. These are not necessarily trades placed today, but represent the largest active bets for the nearest expiration.</em>
-    </p>
+    <p><span style="color:#00ff88;">🟢 Green = Bullish (Calls)</span> · <span style="color:#ff0044;">🔴 Red = Bearish (Puts)</span> · 🎨 Gradient = Mixed Premium Flow</p>
+    <p class="tip"><em>The Whale Meter shows where the most capital is currently concentrated in the options market, based on open interest and last traded price.</em></p>
   </div>
 
   <div class="section">
@@ -199,26 +189,30 @@
       <div id="bullFill" class="sentiment-fill-bullish"></div>
       <div id="bearFill" class="sentiment-fill-bearish"></div>
     </div>
-    <div id="sentimentLabel" class="whale-meter-text" style="margin-top: 10px;">Loading...</div>
-    <p style="font-size: 0.95em; color: #aaa; margin-top: 0.4em;">
-      <em>This chart shows how many large option trades were bullish (calls) vs. bearish (puts) — not dollars, just number of trades.</em>
-    </p>
+    <div id="sentimentLabel" class="whale-meter-text">Loading...</div>
+    <p class="tip"><em>This chart shows how many large trades were calls vs. puts — not dollars, just number of trades.</em></p>
   </div>
 
   <div class="section">
     <h2>📉 Sentiment Timeline</h2>
-    <div class="whale-meter-container">
-      <div id="sentimentTimelineFill" class="timeline-fill"></div>
+    <div class="sentiment-timeline-bar">
+      <div id="timelineBar" class="sentiment-timeline-fill"></div>
     </div>
-    <p id="sentimentTip" style="font-style: italic; color: #aaa;">Loading whale confidence trend...</p>
+    <div id="timelineTip" class="tip">Loading whale confidence trend...</div>
   </div>
 
   <div class="section">
-    <h2>📊 Latest Whale Trades</h2>
-    <div id="whaleList">Loading...</div>
-    <p style="font-size: 0.95em; color: #aaa; margin-top: 0.5em;">
-      <em>These are the top 10 highest-premium options trades — filtered by size, strike, and expiration. Think of them as the largest foam trails left behind by whales. Watch for patterns and use them to guide your own simulated or real trades.</em>
-    </p>
+    <h2>🌊 Foam Signal</h2>
+    <div class="whale-meter-flex">
+      <div id="foamSignal" class="whale-meter-text">Loading...</div>
+    </div>
+    <p class="tip"><em>This signal estimates when whale confidence is rising. Higher foam = more momentum building before a potential move.</em></p>
+  </div>
+
+  <div class="section">
+    <h2>🦈 Shark Meter (Dark Pool)</h2>
+    <div class="shark-meter"></div>
+    <p class="tip"><em>Coming soon: hidden dark pool trades, rebranded as shark activity.</em></p>
   </div>
 
   <div id="whaleBotBox">
@@ -238,8 +232,6 @@
       const now = new Date();
       document.getElementById("liveClock").textContent = now.toLocaleTimeString();
     }
-    setInterval(updateLiveClock, 1000);
-    updateLiveClock();
 
     function updateWhaleData() {
       fetch("whales.json")
@@ -247,38 +239,20 @@
         .then(data => {
           const trades = data.whale_trades || [];
           const ts = new Date(data.timestamp);
-          document.getElementById("whaleTimestamp").textContent =
-            `Last updated: ${ts.toLocaleString()}`;
-
-          const listHTML = trades.map(t => `
-            <div class="trade-card">
-              <strong>${t.symbol}</strong> — ${t.type}<br>
-              Strike: $${t.strike}, Exp: ${t.expiration}, Premium: $${Number(t.premium).toLocaleString()}
-            </div>
-          `).join("");
-          document.getElementById("whaleList").innerHTML = listHTML;
-
+          document.getElementById("whaleTimestamp").textContent = `Last updated: ${ts.toLocaleString()}`;
           const totalPremium = trades.reduce((sum, t) => sum + Number(t.premium), 0);
-          document.getElementById("whaleMeterText").textContent =
-            `Total Premium Traded: $${(totalPremium * 10000).toLocaleString()}`;
-
+          document.getElementById("whaleMeterText").textContent = `Total Premium Traded: $${(totalPremium * 10000).toLocaleString()}`;
           const percent = Math.min((totalPremium * 10000 / 1000000) * 100, 100);
-          document.getElementById("whaleFill").style.width = percent + "%";
-
+          const whaleFill = document.getElementById("whaleFill");
+          whaleFill.style.width = percent + "%";
           const bullishCount = trades.filter(t => t.type === "CALL").length;
           const bearishCount = trades.filter(t => t.type === "PUT").length;
           const totalCount = bullishCount + bearishCount;
           const bullishPct = totalCount > 0 ? (bullishCount / totalCount) * 100 : 50;
           const bearishPct = 100 - bullishPct;
-
           document.getElementById("bullFill").style.width = `${bullishPct}%`;
           document.getElementById("bearFill").style.width = `${bearishPct}%`;
-          document.getElementById("sentimentLabel").textContent =
-            `🐂 Bullish: ${bullishPct.toFixed(1)}% | 🐻 Bearish: ${bearishPct.toFixed(1)}%`;
-        })
-        .catch(err => {
-          console.error("Failed to fetch whale data:", err);
-          document.getElementById("whaleTimestamp").textContent = "Failed to load whale data.";
+          document.getElementById("sentimentLabel").textContent = `🐂 Bullish: ${bullishPct.toFixed(1)}% | 🐻 Bearish: ${bearishPct.toFixed(1)}%`;
         });
     }
 
@@ -286,30 +260,40 @@
       fetch("sentiment.json")
         .then(res => res.json())
         .then(data => {
-          const points = data.sentiment_timeline;
-          if (!points || points.length === 0) return;
+          const bar = document.getElementById("timelineBar");
+          const tips = data.sentiment_timeline || [];
+          bar.innerHTML = "";
+          tips.forEach(entry => {
+            const block = document.createElement("div");
+            block.className = "sentiment-block";
+            block.style.backgroundColor = `rgba(0,255,136,${entry.bullish_pct / 100})`;
+            bar.appendChild(block);
+          });
+          const recent = tips[tips.length - 1];
+          if (recent.bullish_pct > 70) {
+            document.getElementById("timelineTip").textContent = "The whales have been getting more confident. Watch for foam buildup before a possible wave.";
+          } else if (recent.bullish_pct < 40) {
+            document.getElementById("timelineTip").textContent = "Whale confidence has dropped. Consider waiting for signs of reversal.";
+          } else {
+            document.getElementById("timelineTip").textContent = "Neutral zone. Whales may be consolidating.";
+          }
 
-          const recent = points.slice(-5);
-          const avgBullish = recent.reduce((sum, pt) => sum + pt.bullish_pct, 0) / recent.length;
-          document.getElementById("sentimentTimelineFill").style.width = `${avgBullish}%`;
-
-          const tip = avgBullish >= 80
-            ? "🐋 The whales have been getting more confident. Watch for foam buildup before a possible wave."
-            : avgBullish >= 60
-              ? "📈 Whales are leaning bullish, but still mixed. Stay alert."
-              : avgBullish <= 40
-                ? "🔻 Bearish flow has picked up. Whales may be cautious."
-                : "📊 Sentiment is balanced. No clear trend — yet.";
-          document.getElementById("sentimentTip").textContent = tip;
-        })
-        .catch(err => {
-          console.error("Sentiment timeline error:", err);
+          // Foam signal logic
+          const deltas = tips.map((d, i, arr) => i === 0 ? 0 : d.bullish_pct - arr[i - 1].bullish_pct);
+          const avgDelta = deltas.reduce((a, b) => a + b) / deltas.length;
+          let foamLevel = "Low";
+          if (avgDelta > 2) foamLevel = "Moderate";
+          if (avgDelta > 4) foamLevel = "High";
+          document.getElementById("foamSignal").textContent = `Foam Signal: ${foamLevel}`;
         });
     }
 
+    updateLiveClock();
+    setInterval(updateLiveClock, 1000);
     updateWhaleData();
     updateSentimentTimeline();
     setInterval(updateWhaleData, 60000);
+    setInterval(updateSentimentTimeline, 60000);
   </script>
 </body>
 </html>
