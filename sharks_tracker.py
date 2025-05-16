@@ -3,7 +3,7 @@ name: Update Sharks Hourly
 on:
   schedule:
     - cron: '5 * * * *'  # 5 minutes past the hour
-  workflow_dispatch:      # Allow manual trigger too
+  workflow_dispatch:
 
 jobs:
   update:
@@ -13,7 +13,7 @@ jobs:
       - name: Checkout repository (full history)
         uses: actions/checkout@v3
         with:
-          fetch-depth: 0  # Required for pushing back to main
+          fetch-depth: 0  # Needed for pushing updates
 
       - name: Set up Python
         uses: actions/setup-python@v4
@@ -24,8 +24,7 @@ jobs:
         run: pip install pandas
 
       - name: Run shark update script
-        working-directory: ${{ github.workspace }}
-        run: python shark_tracker.py
+        run: python sharks_tracker.py
 
       - name: Commit and push updated sharks.json
         run: |
