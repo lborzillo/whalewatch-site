@@ -1,1 +1,40 @@
-
+{
+  "shark_trades": [
+    {
+      "symbol": "AAPL",
+      "volume": 3200000,
+      "avg_price": 189.12,
+      "date": "2025-05-14",
+      "venue": "FINRA ATS"
+    },
+    {
+      "symbol": "NVDA",
+      "volume": 2700000,
+      "avg_price": 114.75,
+      "date": "2025-05-14",
+      "venue": "FINRA ATS"
+    },
+    {
+      "symbol": "TSLA",
+      "volume": 2100000,
+      "avg_price": 175.6,
+      "date": "2025-05-13",
+      "venue": "FINRA ATS"
+    },
+    {
+      "symbol": "META",
+      "volume": 1800000,
+      "avg_price": 312.44,
+      "date": "2025-05-12",
+      "venue": "FINRA ATS"
+    },
+    {
+      "symbol": "AMZN",
+      "volume": 1500000,
+      "avg_price": 134.88,
+      "date": "2025-05-11",
+      "venue": "FINRA ATS"
+    }
+  ],
+  "last_updated": "2025-05-16 10:05:45.554891"
+}
