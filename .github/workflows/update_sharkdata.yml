@@ -24,7 +24,7 @@ jobs:
         run: pip install pandas
 
       - name: Run shark update script
-        run: python .github/shark_tracker.py
+        run: python sharks_tracker.py
 
       - name: Commit and push updated sharks.json
         run: |
