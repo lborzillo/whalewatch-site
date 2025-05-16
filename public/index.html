@@ -312,5 +312,33 @@ Most recent activity: <strong>2025-05-14</strong> @ $191.0.<br><br>
   setInterval(runFullUpdate, 60000);
 </script>
 
+
+<script>
+  async function updateEnhancedSharkAlert() {
+    const data = await fetch("sharks.json").then(r => r.json());
+    const sharks = data.shark_summary || [];
+
+    if (!sharks.length) {
+      document.getElementById("sharkAlertDisplay").innerHTML = "<em style='color:#aaa'>No high-confidence shark patterns found.</em>";
+      return;
+    }
+
+    // Get top candidate based on frequency and volume
+    const top = sharks.sort((a, b) =>
+      b.frequency - a.frequency || b.total_volume - a.total_volume
+    )[0];
+
+    document.getElementById("sharkAlertDisplay").innerHTML = `
+      🚨 <strong>${top.symbol}</strong> appeared <strong>${top.frequency}x</strong> this week<br>
+      Total volume: <strong>${top.total_volume.toLocaleString()}</strong> shares<br>
+      Most recent: <strong>${top.last_seen}</strong> @ ~$${top.average_price}<br><br>
+      🍫 Confidence: <strong>${top.confidence}</strong><br>
+      <span style='color:#aaa'>Want to see all alerts? <a href='whispers.html' style='color:#ffaa00'>Unlock with Premium</a>.</span>
+    `;
+  }
+
+  updateEnhancedSharkAlert();
+</script>
+
 </body>
 </html>
