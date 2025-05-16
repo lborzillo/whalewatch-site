@@ -73,4 +73,4 @@ if __name__ == "__main__":
             print(f"⚠️ Failed to fetch for {sym}: {e}")
 
     top_whales = sorted(all_trades, key=lambda x: x['premium'], reverse=True)[:10]
-    save_whales_json(top_whales)
+    save_whales_json(all_trades)
