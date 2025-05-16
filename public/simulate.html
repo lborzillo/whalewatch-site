@@ -24,11 +24,10 @@
     nav {
       background-color: #001520;
       padding: 1em;
-      text-align: center;
       display: flex;
       justify-content: center;
-      gap: 1em;
       flex-wrap: wrap;
+      gap: 1.5em;
     }
 
     nav a {
@@ -43,15 +42,8 @@
       background-color: #002b3f;
     }
 
-    .whale-hero {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-    }
-
     .homepage-logo {
       width: 100px;
-      height: auto;
       margin-bottom: 1rem;
       filter: drop-shadow(0 0 12px #00ffeecc);
     }
@@ -63,11 +55,11 @@
 
     h2 {
       font-size: 2rem;
-      margin-bottom: 1rem;
       color: var(--accent);
+      margin-bottom: 1rem;
     }
 
-    select, input, button {
+    select, button {
       padding: 0.6em;
       margin: 0.5em;
       font-size: 1em;
@@ -88,7 +80,6 @@
 
     .result-box {
       background: var(--box);
-      color: var(--text);
       padding: 1.5em;
       margin-top: 2em;
       border-radius: 12px;
@@ -99,6 +90,46 @@
     .chart-container {
       max-width: 600px;
       margin: 2em auto;
+    }
+
+    .advanced-link {
+      display: block;
+      margin-top: 2em;
+      font-weight: bold;
+      color: var(--accent);
+      text-decoration: underline;
+    }
+
+    .whale-hero {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    #whaleBotBox {
+      position: fixed;
+      bottom: 1em;
+      right: 1em;
+      background: #002b3f;
+      border: 2px solid #00ffee;
+      padding: 1em;
+      border-radius: 12px;
+      font-size: 0.9em;
+      width: 240px;
+      box-shadow: 0 0 20px #00ffee88;
+    }
+
+    #whaleBotBox h3 {
+      margin-top: 0;
+      color: #00ffee;
+    }
+
+    #whaleBotBox ul {
+      padding-left: 1.2em;
+    }
+
+    #whaleBotBox li {
+      margin-bottom: 0.4em;
     }
 
     .whisper-modal {
@@ -137,40 +168,6 @@
       padding: 0.4em 0.8em;
       border-radius: 8px;
     }
-
-    .advanced-link {
-      display: block;
-      margin-top: 2em;
-      font-weight: bold;
-      color: var(--accent);
-      text-decoration: underline;
-    }
-
-    #whaleBotBox {
-      position: fixed;
-      bottom: 1em;
-      right: 1em;
-      background: #002b3f;
-      border: 2px solid #00ffee;
-      padding: 1em;
-      border-radius: 12px;
-      font-size: 0.9em;
-      width: 240px;
-      box-shadow: 0 0 20px #00ffee88;
-    }
-
-    #whaleBotBox h3 {
-      margin-top: 0;
-      color: #00ffee;
-    }
-
-    #whaleBotBox ul {
-      padding-left: 1.2em;
-    }
-
-    #whaleBotBox li {
-      margin-bottom: 0.4em;
-    }
   </style>
 </head>
 <body>
@@ -190,19 +187,17 @@
 
   <main>
     <h2>Simulate a Whale Trade</h2>
-    <select id="symbolSelect"><option value="">Loading symbols...</option></select>
-    <select id="typeSelect"><option value="CALL">CALL</option><option value="PUT">PUT</option></select>
-    <select id="strikeSelect"></select>
-    <select id="expirationSelect"></select>
+    <select id="symbolSelect"><option value="">Select Symbol</option></select>
+    <select id="typeSelect"><option value="">Select Type</option></select>
+    <select id="strikeSelect"><option value="">Select Strike</option></select>
+    <select id="expirationSelect"><option value="">Select Expiration</option></select>
     <div>
       <button onclick="simulateTrade()">Simulate</button>
       <button onclick="resetForm()">Reset</button>
       <button onclick="showModal()">Unlock Whisper+</button>
     </div>
     <div id="resultBox" class="result-box">📈 Select options and click Simulate.</div>
-    <div class="chart-container" id="chartSection">
-      <canvas id="profitChart" width="400" height="200"></canvas>
-    </div>
+    <div class="chart-container"><canvas id="profitChart" width="400" height="200"></canvas></div>
     <a class="advanced-link" href="/whisper.html">🔍 View My Whisper Trades</a>
   </main>
 
@@ -228,32 +223,88 @@
   </div>
 
   <script>
-    function showModal() {
-      document.getElementById("whisperModal").style.display = "flex";
+    let whaleTrades = {};
+
+    async function loadWhaleData() {
+      try {
+        const res = await fetch("whales.json");
+        const data = await res.json();
+
+        whaleTrades = {};
+
+        data.whale_trades.forEach(({ symbol, type, strike, expiration }) => {
+          if (!whaleTrades[symbol]) whaleTrades[symbol] = {};
+          if (!whaleTrades[symbol][type]) whaleTrades[symbol][type] = [];
+          whaleTrades[symbol][type].push({ strike, expiration });
+        });
+
+        populateSymbols();
+      } catch (error) {
+        document.getElementById("resultBox").textContent = "❌ Failed to load whale data.";
+      }
     }
-    function closeModal() {
-      document.getElementById("whisperModal").style.display = "none";
+
+    function populateSymbols() {
+      const symbolSelect = document.getElementById("symbolSelect");
+      symbolSelect.innerHTML = `<option value="">Select Symbol</option>`;
+      Object.keys(whaleTrades).forEach(symbol => {
+        const opt = document.createElement("option");
+        opt.value = symbol;
+        opt.textContent = symbol;
+        symbolSelect.appendChild(opt);
+      });
+
+      symbolSelect.addEventListener("change", updateTypes);
+    }
+
+    function updateTypes() {
+      const symbol = document.getElementById("symbolSelect").value;
+      const typeSelect = document.getElementById("typeSelect");
+      const types = Object.keys(whaleTrades[symbol] || {});
+
+      typeSelect.innerHTML = types.length
+        ? `<option value="">Select Type</option>` + types.map(t => `<option value="${t}">${t}</option>`).join("")
+        : `<option value="">No Data Available</option>`;
+
+      typeSelect.addEventListener("change", updateStrikesAndExpirations);
+    }
+
+    function updateStrikesAndExpirations() {
+      const symbol = document.getElementById("symbolSelect").value;
+      const type = document.getElementById("typeSelect").value;
+      const trades = whaleTrades[symbol]?.[type] || [];
+
+      const strikeSelect = document.getElementById("strikeSelect");
+      const expirationSelect = document.getElementById("expirationSelect");
+
+      strikeSelect.innerHTML = trades.map(t => `<option value="${t.strike}">${t.strike}</option>`).join("") || `<option value="">None</option>`;
+      expirationSelect.innerHTML = trades.map(t => `<option value="${t.expiration}">${t.expiration}</option>`).join("") || `<option value="">None</option>`;
+
+      document.getElementById("resultBox").textContent =
+        trades.length === 0
+          ? `📚 Teachable Moment: Whales are only trading ${type === "PUT" ? "CALLS" : "PUTS"} on ${symbol}.`
+          : "📈 Select options and click Simulate.";
     }
 
     function simulateTrade() {
-      const resultBox = document.getElementById("resultBox");
       const symbol = document.getElementById("symbolSelect").value;
       const type = document.getElementById("typeSelect").value;
       const strike = document.getElementById("strikeSelect").value;
       const expiration = document.getElementById("expirationSelect").value;
 
-      if (!symbol || !strike || !expiration) {
-        resultBox.textContent = "⚠️ Please fill in all fields before simulating.";
+      if (!symbol || !type || !strike || !expiration) {
+        document.getElementById("resultBox").textContent = "⚠️ Please fill in all fields before simulating.";
         return;
       }
 
-      resultBox.textContent = `🧠 Simulating: ${type} on ${symbol} at $${strike} expiring ${expiration}...`;
+      document.getElementById("resultBox").textContent =
+        `🧠 Simulating: ${type} on ${symbol} at $${strike}, expiring ${expiration}`;
 
       const ctx = document.getElementById("profitChart").getContext("2d");
       new Chart(ctx, {
         type: "line",
         data: {
-          labels: ["Now", "Later"],
+          labels: ["Now", "Expiration"],
           datasets: [{
             label: "Profit Potential",
             data: [0, type === "CALL" ? 500 : 300],
@@ -263,9 +314,7 @@
         },
         options: {
           responsive: true,
-          plugins: {
-            legend: { labels: { color: "#ffffff" } }
-          },
+          plugins: { legend: { labels: { color: "#ffffff" } } },
           scales: {
             x: { ticks: { color: "#ffffff" } },
             y: { ticks: { color: "#ffffff" } }
@@ -276,28 +325,23 @@
 
     function resetForm() {
       document.getElementById("symbolSelect").selectedIndex = 0;
-      document.getElementById("typeSelect").value = "CALL";
-      document.getElementById("strikeSelect").innerHTML = "";
-      document.getElementById("expirationSelect").innerHTML = "";
+      document.getElementById("typeSelect").innerHTML = `<option value="">Select Type</option>`;
+      document.getElementById("strikeSelect").innerHTML = `<option value="">Select Strike</option>`;
+      document.getElementById("expirationSelect").innerHTML = `<option value="">Select Expiration</option>`;
       document.getElementById("resultBox").textContent = "📈 Select options and click Simulate.";
-      const chartCanvas = document.getElementById("profitChart");
-      chartCanvas.getContext("2d").clearRect(0, 0, chartCanvas.width, chartCanvas.height);
+      const ctx = document.getElementById("profitChart").getContext("2d");
+      ctx.clearRect(0, 0, 400, 200);
     }
 
-    window.onload = function() {
-      const symbols = ["AAPL", "NVDA", "KO"];
-      const strikes = ["100", "110", "120"];
-      const expirations = ["2025-05-17", "2025-05-24"];
+    function showModal() {
+      document.getElementById("whisperModal").style.display = "flex";
+    }
 
-      const symbolSelect = document.getElementById("symbolSelect");
-      symbolSelect.innerHTML = symbols.map(s => `<option value="${s}">${s}</option>`).join("");
+    function closeModal() {
+      document.getElementById("whisperModal").style.display = "none";
+    }
 
-      const strikeSelect = document.getElementById("strikeSelect");
-      strikeSelect.innerHTML = strikes.map(s => `<option value="${s}">${s}</option>`).join("");
-
-      const expirationSelect = document.getElementById("expirationSelect");
-      expirationSelect.innerHTML = expirations.map(e => `<option value="${e}">${e}</option>`).join("");
-    };
+    window.onload = loadWhaleData;
   </script>
 </body>
 </html>
