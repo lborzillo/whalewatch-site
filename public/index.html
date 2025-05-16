@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -113,23 +112,27 @@
     <a href="harvesting.html">Premium Harvesting</a>
   </nav>
 
+  <!-- Live Trader Log -->
   <div class="section">
     <h2>📒 Live Trader Log</h2>
     <div id="liveTrade">Loading latest trade...</div>
     <p class="teaser">Want to see all my trades, win or lose? <a href="whisper.html">Unlock Premium Access</a>.</p>
   </div>
 
+  <!-- Suggested Trade -->
   <div class="section">
     <h2>💡 Suggested Trade Based on Whale + Shark Signals <span style="color: gold;">(🔒 Premium Preview)</span></h2>
     <div id="suggestedTrade">Loading...</div>
   </div>
 
+  <!-- Shark Alerts -->
   <div class="section">
     <h2>🦈 Shark Alerts</h2>
     <div id="sharkAlerts">Loading shark alerts...</div>
     <div class="teaser" id="confidenceExplanation"></div>
   </div>
 
+  <!-- WhaleBot Widget -->
   <div id="whaleBotBox">
     <h3>🤖 WhaleBot</h3>
     <p>Ask me anything about:</p>
@@ -143,41 +146,45 @@
   </div>
 
   <script>
+    // Load Live Trader Log
     fetch("trades.json")
       .then(res => res.json())
       .then(data => {
         const last = data.trades?.slice(-1)[0];
-        const result = \`
+        const result = `
           <div class="trade-card">
-            <strong>\${last.symbol}</strong> — \${last.type}<br>
-            Strike: $\${last.strike}, Exp: \${last.expiration}<br>
-            Premium: $\${last.premium} × \${last.size} = <strong>$\${(last.premium * last.size).toFixed(2)}</strong><br>
-            Status: <span style="color:\${last.status === 'OPEN' ? '#00ff88' : '#aaa'}">\${last.status}</span> (Date: \${last.date})
+            <strong>${last.symbol}</strong> — ${last.type}<br>
+            Strike: $${last.strike}, Exp: ${last.expiration}<br>
+            Premium: $${last.premium} × ${last.size} = <strong>$${(last.premium * last.size).toFixed(2)}</strong><br>
+            Status: <span style="color:${last.status === 'OPEN' ? '#00ff88' : '#aaa'}">${last.status}</span> (Date: ${last.date})
           </div>
-        \`;
+        `;
         document.getElementById("liveTrade").innerHTML = result;
       });
 
+    // Load Shark Alerts and Suggested Trade
     fetch("sharks.json")
       .then(res => res.json())
       .then(data => {
-        const best = data.shark_summary.find(s => s.confidence === "MODERATE" || s.confidence === "HIGH");
-        const alerts = data.shark_summary.map(s => \`
+        const best = data.shark_summary.find(s => s.confidence === "HIGH" || s.confidence === "MODERATE");
+        const alerts = data.shark_summary.map(s => `
           <div class="shark-alert">
-            🔔 <strong>\${s.symbol}</strong> has appeared in dark pool trades \${s.frequency}x this week.<br>
-            Total volume: <strong>\${s.total_volume.toLocaleString()}</strong> shares.<br>
-            Most recent activity: <strong>\${s.last_seen}</strong> @ <strong>$\${s.average_price.toFixed(2)}</strong><br>
-            🧭 Confidence Level: <strong>\${s.confidence}</strong>
-          </div>\`).join("");
+            🔔 <strong>${s.symbol}</strong> has appeared in dark pool trades ${s.frequency}x this week.<br>
+            Total volume: <strong>${s.total_volume.toLocaleString()}</strong> shares.<br>
+            Most recent activity: <strong>${s.last_seen}</strong> @ <strong>$${s.average_price.toFixed(2)}</strong><br>
+            🧭 Confidence Level: <strong>${s.confidence}</strong>
+          </div>`).join("");
         document.getElementById("sharkAlerts").innerHTML = alerts;
+
         document.getElementById("suggestedTrade").innerHTML = best
-          ? \`
-          <div class="trade-card">
-            📌 Based on recent dark pool and whale activity in <strong>\${best.symbol}</strong>, a beginner-friendly strategy could be:<br><br>
-            ✅ <strong>Sell a cash-secured put</strong> near $<strong>\${best.average_price.toFixed(0)}</strong>.<br>
-            <span style="color:#ccc;">This lets you collect premium while potentially buying \${best.symbol} near the level sharks are swimming.</span>
-          </div>\`
-          : '<div class="trade-card">No clear alignment found right now.</div>';
+          ? `
+            <div class="trade-card">
+              📌 Based on recent dark pool and whale activity in <strong>${best.symbol}</strong>, a beginner-friendly strategy could be:<br><br>
+              ✅ <strong>Sell a cash-secured put</strong> near $<strong>${best.average_price.toFixed(0)}</strong>.<br>
+              <span style="color:#ccc;">This lets you collect premium while potentially buying ${best.symbol} near the level sharks are swimming.</span>
+            </div>`
+          : '<div class="trade-card">No clear alignment found right now. Check back later!</div>';
+
         document.getElementById("confidenceExplanation").innerHTML =
           "<strong>What does confidence mean?</strong><br/>" +
           "Confidence reflects how likely shark activity signals a real move.<ul>" +
