@@ -248,18 +248,12 @@
       document.getElementById("bearFill").style.width = (100 - bullPct) + "%";
       document.getElementById("sentimentLabel").textContent = `🐂 Bullish: ${bullPct.toFixed(1)}% | 🐻 Bearish: ${(100 - bullPct).toFixed(1)}%`;
 
-      
-    const topTrades = tradesData
-      .sort((a, b) => b.premium - a.premium)
-      .slice(0, 10);
-
-    document.getElementById("whaleList").innerHTML = topTrades.map(w => \`
-      <div class="trade-card">
-        <strong>\${w.symbol}</strong> — \${w.type}<br>
-        Strike: $\${w.strike}, Exp: \${w.expiration}, Premium: $\${w.premium.toFixed(2)}
-      </div>
-    \`).join("");
-
+      document.getElementById("whaleList").innerHTML = tradesData.map(w => `
+        <div class="trade-card">
+          <strong>${w.symbol}</strong> — ${w.type}<br>
+          Strike: $${w.strike}, Exp: ${w.expiration}, Premium: $${w.premium}
+        </div>
+      `).join("");
 
       const timeline = sentiment.sentiment_timeline;
       document.getElementById("timelineFill").style.width = timeline.at(-1)?.bullish_pct + "%";
