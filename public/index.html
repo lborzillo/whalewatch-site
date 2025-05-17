@@ -220,7 +220,11 @@
   </div>
 
   <script>
-    async function updateData() {
+    
+let whale; // ensure it's global
+
+async function updateData() {
+
       const [whale, sentiment, sharks, trades] = await Promise.all([
         fetch("whales.json").then(r => r.json()),
         fetch("sentiment.json").then(r => r.json()),
