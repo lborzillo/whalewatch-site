@@ -241,7 +241,15 @@
 
       
     console.log("🐋 Whale object loaded:", whale);
-    const tradesData = whale.whale_trades || [];
+    
+    console.log("🐋 Whale loaded?", whale);
+    if (!whale || !Array.isArray(whale.whale_trades)) {
+      console.warn("⚠️ whale.whale_trades not available.");
+      document.getElementById("whaleList").innerHTML = "<p style='color: orange;'>No whale trades loaded — check whales.json</p>";
+      return;
+    }
+    const tradesData = whale.whale_trades;
+    
     if (!Array.isArray(tradesData) || tradesData.length === 0) {
       document.getElementById("whaleList").innerHTML = "<p style='color:#ccc;'>No whale trades found.</p>";
       return;
