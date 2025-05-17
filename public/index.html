@@ -249,7 +249,7 @@
       document.getElementById("whaleTimestamp").textContent = `Last updated: ${whaleTS1.toLocaleString()}`;
 
       var bulls1 = tradesData.filter(t => t.type === "CALL").length;
-      const bears1 = tradesData.filter(t => t.type === "PUT").length;
+      var bears1 = tradesData.filter(t => t.type === "PUT").length;
       const bullPct1 = bulls1 / (bulls1 + bears1) * 100;
       document.getElementById("bullFill").style.width = bullPct1 + "%";
       document.getElementById("bearFill").style.width = (100 - bullPct1) + "%";
@@ -277,7 +277,7 @@
       document.getElementById("whaleTimestamp").textContent = `Last updated: ${whaleTS1.toLocaleString()}`;
 
       var bulls1 = tradesData.filter(t => t.type === "CALL").length;
-      const bears1 = tradesData.filter(t => t.type === "PUT").length;
+      var bears1 = tradesData.filter(t => t.type === "PUT").length;
       const bullPct1 = bulls1 / (bulls1 + bears1) * 100;
       document.getElementById("bullFill").style.width = bullPct1 + "%";
       document.getElementById("bearFill").style.width = (100 - bullPct1) + "%";
