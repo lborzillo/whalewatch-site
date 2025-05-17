@@ -4,96 +4,154 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>WhaleWatch.Trade</title>
-  <link rel="stylesheet" href="style.css">
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background-color: #001d2d;
+      color: white;
+      margin: 0;
+      padding: 0;
+    }
+    nav {
+      background-color: #001520;
+      padding: 1em;
+      display: flex;
+      justify-content: center;
+      flex-wrap: wrap;
+      gap: 1.5em;
+    }
+    nav a {
+      color: #00ffee;
+      text-decoration: none;
+      font-weight: bold;
+    }
+    .hero {
+      text-align: center;
+      padding: 3em 1em 2em;
+      background-color: #002b3f;
+    }
+    .homepage-logo {
+      width: 100px;
+      border-radius: 12px;
+      box-shadow: 0 0 20px #00ffee77;
+    }
+    .section {
+      max-width: 800px;
+      margin: 3em auto;
+      padding: 0 2em;
+    }
+    h2 {
+      color: #5fffff;
+    }
+    .trade-card, .shark-alert {
+      background: radial-gradient(circle at center, #0c344a, #001d2d);
+      border: 1px solid #00ffee88;
+      padding: 1em;
+      border-radius: 12px;
+      margin-bottom: 1em;
+    }
+    .bar {
+      background: linear-gradient(to right, limegreen, red);
+      height: 18px;
+      border-radius: 8px;
+      margin-bottom: 0.5em;
+    }
+    .tooltip {
+      font-style: italic;
+      color: #ccc;
+      font-size: 0.9em;
+    }
+    .premium-box {
+      background: #012b40;
+      border: 1px solid #00ffee55;
+      padding: 1em;
+      border-radius: 10px;
+      margin-top: 1em;
+    }
+  </style>
 </head>
 <body>
   <nav>
-    <a href="index.html">Home</a>
+    <a href="/">Home</a>
     <a href="learn.html">Learn</a>
     <a href="simulate.html">Simulate</a>
-    <a href="harvesting.html">Premium Harvesting</a>
-    <a href="whisper.html">Whispers</a>
+    <a href="premium.html">Premium Harvesting</a>
+    <a href="whispers.html">Whispers</a>
   </nav>
-
   <div class="hero">
-    <img src="whale.png" alt="Whale Logo" class="homepage-logo">
+    <img src="whale.png" alt="Whale Logo" class="homepage-logo" />
     <h1>WhaleWatch.Trade</h1>
     <p>We track the whales so you can harvest the premium.</p>
-    <a href="harvesting.html" class="cta">What Is Premium Harvesting?</a>
+    <a href="#" style="color:cyan">What Is Premium Harvesting?</a>
   </div>
 
   <div class="section">
-    <h2>🌊 Whale Meter</h2>
-    <div id="whaleMeter" class="meter"></div>
-    <p class="whale-metrics"></p>
-    <p class="legend">
-      🟢 Green = Bullish (Calls) · 🔴 Red = Bearish (Puts) · 🎨 Gradient = Mixed Premium Flow
-    </p>
-    <p class="explanation">
-      The Whale Meter shows where the most capital is currently concentrated in the options market, based on open interest and last traded price.
-    </p>
+    <h2>🐬 Whale Meter</h2>
+    <div class="bar"></div>
+    <p><strong>Green</strong> = Bullish (Calls) &middot; <strong>Red</strong> = Bearish (Puts) &middot; <strong>🎨 Gradient</strong> = Mixed Premium Flow</p>
+    <p class="tooltip">The Whale Meter shows where the most capital is currently concentrated in the options market, based on open interest and last traded price.</p>
   </div>
 
   <div class="section">
     <h2>📈 Bullish vs. Bearish Sentiment</h2>
-    <div id="sentimentBar" class="meter"></div>
-    <p id="sentimentRatio" class="whale-metrics"></p>
-    <p class="explanation">
-      This chart shows how many large option trades were bullish (calls) vs. bearish (puts) — not dollars, just number of trades.
-    </p>
+    <div class="bar" style="background: linear-gradient(to right, limegreen 70%, crimson 30%)"></div>
+    <p><strong>🐃 Bullish: 70%</strong> / <strong>🐻 Bearish: 30%</strong></p>
+    <p class="tooltip">This chart shows how many large option trades were bullish (calls) vs. bearish (puts) &mdash; not dollars, just number of trades.</p>
   </div>
 
   <div class="section">
-    <h2>🖊️ Sentiment Timeline</h2>
-    <div id="timelineContainer" class="meter"></div>
-    <p id="timelineTip" class="explanation"></p>
+    <h2>✍️ Sentiment Timeline</h2>
+    <div class="bar" style="background: linear-gradient(to right, #5cff9d, #5cffdf, #50ffe6, #003344)"></div>
+    <p class="tooltip">The whales have been getting more confident. Watch for foam buildup before a possible wave.</p>
   </div>
 
   <div class="section">
-    <h2>🌃 Latest Whale Trades</h2>
-    <p class="loading">Loading...</p>
-    <div id="whaleList"></div>
-  </div>
-
-  <div class="section">
-    <h2>🦈 Shark Meter</h2>
-    <p class="explanation">
-      Sharks swim in dark pools. These trades are hidden from the public tape but show up later on FINRA reports. We surface the biggest hidden moves for you.
-    </p>
-    <div id="sharkMeter"></div>
-  </div>
-
-  <div class="section">
-    <h2>🛑 Shark Alert</h2>
-    <div id="sharkAlert"></div>
-    <div class="explanation">
-      <p><strong>What does confidence mean?</strong> It's our best guess at how likely this shark activity signals a real move.</p>
-      <ul>
-        <li><strong>LOW:</strong> Could be noise. Only 1 hit or low volume.</li>
-        <li><strong>MODERATE:</strong> Starting to build. Multiple pings, elevated volume.</li>
-        <li><strong>HIGH:</strong> Something may be brewing. Sharks might be accumulating.</li>
-      </ul>
-      <p><em>A MODERATE confidence doesn’t mean “don’t act” — it means: 👀 Watch closely. This might be the start of something.</em></p>
+    <h2>🏋️ Latest Whale Trades</h2>
+    <div id="whaleList">
+      <div class="trade-card">
+        <strong>NVDA &mdash; CALL</strong><br>
+        Strike: $100, Exp: 2025-05-17, Premium: $1,234,567.89
+      </div>
+      <div class="trade-card">
+        <strong>AAPL &mdash; PUT</strong><br>
+        Strike: $190, Exp: 2025-05-17, Premium: $987,654.32
+      </div>
     </div>
   </div>
 
   <div class="section">
-    <h2>💡 Suggested Trade Based on Whale + Shark Signals (<span class="lock"> 🔐 Premium Preview</span>)</h2>
-    <div id="suggestedTrade"></div>
+    <h2>🦈 Shark Meter</h2>
+    <p class="tooltip">Sharks swim in dark pools. These trades are hidden from the public tape but show up later on FINRA reports. We surface the biggest hidden moves for you.</p>
+    <div class="trade-card">
+      <strong>🔔 AAPL</strong> has appeared in dark pool trades <strong>3x</strong> this week.<br>
+      Total volume: <strong>8,700,000</strong> shares. Most recent: <strong>2025-05-14 @ $190.04</strong><br>
+      🌌 Confidence Level: <strong>MODERATE</strong>
+    </div>
   </div>
 
-  <div id="whaleBotBox" class="floating-bot">
-    <h3>🧬 WhaleBot</h3>
-    <p>Ask me about:</p>
-    <ul>
-      <li>• Covered calls</li>
-      <li>• Put selling</li>
-      <li>• Whale trades</li>
-      <li>• Premium harvesting</li>
-    </ul>
-    <p class="note">(Coming soon: live chat!)</p>
+  <div class="section">
+    <h2>🛑 Shark Alert</h2>
+    <div class="shark-alert">
+      <strong>🔔 AAPL</strong> is surfacing repeatedly. Volume and frequency suggest accumulation.<br>
+      🌌 Confidence Level: <strong>MODERATE</strong>
+    </div>
+    <div class="tooltip">
+      <p><em>What does confidence mean?</em><br>
+      LOW: Could be noise. Only 1 hit or low volume.<br>
+      MODERATE: Starting to build. Multiple pings, elevated volume.<br>
+      HIGH: Something may be brewing. Sharks might be accumulating.</p>
+    </div>
   </div>
 
-  <script src="main.js"></script>
+  <div class="section">
+    <h2>🔎 Suggested Trade Based on Whale + Shark Signals (🔐 Premium Preview)</h2>
+    <div class="premium-box">
+      🖊️ Based on recent dark pool and whale activity in <strong>NVDA</strong>, a beginner-friendly strategy could be:
+      <p>
+        ✅ <strong>Sell a cash-secured put</strong> near <strong>$115</strong>.<br>
+        <span class="tooltip">This lets you collect premium while potentially buying NVDA near the level sharks are swimming.</span>
+      </p>
+    </div>
+  </div>
 </body>
 </html>
