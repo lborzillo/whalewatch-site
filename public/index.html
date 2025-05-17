@@ -145,6 +145,11 @@
 
   <div class="section">
     <h2>📒 Live Trader Log</h2>
+  <div class="section">
+    <h2>🧾 Weekly Premium Harvest Plan</h2>
+    <div id="harvestPlan">Loading plan...</div>
+  </div>
+
     <div id="liveTrade">Loading latest trade...</div>
     <p class="tip">Want to see all my trades? <a href="whisper.html">Unlock Premium Access</a>.</p>
   </div>
@@ -286,6 +291,39 @@
         <br><span style="font-size:0.9em;color:#ccc;">Earn premium while potentially entering ${match.symbol} near shark levels.</span>
       ` : "No clear alignment between whales and sharks at the moment.";
     }
+
+    // Load Premium Harvest Plan
+    fetch("harvest.json")
+      .then(r => r.json())
+      .then(data => {
+        const harvestDiv = document.getElementById("harvestPlan");
+        let html = `<p><strong>Week:</strong> ${data.week}</p>`;
+        html += `<p><strong>Target:</strong> $${data.premium_goal} | <strong>Total:</strong> $${data.total_premium}</p>`;
+        for (const [account, info] of Object.entries(data.accounts)) {
+          html += `<h3>${account}</h3>`;
+          if (info.puts?.length) {
+            html += `<strong>Puts:</strong><ul>`;
+            info.puts.forEach(p => {
+              const totalPremium = p.premium * 100 * p.contracts;
+              html += `<li>${p.contracts}x ${p.symbol} $${p.strike} Put @ $${p.premium} = $${totalPremium.toFixed(2)}</li>`;
+            });
+            html += `</ul>`;
+          }
+          if (info.calls?.length) {
+            html += `<strong>Calls:</strong><ul>`;
+            info.calls.forEach(c => {
+              const totalPremium = c.premium * 100 * c.contracts;
+              html += `<li>${c.contracts}x ${c.symbol} $${c.strike} Call @ $${c.premium} = $${totalPremium.toFixed(2)}</li>`;
+            });
+            html += `</ul>`;
+          }
+        }
+        harvestDiv.innerHTML = html;
+      })
+      .catch(err => {
+        document.getElementById("harvestPlan").innerHTML = `<p style="color:red;">Error loading plan.</p>`;
+        console.error("Harvest Plan Error:", err);
+      });
 
     updateData();
     setInterval(updateData, 60000);
