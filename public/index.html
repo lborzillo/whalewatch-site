@@ -219,133 +219,47 @@
     <p style="font-size:0.8em;color:#aaa;">(Coming soon: live chat!)</p>
   </div>
 
-  <script>
-    
-let whale; // ensure it's global
-
+  
+<script>
 async function updateData() {
+  try {
+    const [whaleResp] = await Promise.all([
+      fetch('whales.json')
+    ]);
 
-      const [whale, sentiment, sharks, trades] = await Promise.all([
-        fetch("whales.json").then(r => r.json()),
-        fetch("sentiment.json").then(r => r.json()),
-        fetch("sharks.json").then(r => r.json()),
-        fetch("trades.json").then(r => r.json())
-      ]);
+    const whale = await whaleResp.json();
+    window.whale = whale;
+    console.log("🐳 Whale object loaded:", whale);
 
-      const tList = trades.trades;
-      const t = tList[tList.length - 1];
-      document.getElementById("liveTrade").innerHTML = `
-        <div class="trade-card">
-          <strong>${t.symbol}</strong> — ${t.type}<br>
-          Strike: $${t.strike}, Exp: ${t.expiration}<br>
-          Premium: $${t.premium} × ${t.size} = <strong>$${(t.premium * t.size).toFixed(2)}</strong><br>
-          Status: <span style="color:${t.status === 'OPEN' ? '#00ff88' : '#ccc'}">${t.status}</span> (Date: ${t.date})
-        </div>
-      `;
-
-      
-    console.log("🐋 Whale object loaded:", whale);
-    
-    console.log("🐋 Whale loaded?", whale);
-    if (!whale || !Array.isArray(whale.whale_trades)) {
-      console.warn("⚠️ whale.whale_trades not available.");
-      document.getElementById("whaleList").innerHTML = "<p style='color: orange;'>No whale trades loaded — check whales.json</p>";
-      return;
-    }
     const tradesData = whale.whale_trades;
-    
-    if (!Array.isArray(tradesData) || tradesData.length === 0) {
-      document.getElementById("whaleList").innerHTML = "<p style='color:#ccc;'>No whale trades found.</p>";
-      return;
-    }
-    
-      const ts = new Date(whale.timestamp);
-      const prem = tradesData.reduce((sum, t) => sum + t.premium, 0) * 10000;
-      document.getElementById("whaleMeterText").textContent = `Total Premium Traded: $${prem.toLocaleString()}`;
-      document.getElementById("whaleFill").style.width = Math.min((prem / 1000000) * 100, 100) + "%";
-      document.getElementById("whaleTimestamp").textContent = `Last updated: ${ts.toLocaleString()}`;
 
-      const bulls = tradesData.filter(t => t.type === "CALL").length;
-      const bears = tradesData.filter(t => t.type === "PUT").length;
-      const bullPct = bulls / (bulls + bears) * 100;
-      document.getElementById("bullFill").style.width = bullPct + "%";
-      document.getElementById("bearFill").style.width = (100 - bullPct) + "%";
-      document.getElementById("sentimentLabel").textContent = `🐂 Bullish: ${bullPct.toFixed(1)}% | 🐻 Bearish: ${(100 - bullPct).toFixed(1)}%`;
-
-      document.getElementById("whaleList").innerHTML = tradesData.map(w => `
-        <div class="trade-card">
-          <strong>${w.symbol}</strong> — ${w.type}<br>
-          Strike: $${w.strike}, Exp: ${w.expiration}, Premium: $${w.premium}
-        </div>
-      `).join("");
-
-      const timeline = sentiment.sentiment_timeline;
-      document.getElementById("timelineFill").style.width = timeline.at(-1)?.bullish_pct + "%";
-      document.getElementById("timelineTip").textContent = "The whales have been getting more confident. Watch for foam buildup before a possible wave.";
-
-      document.getElementById("sharkList").innerHTML = sharks.shark_summary.map(s => `
-        <div class="shark-ping">
-          🔔 <strong>${s.symbol}</strong> has appeared in dark pool trades <strong>${s.frequency}x</strong> this week.<br>
-          Total volume: <strong>${s.total_volume.toLocaleString()}</strong> shares.<br>
-          Most recent activity: <strong>${s.last_seen}</strong> @ $${s.average_price}<br>
-          🧭 Confidence Level: <strong>${s.confidence}</strong>
-        </div>`).join("");
-
-      const top = sharks.shark_summary[0];
-      if (top) {
-        document.getElementById("sharkAlert").innerHTML = `
-          <div class="shark-alert">
-            🚨 <strong>${top.symbol}</strong> appeared <strong>${top.frequency}x</strong> in dark pool trades.<br>
-            Total volume: <strong>${top.total_volume.toLocaleString()}</strong><br>
-            Latest: <strong>${top.last_seen}</strong> @ $${top.average_price}<br>
-            Confidence: <strong style="color:#ffaa00">${top.confidence}</strong><br><br>
-            Want more? <a style="color:#ffaa00" href="whisper.html">Unlock Premium</a>
-          </div>`;
+    const summary = {};
+    tradesData.forEach(t => {
+      if (!summary[t.symbol]) {
+        summary[t.symbol] = { total: 0, type: t.type };
       }
+      summary[t.symbol].total += t.premium;
+    });
 
-      const match = sharks.shark_summary.find(s => tradesData.some(w => w.symbol === s.symbol));
-      document.getElementById("suggestedTrade").innerHTML = match ? `
-        📌 Based on activity in <strong>${match.symbol}</strong>, you could:<br><br>
-        ✅ <strong>Sell a cash-secured put</strong> near $${Math.floor(match.average_price)}.
-        <br><span style="font-size:0.9em;color:#ccc;">Earn premium while potentially entering ${match.symbol} near shark levels.</span>
-      ` : "No clear alignment between whales and sharks at the moment.";
-    }
+    const top5 = Object.entries(summary)
+      .sort((a, b) => b[1].total - a[1].total)
+      .slice(0, 5);
 
-    // Load Premium Harvest Plan
-    fetch("harvest.json")
-      .then(r => r.json())
-      .then(data => {
-        const harvestDiv = document.getElementById("harvestPlan");
-        let html = `<p><strong>Week:</strong> ${data.week}</p>`;
-        html += `<p><strong>Target:</strong> $${data.premium_goal} | <strong>Total:</strong> $${data.total_premium}</p>`;
-        for (const [account, info] of Object.entries(data.accounts)) {
-          html += `<h3>${account}</h3>`;
-          if (info.puts?.length) {
-            html += `<strong>Puts:</strong><ul>`;
-            info.puts.forEach(p => {
-              const totalPremium = p.premium * 100 * p.contracts;
-              html += `<li>${p.contracts}x ${p.symbol} $${p.strike} Put @ $${p.premium} = $${totalPremium.toFixed(2)}</li>`;
-            });
-            html += `</ul>`;
-          }
-          if (info.calls?.length) {
-            html += `<strong>Calls:</strong><ul>`;
-            info.calls.forEach(c => {
-              const totalPremium = c.premium * 100 * c.contracts;
-              html += `<li>${c.contracts}x ${c.symbol} $${c.strike} Call @ $${c.premium} = $${totalPremium.toFixed(2)}</li>`;
-            });
-            html += `</ul>`;
-          }
-        }
-        harvestDiv.innerHTML = html;
-      })
-      .catch(err => {
-        document.getElementById("harvestPlan").innerHTML = `<p style="color:red;">Error loading plan.</p>`;
-        console.error("Harvest Plan Error:", err);
-      });
+    document.getElementById("whaleList").innerHTML = top5.map(([symbol, data]) => {
+      return \`
+        <div class="trade-card">
+          <strong>\${symbol}</strong> — \${data.type}<br>
+          Total Premium: $\${data.total.toLocaleString()}
+        </div>
+      \`;
+    }).join("");
+  } catch (e) {
+    console.error("🐳 Whale load error:", e);
+    document.getElementById("whaleList").innerHTML = "<div class='trade-card'>🐳 Whale data unavailable</div>";
+  }
+}
+updateData();
+</script>
 
-    updateData();
-    setInterval(updateData, 60000);
-  </script>
 </body>
 </html>
