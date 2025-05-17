@@ -1,1 +1,9 @@
-[{"day":"Mon","bullish":50}]
+{
+  "sentiment_timeline": [
+    { "timestamp": "2025-05-10", "bullish_pct": 40, "bearish_pct": 60 },
+    { "timestamp": "2025-05-11", "bullish_pct": 50, "bearish_pct": 50 },
+    { "timestamp": "2025-05-12", "bullish_pct": 60, "bearish_pct": 40 },
+    { "timestamp": "2025-05-13", "bullish_pct": 72, "bearish_pct": 28 },
+    { "timestamp": "2025-05-14", "bullish_pct": 85, "bearish_pct": 15 }
+  ]
+}
