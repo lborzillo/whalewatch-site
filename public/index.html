@@ -222,6 +222,7 @@
   </div>
 
   <script>
+    console.log("✅ WhaleWatch script is running");
     async function updateData() {
       const [whale, sentiment, sharks, trades] = await Promise.all([
         fetch("whales.json").then(r => r.json()),
