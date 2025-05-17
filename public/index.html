@@ -1,252 +1,99 @@
 <!DOCTYPE html>
-
 <html lang="en">
 <head>
-<meta charset="utf-8"/>
-<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
-<title>WhaleWatch.Trade</title>
-<style>
-    body {
-      font-family: 'Segoe UI', sans-serif;
-      background-color: #001d2d;
-      color: white;
-      margin: 0;
-      padding: 0;
-    }
-    nav {
-      background-color: #001520;
-      padding: 1em;
-      display: flex;
-      justify-content: center;
-      flex-wrap: wrap;
-      gap: 1.5em;
-    }
-    nav a {
-      color: #00ffee;
-      text-decoration: none;
-      font-weight: bold;
-    }
-    .hero {
-      text-align: center;
-      padding: 3em 1em 2em;
-      background-color: #002b3f;
-    }
-    .homepage-logo {
-      width: 100px;
-      filter: drop-shadow(0 0 12px #00ffeeaa);
-      margin-bottom: 1em;
-    }
-    h1 {
-      font-size: 2.8em;
-      color: #00ffee;
-    }
-    .cta-button {
-      background: #00ffee;
-      color: #001d2d;
-      padding: 0.75em 1.5em;
-      border-radius: 10px;
-      text-decoration: none;
-      font-weight: bold;
-    }
-    .section {
-      max-width: 800px;
-      margin: 3em auto;
-      padding: 0 2em;
-    }
-    .section h2 {
-      color: #00ffee;
-      margin-bottom: 0.5em;
-    }
-    .whale-meter-container,
-    .sentiment-bar,
-    .timeline-bar {
-      background: #003850;
-      height: 24px;
-      border-radius: 8px;
-      overflow: hidden;
-      margin-bottom: 1em;
-    }
-    .whale-meter-fill {
-      height: 100%;
-      background: linear-gradient(to right, #00ff88, #ffaa00, #ff0044);
-      width: 0;
-      transition: width 1s ease-in-out;
-    }
-    .sentiment-fill-bullish,
-    .sentiment-fill-bearish {
-      height: 100%;
-      float: left;
-      transition: width 1s ease-in-out;
-    }
-    .sentiment-fill-bullish { background: #00ff88; width: 0; }
-    .sentiment-fill-bearish { background: #ff0044; width: 0; }
-    .timeline-fill {
-      height: 100%;
-      background: repeating-linear-gradient(to right, #00ff88, #00cc88 10%, #00ff88 20%);
-      width: 0;
-      transition: width 1s ease-in-out;
-    }
-    .timestamp, .tip {
-      font-size: 0.9em;
-      color: #aaa;
-    }
-    .whale-meter-text { font-weight: bold; color: #00ffee; }
-    .trade-card, .shark-ping, .shark-alert {
-      background: radial-gradient(circle at center, #0c344a, #001d2d);
-      border: 1px solid #00ffee88;
-      padding: 1em;
-      border-radius: 12px;
-      margin-bottom: 1em;
-    }
-    .shark-radar {
-      display: flex;
-      flex-direction: column;
-      gap: 1em;
-    }
-    .suggested-trade {
-      background-color: #0b2a3a;
-      border-radius: 10px;
-      padding: 1em;
-      margin-top: 1em;
-      font-size: 1.05em;
-    }
-    #whaleBotBox {
-      position: fixed;
-      bottom: 1em;
-      right: 1em;
-      background: #002b3f;
-      border: 2px solid #00ffee;
-      padding: 1em;
-      border-radius: 12px;
-      font-size: 0.9em;
-      width: 240px;
-      box-shadow: 0 0 20px #00ffeeaa;
-    }
-    #whaleBotBox h3 {
-      margin-top: 0;
-      color: #00ffee;
-    }
-  </style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>WhaleWatch.Trade</title>
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
-<div class="hero">
-<img alt="WhaleWatch Logo" class="homepage-logo" src="whale.png"/>
-<h1>WhaleWatch.Trade</h1>
-<p>We track the whales so you can harvest the premium.</p>
-<a class="cta-button" href="harvesting.html">What Is Premium Harvesting?</a>
-</div>
-<nav>
-<a href="index.html">Home</a>
-<a href="learn.html">Learn</a>
-<a href="simulate.html">Simulate</a>
-<a href="harvesting.html">Premium Harvesting</a>
-<a href="whisper.html">Whispers</a>
-</nav>
-<div class="section">
-<h2>📒 Live Trader Log</h2>
-<div class="section">
-<h2>🧾 Weekly Premium Harvest Plan</h2>
-<div id="harvestPlan">Loading plan...</div>
-</div>
-<div id="liveTrade">Loading latest trade...</div>
-<p class="tip">Want to see all my trades? <a href="whisper.html">Unlock Premium Access</a>.</p>
-</div>
-<div class="section">
-<h2>🌊 Whale Meter</h2>
-<div class="whale-meter-container"><div class="whale-meter-fill" id="whaleFill"></div></div>
-<div class="whale-meter-text" id="whaleMeterText">Loading...</div>
-<div class="timestamp" id="whaleTimestamp">Loading...</div>
-<p>🟢 Green = Bullish (Calls) · 🔴 Red = Bearish (Puts) · 🎨 Gradient = Mixed Premium Flow</p>
-<p class="tip">The Whale Meter shows where the most capital is currently concentrated in the options market, based on open interest and last traded price.</p>
-</div>
-<div class="section">
-<h2>📈 Bullish vs. Bearish Sentiment</h2>
-<div class="sentiment-bar">
-<div class="sentiment-fill-bullish" id="bullFill"></div>
-<div class="sentiment-fill-bearish" id="bearFill"></div>
-</div>
-<div class="whale-meter-text" id="sentimentLabel">Loading...</div>
-<p class="tip">This shows how many trades were calls vs. puts — not dollars, just number of trades.</p>
-</div>
-<div class="section">
-<h2>📉 Sentiment Timeline</h2>
-<div class="timeline-bar"><div class="timeline-fill" id="timelineFill"></div></div>
-<p class="tip" id="timelineTip">Loading whale confidence trend...</p>
-</div>
-<div class="section">
-<h2>📊 Latest Whale Trades</h2>
-<div id="whaleList">Loading...</div>
-</div>
-<div class="section">
-<h2>💡 Suggested Trade Based on Whale + Shark Signals <span style="color:#ffaa00">(🔒 Premium Preview)</span></h2>
-<div class="suggested-trade" id="suggestedTrade">Loading...</div>
-</div>
-<div class="section">
-<h2>🦈 Shark Meter</h2>
-<div class="shark-radar" id="sharkList">Loading...</div>
-</div>
-<div class="section">
-<h2>🚨 Shark Alert</h2>
-<div id="sharkAlert">Loading latest alert...</div>
-<p class="tip">
-<strong>What does confidence mean?</strong> It's our rating of how likely this shark activity signals a potential move.<br/>
-<ul>
-<li><strong>LOW</strong> = One-off or light volume</li>
-<li><strong>MODERATE</strong> = Elevated or repeated activity</li>
-<li><strong>HIGH</strong> = Strong signs of accumulation</li>
-</ul>
-</p>
-</div>
-<div id="whaleBotBox">
-<h3>🤖 WhaleBot</h3>
-<p>Ask me about:</p>
-<ul>
-<li>• Covered calls</li>
-<li>• Put selling</li>
-<li>• Whale trades</li>
-<li>• Premium harvesting</li>
-</ul>
-<p style="font-size:0.8em;color:#aaa;">(Coming soon: live chat!)</p>
-</div>
-<script>
-async function updateData() {
-  try {
-    const [whaleResp] = await Promise.all([
-      fetch('whales.json')
-    ]);
+  <nav>
+    <a href="index.html">Home</a>
+    <a href="learn.html">Learn</a>
+    <a href="simulate.html">Simulate</a>
+    <a href="harvesting.html">Premium Harvesting</a>
+    <a href="whisper.html">Whispers</a>
+  </nav>
 
-    const whale = await whaleResp.json();
-    window.whale = whale;
-    console.log("🐳 Whale object loaded:", whale);
+  <div class="hero">
+    <img src="whale.png" alt="Whale Logo" class="homepage-logo">
+    <h1>WhaleWatch.Trade</h1>
+    <p>We track the whales so you can harvest the premium.</p>
+    <a href="harvesting.html" class="cta">What Is Premium Harvesting?</a>
+  </div>
 
-    const tradesData = whale.whale_trades;
+  <div class="section">
+    <h2>🌊 Whale Meter</h2>
+    <div id="whaleMeter" class="meter"></div>
+    <p class="whale-metrics"></p>
+    <p class="legend">
+      🟢 Green = Bullish (Calls) · 🔴 Red = Bearish (Puts) · 🎨 Gradient = Mixed Premium Flow
+    </p>
+    <p class="explanation">
+      The Whale Meter shows where the most capital is currently concentrated in the options market, based on open interest and last traded price.
+    </p>
+  </div>
 
-    const summary = {};
-    tradesData.forEach(t =&gt; {
-      if (!summary[t.symbol]) {
-        summary[t.symbol] = { total: 0, type: t.type };
-      }
-      summary[t.symbol].total += t.premium;
-    });
+  <div class="section">
+    <h2>📈 Bullish vs. Bearish Sentiment</h2>
+    <div id="sentimentBar" class="meter"></div>
+    <p id="sentimentRatio" class="whale-metrics"></p>
+    <p class="explanation">
+      This chart shows how many large option trades were bullish (calls) vs. bearish (puts) — not dollars, just number of trades.
+    </p>
+  </div>
 
-    const top5 = Object.entries(summary)
-      .sort((a, b) =&gt; b[1].total - a[1].total)
-      .slice(0, 5);
+  <div class="section">
+    <h2>🖊️ Sentiment Timeline</h2>
+    <div id="timelineContainer" class="meter"></div>
+    <p id="timelineTip" class="explanation"></p>
+  </div>
 
-    document.getElementById("whaleList").innerHTML = top5.map(([symbol, data]) =&gt; {
-      return \`
-        &lt;div class="trade-card"&gt;
-          &lt;strong&gt;\${symbol}&lt;/strong&gt; — \${data.type}&lt;br&gt;
-          Total Premium: $\${data.total.toLocaleString()}
-        &lt;/div&gt;
-      \`;
-    }).join("");
-  } catch (e) {
-    console.error("🐳 Whale load error:", e);
-    document.getElementById("whaleList").innerHTML = "&lt;div class='trade-card'&gt;🐳 Whale data unavailable&lt;/div&gt;";
-  }
-}
-updateData();
-</script>
+  <div class="section">
+    <h2>🌃 Latest Whale Trades</h2>
+    <p class="loading">Loading...</p>
+    <div id="whaleList"></div>
+  </div>
+
+  <div class="section">
+    <h2>🦈 Shark Meter</h2>
+    <p class="explanation">
+      Sharks swim in dark pools. These trades are hidden from the public tape but show up later on FINRA reports. We surface the biggest hidden moves for you.
+    </p>
+    <div id="sharkMeter"></div>
+  </div>
+
+  <div class="section">
+    <h2>🛑 Shark Alert</h2>
+    <div id="sharkAlert"></div>
+    <div class="explanation">
+      <p><strong>What does confidence mean?</strong> It's our best guess at how likely this shark activity signals a real move.</p>
+      <ul>
+        <li><strong>LOW:</strong> Could be noise. Only 1 hit or low volume.</li>
+        <li><strong>MODERATE:</strong> Starting to build. Multiple pings, elevated volume.</li>
+        <li><strong>HIGH:</strong> Something may be brewing. Sharks might be accumulating.</li>
+      </ul>
+      <p><em>A MODERATE confidence doesn’t mean “don’t act” — it means: 👀 Watch closely. This might be the start of something.</em></p>
+    </div>
+  </div>
+
+  <div class="section">
+    <h2>💡 Suggested Trade Based on Whale + Shark Signals (<span class="lock"> 🔐 Premium Preview</span>)</h2>
+    <div id="suggestedTrade"></div>
+  </div>
+
+  <div id="whaleBotBox" class="floating-bot">
+    <h3>🧬 WhaleBot</h3>
+    <p>Ask me about:</p>
+    <ul>
+      <li>• Covered calls</li>
+      <li>• Put selling</li>
+      <li>• Whale trades</li>
+      <li>• Premium harvesting</li>
+    </ul>
+    <p class="note">(Coming soon: live chat!)</p>
+  </div>
+
+  <script src="main.js"></script>
 </body>
 </html>
