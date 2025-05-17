@@ -32,6 +32,17 @@
     h2 {
       color: #00ffff;
     }
+    .whale-meter, .sentiment-timeline, .shark-meter, .suggested-trade, .live-trader-log {
+      margin-bottom: 2em;
+      background-color: #002b3f;
+      border-radius: 12px;
+      padding: 1.5em;
+    }
+    footer {
+      text-align: center;
+      padding: 2em;
+      color: gray;
+    }
   </style>
 </head>
 <body>
@@ -43,14 +54,13 @@
   <a href="whisper.html">Whispers</a>
 </nav>
 
-<section>
+<section class="live-trader-log">
   <h2>📁 Live Trader Log</h2>
   <p>Latest real-money trades from our premium harvesting strategy.</p>
 </section>
 
-
-<section id="weekly-plan" style="padding: 2em; background-color: #001f2e; color: #ffffff;">
-  <h2 style="color: #00ffff;">📄 Weekly Premium Harvest Plan</h2>
+<section class="weekly-plan">
+  <h2>📄 Weekly Premium Harvest Plan</h2>
   <p><strong>Week:</strong> May 20–24, 2025<br>
      <strong>Target:</strong> $2000 | <strong>Total:</strong> $2044</p>
 
@@ -73,8 +83,7 @@
   </ul>
 </section>
 
-
-<footer style="text-align:center; padding:2em; color:gray;">
+<footer>
   <p>© WhaleWatch.Trade — Updated May 17, 2025</p>
 </footer>
 
