@@ -242,11 +242,11 @@
       `;
 
       const tradesData = whale.whale_trades;
-      const whaleTimestamp = new Date(whale.timestamp);
+      const whaleTS = new Date(whale.timestamp);
       const prem = tradesData.reduce((sum, t) => sum + t.premium, 0) * 10000;
       document.getElementById("whaleMeterText").textContent = `Total Premium Traded: $${prem.toLocaleString()}`;
       document.getElementById("whaleFill").style.width = Math.min((prem / 1000000) * 100, 100) + "%";
-      document.getElementById("whaleTimestamp").textContent = `Last updated: ${whaleTimestamp.toLocaleString()}`;
+      document.getElementById("whaleTimestamp").textContent = `Last updated: ${whaleTS.toLocaleString()}`;
 
       const bulls = tradesData.filter(t => t.type === "CALL").length;
       const bears = tradesData.filter(t => t.type === "PUT").length;
@@ -270,11 +270,11 @@
       document.getElementById("whaleList").innerHTML = sorted.map(([symbol, stats]) => 
         `<div class="trade-card">📊 <strong>${symbol}</strong> — $${(stats.total * 100).toFixed(2)} total premium across ${stats.count} trades</div>`
       ).join("");
-      const whaleTimestamp = new Date(whale.timestamp);
+      const whaleTS = new Date(whale.timestamp);
       const prem = tradesData.reduce((sum, t) => sum + t.premium, 0) * 10000;
       document.getElementById("whaleMeterText").textContent = `Total Premium Traded: $${prem.toLocaleString()}`;
       document.getElementById("whaleFill").style.width = Math.min((prem / 1000000) * 100, 100) + "%";
-      document.getElementById("whaleTimestamp").textContent = `Last updated: ${whaleTimestamp.toLocaleString()}`;
+      document.getElementById("whaleTimestamp").textContent = `Last updated: ${whaleTS.toLocaleString()}`;
 
       const bulls = tradesData.filter(t => t.type === "CALL").length;
       const bears = tradesData.filter(t => t.type === "PUT").length;
