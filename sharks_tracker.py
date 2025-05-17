@@ -1,36 +1,32 @@
-name: Update Sharks Hourly
+import json
+from datetime import datetime, timezone
+import os
+import random
 
-on:
-  schedule:
-    - cron: '5 * * * *'  # Runs at 5 minutes past the hour
-  workflow_dispatch:      # Allow manual trigger
+# Simulated dark pool data
+symbols = ["AAPL", "NVDA", "TSLA", "AMD", "META", "MSFT", "AMZN", "GOOG"]
+shark_trades = []
 
-jobs:
-  update:
-    runs-on: ubuntu-latest
+for symbol in symbols:
+    trades_today = random.randint(1, 3)
+    for _ in range(trades_today):
+        avg_price = round(random.uniform(100, 500), 2)
+        volume = random.randint(50000, 500000)
+        confidence = random.choice(["Low", "Medium", "High"])
+        shark_trades.append({
+            "symbol": symbol,
+            "average_price": avg_price,
+            "total_volume": volume,
+            "average_volume": volume // 2,
+            "last_seen": datetime.now(timezone.utc).isoformat(),
+            "confidence": confidence
+        })
 
-    steps:
-      - name: Checkout repository (full history)
-        uses: actions/checkout@v3
-        with:
-          fetch-depth: 0  # Required for pushing back to main
+output = {
+    "timestamp": datetime.now(timezone.utc).isoformat(),
+    "shark_trades": shark_trades
+}
 
-      - name: Set up Python
-        uses: actions/setup-python@v4
-        with:
-          python-version: '3.10'
-
-      - name: Install dependencies
-        run: pip install pandas
-
-      - name: Run shark update script
-        run: python sharks_tracker.py
-
-      - name: Commit and push updated sharks.json
-        run: |
-          git config user.name "whalewatch-bot"
-          git config user.email "actions@github.com"
-          git pull origin main --rebase || echo "No remote changes to rebase"
-          git add public/sharks.json
-          git commit -m "🦈 Update sharks.json (hourly sync)" || echo "No changes to commit"
-          git push --force
+os.makedirs("public", exist_ok=True)
+with open("public/sharks.json", "w") as f:
+    json.dump(output, f, indent=2)
