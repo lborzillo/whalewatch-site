@@ -30,3 +30,4 @@ output = {
 os.makedirs("public", exist_ok=True)
 with open("public/sharks.json", "w") as f:
     json.dump(output, f, indent=2)
+
