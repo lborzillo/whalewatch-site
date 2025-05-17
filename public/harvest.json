@@ -1,0 +1,22 @@
+{
+  "week": "May 20–24, 2025",
+  "premium_goal": 2000,
+  "total_premium": 2044,
+  "accounts": {
+    "Roth IRA": {
+      "puts": [
+        { "symbol": "NVDA", "strike": 120, "contracts": 3, "premium": 1.66 },
+        { "symbol": "NVDA", "strike": 118, "contracts": 2, "premium": 1.30 }
+      ],
+      "calls": [
+        { "symbol": "ABBV", "strike": 190, "contracts": 2, "premium": 2.77 }
+      ]
+    },
+    "IRA": {
+      "puts": [
+        { "symbol": "NVDA", "strike": 120, "contracts": 1, "premium": 1.50 },
+        { "symbol": "NVDA", "strike": 117, "contracts": 2, "premium": 1.20 }
+      ]
+    }
+  }
+}
