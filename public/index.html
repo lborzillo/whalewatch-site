@@ -351,7 +351,45 @@
           div.innerHTML = html;
         });
 
-    updateData();
+    
+  // Load harvest plan with error logging
+  fetch("harvest.json")
+    .then(r => {
+      if (!r.ok) throw new Error("Failed to fetch harvest.json");
+      return r.json();
+    })
+    .then(data => {
+      const div = document.getElementById("harvestPlan");
+      let html = `<p><strong>Week:</strong> ${data.week}</p>`;
+      html += `<p><strong>Target:</strong> $${data.premium_goal} | <strong>Total:</strong> $${data.total_premium}</p>`;
+      for (const [account, info] of Object.entries(data.accounts)) {
+        html += `<h3>${account}</h3>`;
+        if (info.puts?.length) {
+          html += `<strong>Puts:</strong><ul>`;
+          info.puts.forEach(p => {
+            const total = p.premium * 100 * p.contracts;
+            html += `<li>${p.contracts}x ${p.symbol} $${p.strike} Put @ $${p.premium} = $${total.toFixed(2)}</li>`;
+          });
+          html += `</ul>`;
+        }
+        if (info.calls?.length) {
+          html += `<strong>Calls:</strong><ul>`;
+          info.calls.forEach(c => {
+            const total = c.premium * 100 * c.contracts;
+            html += `<li>${c.contracts}x ${c.symbol} $${c.strike} Call @ $${c.premium} = $${total.toFixed(2)}</li>`;
+          });
+          html += `</ul>`;
+        }
+      }
+      div.innerHTML = html;
+    })
+    .catch(err => {
+      document.getElementById("harvestPlan").innerHTML = `<p style="color:red;">Error loading harvest.json: ${err.message}</p>`;
+      console.error("Harvest Plan Error:", err);
+    });
+
+
+  updateData();
     setInterval(updateData, 60000);
   </script>
 </body>
