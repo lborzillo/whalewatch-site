@@ -128,44 +128,44 @@
   </style>
 </head>
 <body>
-  <!-- Page layout preserved... Only <script> block changed -->
-
-  <!-- all sections here remain same as previous upload -->
-
+  <!-- [Previous layout remains the same] -->
   <script>
     async function updateData() {
-      const [whale, sentiment, sharks, trades] = await Promise.all([
-        fetch("whales.json").then(r => r.json()),
-        fetch("sentiment.json").then(r => r.json()),
-        fetch("sharks.json").then(r => r.json()),
-        fetch("trades.json").then(r => r.json())
-      ]);
+      try {
+        const [whale, sentiment, sharks, trades] = await Promise.all([
+          fetch("whales.json").then(r => r.json()),
+          fetch("sentiment.json").then(r => r.json()),
+          fetch("sharks.json").then(r => r.json()),
+          fetch("trades.json").then(r => r.json())
+        ]);
 
-      // Consolidate Whale Trades
-      const grouped = {};
-      for (const t of whale.whale_trades) {
-        const key = `${t.symbol}|${t.type}|${t.strike}|${t.expiration}`;
-        if (!grouped[key]) {
-          grouped[key] = { ...t, size: 1, totalPremium: t.premium };
-        } else {
-          grouped[key].size++;
-          grouped[key].totalPremium += t.premium;
+        const grouped = {};
+        for (const t of whale.whale_trades) {
+          if (!t.symbol || !t.strike || !t.premium || !t.expiration || !t.type) continue;
+          const key = `${t.symbol}|${t.type}|${t.strike}|${t.expiration}`;
+          if (!grouped[key]) {
+            grouped[key] = { ...t, size: 1, totalPremium: t.premium };
+          } else {
+            grouped[key].size++;
+            grouped[key].totalPremium += t.premium;
+          }
         }
+        const groupedTrades = Object.values(grouped)
+          .sort((a, b) => b.totalPremium - a.totalPremium)
+          .slice(0, 10);
+
+        document.getElementById("whaleList").innerHTML = groupedTrades.map(w => `
+          <div class="trade-card">
+            <strong>${w.symbol}</strong> — ${w.type}<br>
+            Strike: $${w.strike}, Exp: ${w.expiration}<br>
+            Trades: ${w.size} | Avg Premium: $${(w.totalPremium / w.size).toFixed(2)}<br>
+            Total Premium: $${w.totalPremium.toFixed(2)}
+          </div>`).join("");
+
+      } catch (e) {
+        console.error("Error loading data:", e);
+        document.getElementById("whaleList").innerHTML = `<p class="tip">Failed to load whale data. Please try again later.</p>`;
       }
-      const groupedTrades = Object.values(grouped)
-        .sort((a, b) => b.totalPremium - a.totalPremium)
-        .slice(0, 10);
-
-      // Render Whale Trades
-      document.getElementById("whaleList").innerHTML = groupedTrades.map(w => `
-        <div class="trade-card">
-          <strong>${w.symbol}</strong> — ${w.type}<br>
-          Strike: $${w.strike}, Exp: ${w.expiration}<br>
-          Trades: ${w.size} | Avg Premium: $${(w.totalPremium / w.size).toFixed(2)}<br>
-          Total Premium: $${w.totalPremium.toFixed(2)}
-        </div>`).join("");
-
-      // ... leave other existing script logic untouched (sharks, bot, meters)
     }
     updateData();
     setInterval(updateData, 60000);
