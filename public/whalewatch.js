@@ -27,7 +27,12 @@ fetch('whales.json')
       .slice(0, 10);
 
     const whaleSymbols = document.getElementById('whale-symbols');
+    const loadingText = whaleSymbols?.previousElementSibling;
+
     if (whaleSymbols) {
+      if (loadingText && loadingText.tagName === 'P') {
+        loadingText.remove();
+      }
       whaleSymbols.innerHTML = '';
       sorted.forEach(([symbol, premium]) => {
         const li = document.createElement('li');
@@ -57,11 +62,25 @@ fetch('sharks.json')
   .then(data => {
     const container = document.getElementById('shark-meter');
     container.innerHTML = '';
-    const symbols = Object.entries(data).sort((a, b) => b[1].total_volume - a[1].total_volume);
 
-    symbols.slice(0, 5).forEach(([symbol, info]) => {
+    const totals = {};
+    data.shark_trades.forEach(t => {
+      if (!totals[t.symbol]) {
+        totals[t.symbol] = { total_volume: 0, total_price: 0, count: 0 };
+      }
+      totals[t.symbol].total_volume += t.total_volume;
+      totals[t.symbol].total_price += t.average_price;
+      totals[t.symbol].count += 1;
+    });
+
+    const sorted = Object.entries(totals)
+      .sort((a, b) => b[1].total_volume - a[1].total_volume)
+      .slice(0, 5);
+
+    sorted.forEach(([symbol, info]) => {
+      const avgPrice = (info.total_price / info.count).toFixed(2);
       const div = document.createElement('div');
-      div.innerHTML = `🦈 ${symbol}: ${info.total_volume.toLocaleString()} shares @ $${info.average_price}`;
+      div.innerHTML = `🦈 ${symbol}: ${info.total_volume.toLocaleString()} shares @ $${avgPrice}`;
       container.appendChild(div);
     });
   });
@@ -73,18 +92,37 @@ fetch('sharks.json')
     const alerts = document.getElementById('shark-alerts');
     alerts.innerHTML = '';
 
-    const sorted = Object.entries(data)
-      .filter(([_, v]) => v.confidence && v.confidence.toUpperCase() !== 'LOW')
-      .sort((a, b) => b[1].total_volume - a[1].total_volume);
+    const grouped = {};
 
-    if (sorted.length === 0) {
+    data.shark_trades.forEach(t => {
+      if (!grouped[t.symbol]) grouped[t.symbol] = [];
+      grouped[t.symbol].push(t);
+    });
+
+    const alertEntries = Object.entries(grouped)
+      .map(([symbol, trades]) => {
+        const totalVolume = trades.reduce((sum, t) => sum + t.total_volume, 0);
+        const confidenceLevels = trades.map(t => t.confidence.toUpperCase());
+        const highConfidence = confidenceLevels.filter(c => c === 'HIGH').length;
+        return {
+          symbol,
+          frequency: trades.length,
+          last_seen: trades[trades.length - 1].last_seen,
+          confidence: highConfidence >= 1 ? 'High' : 'Medium',
+          total_volume: totalVolume
+        };
+      })
+      .filter(t => t.confidence !== 'Low')
+      .sort((a, b) => b.total_volume - a.total_volume);
+
+    if (alertEntries.length === 0) {
       alerts.innerHTML = 'No high-confidence shark activity detected.';
       return;
     }
 
-    sorted.forEach(([symbol, info]) => {
+    alertEntries.forEach(info => {
       const div = document.createElement('div');
-      div.innerHTML = `🔔 ${symbol} appeared ${info.frequency}x — Latest @ $${info.last_seen} — Confidence: ${info.confidence}`;
+      div.innerHTML = `🔔 ${info.symbol} appeared ${info.frequency}x — Latest @ $${info.last_seen} — Confidence: ${info.confidence}`;
       alerts.appendChild(div);
     });
   });
