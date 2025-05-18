@@ -17,7 +17,7 @@ fetch('whales.json')
       premiumTotal.innerText = `Total Premium Traded: $${total.toLocaleString()}`;
     }
 
-    // Top 10 Symbols
+    // Top 10 Whale Symbols by Premium
     const symbolMap = {};
     data.whale_trades.forEach(t => {
       symbolMap[t.symbol] = (symbolMap[t.symbol] || 0) + t.premium;
@@ -27,12 +27,10 @@ fetch('whales.json')
       .slice(0, 10);
 
     const whaleSymbols = document.getElementById('whale-symbols');
-    const loadingText = whaleSymbols?.previousElementSibling;
+    const loadingMsg = document.getElementById('whale-loading'); // New: Remove the loading message
+    if (loadingMsg) loadingMsg.remove();
 
     if (whaleSymbols) {
-      if (loadingText && loadingText.tagName === 'P') {
-        loadingText.remove();
-      }
       whaleSymbols.innerHTML = '';
       sorted.forEach(([symbol, premium]) => {
         const li = document.createElement('li');
@@ -62,25 +60,28 @@ fetch('sharks.json')
   .then(data => {
     const container = document.getElementById('shark-meter');
     container.innerHTML = '';
-
     const totals = {};
+
     data.shark_trades.forEach(t => {
       if (!totals[t.symbol]) {
-        totals[t.symbol] = { total_volume: 0, total_price: 0, count: 0 };
+        totals[t.symbol] = { volume: 0, total: 0 };
       }
-      totals[t.symbol].total_volume += t.total_volume;
-      totals[t.symbol].total_price += t.average_price;
-      totals[t.symbol].count += 1;
+      totals[t.symbol].volume += t.total_volume;
+      totals[t.symbol].total += t.total_volume * t.average_price;
     });
 
-    const sorted = Object.entries(totals)
-      .sort((a, b) => b[1].total_volume - a[1].total_volume)
+    const ranked = Object.entries(totals)
+      .map(([symbol, { volume, total }]) => ({
+        symbol,
+        total_volume: volume,
+        average_price: (total / volume).toFixed(2)
+      }))
+      .sort((a, b) => b.total_volume - a.total_volume)
       .slice(0, 5);
 
-    sorted.forEach(([symbol, info]) => {
-      const avgPrice = (info.total_price / info.count).toFixed(2);
+    ranked.forEach(t => {
       const div = document.createElement('div');
-      div.innerHTML = `🦈 ${symbol}: ${info.total_volume.toLocaleString()} shares @ $${avgPrice}`;
+      div.innerHTML = `🦈 ${t.symbol}: ${t.total_volume.toLocaleString()} shares @ $${t.average_price}`;
       container.appendChild(div);
     });
   });
@@ -92,35 +93,33 @@ fetch('sharks.json')
     const alerts = document.getElementById('shark-alerts');
     alerts.innerHTML = '';
 
-    const grouped = {};
+    const frequencyMap = {};
 
     data.shark_trades.forEach(t => {
-      if (!grouped[t.symbol]) grouped[t.symbol] = [];
-      grouped[t.symbol].push(t);
+      const key = `${t.symbol}-${t.confidence}`;
+      if (!frequencyMap[key]) {
+        frequencyMap[key] = {
+          symbol: t.symbol,
+          confidence: t.confidence,
+          last_seen: t.last_seen,
+          total_volume: 0,
+          frequency: 0
+        };
+      }
+      frequencyMap[key].total_volume += t.total_volume;
+      frequencyMap[key].frequency += 1;
     });
 
-    const alertEntries = Object.entries(grouped)
-      .map(([symbol, trades]) => {
-        const totalVolume = trades.reduce((sum, t) => sum + t.total_volume, 0);
-        const confidenceLevels = trades.map(t => t.confidence.toUpperCase());
-        const highConfidence = confidenceLevels.filter(c => c === 'HIGH').length;
-        return {
-          symbol,
-          frequency: trades.length,
-          last_seen: trades[trades.length - 1].last_seen,
-          confidence: highConfidence >= 1 ? 'High' : 'Medium',
-          total_volume: totalVolume
-        };
-      })
-      .filter(t => t.confidence !== 'Low')
+    const sorted = Object.values(frequencyMap)
+      .filter(t => t.confidence && t.confidence.toUpperCase() !== 'LOW')
       .sort((a, b) => b.total_volume - a.total_volume);
 
-    if (alertEntries.length === 0) {
+    if (sorted.length === 0) {
       alerts.innerHTML = 'No high-confidence shark activity detected.';
       return;
     }
 
-    alertEntries.forEach(info => {
+    sorted.forEach(info => {
       const div = document.createElement('div');
       div.innerHTML = `🔔 ${info.symbol} appeared ${info.frequency}x — Latest @ $${info.last_seen} — Confidence: ${info.confidence}`;
       alerts.appendChild(div);
