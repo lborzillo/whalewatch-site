@@ -27,24 +27,51 @@ fetch('sentiment.json')
 
     if (bar && text) {
       bar.style.background = `linear-gradient(to right, #00ffcc ${latest.bullish_pct}%, #002b3f ${latest.bearish_pct}%)`;
-      text.innerText = `🐂 Bullish: ${latest.bullish_pct}% | 🐻 Bearish: ${latest.bearish_pct}%`;
+      text.innerText = `🐂 Bullish: ${latest.bullish_pct}% | 🐽 Bearish: ${latest.bearish_pct}%`;
     }
   });
 
-// Load Shark Alerts
+// Load Shark Meter and Alerts
 fetch('sharks.json')
   .then(res => res.json())
   .then(data => {
     const sharkMeter = document.getElementById('shark-meter');
-    if (sharkMeter && data.shark_alerts && data.shark_alerts.length > 0) {
-      sharkMeter.innerHTML = data.shark_alerts.map(alert => `
-        <div class="shark-alert">
-          <strong>🦈 ${alert.symbol}</strong> appeared ${alert.frequency}x<br>
-          Total volume: ${alert.total_volume.toLocaleString()}<br>
-          Last seen: ${alert.last_seen} @ $${alert.average_price}<br>
-          Confidence Level: ${alert.confidence}
+    const sharkAlerts = document.getElementById('shark-alerts');
+
+    if (sharkMeter && data.shark_trades && Array.isArray(data.shark_trades)) {
+      sharkMeter.innerHTML = data.shark_trades.map(trade => `
+        <div class="shark-trade">
+          <strong>${trade.symbol}</strong>: ${trade.total_volume.toLocaleString()} shares @ $${trade.average_price} (Confidence: ${trade.confidence})
         </div>
       `).join('');
+    }
+
+    if (sharkAlerts && data.shark_alerts && Array.isArray(data.shark_alerts)) {
+      sharkAlerts.innerHTML = data.shark_alerts.map(alert => `
+        <div class="shark-alert">
+          ⚠️ <strong>${alert.symbol}</strong> triggered alert — <em>${alert.reason}</em>
+        </div>
+      `).join('');
+    }
+  });
+
+// Load Whale Symbols by Premium
+fetch('whales.json')
+  .then(res => res.json())
+  .then(data => {
+    const list = document.getElementById('whale-symbols');
+    if (list) {
+      const premiumMap = {};
+      data.whale_trades.forEach(t => {
+        if (!premiumMap[t.symbol]) premiumMap[t.symbol] = 0;
+        premiumMap[t.symbol] += t.premium;
+      });
+
+      const sorted = Object.entries(premiumMap)
+        .sort((a, b) => b[1] - a[1])
+        .slice(0, 10);
+
+      list.innerHTML = sorted.map(([sym, amt]) => `<li><strong>${sym}</strong>: $${amt.toLocaleString()}</li>`).join('');
     }
   });
 
