@@ -40,18 +40,6 @@
       font-size: 1.2em;
       margin-top: 0.5em;
     }
-    .logo-circle {
-      background-color: black;
-      border-radius: 50%;
-      width: 100px;
-      height: 100px;
-      margin: 0 auto;
-      box-shadow: 0 0 20px #00ffee;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 3em;
-    }
     .section {
       padding: 2em 1em;
       max-width: 1000px;
@@ -70,9 +58,12 @@
     }
     .bar {
       height: 20px;
-      width: 100%;
       border-radius: 10px;
-      margin-bottom: 1em;
+      margin: 10px 0;
+      background: #003a44;
+    }
+    ul {
+      padding-left: 1.5em;
     }
     .whalebot {
       position: fixed;
@@ -82,7 +73,7 @@
       border: 2px solid #00ffee;
       padding: 1em;
       border-radius: 50%;
-      box-shadow: 0 0 12px #00ffee;
+      box-shadow: 0 0 15px #00ffee;
       cursor: pointer;
       z-index: 1000;
     }
@@ -124,18 +115,20 @@
   </nav>
 
   <div class="hero">
-    <div class="logo-circle">🐳</div>
-    <h1>WhaleWatch.Trade</h1>
+    <div style="background-color: black; border-radius: 50%; width: 100px; height: 100px; margin: 0 auto; box-shadow: 0 0 20px #00ffee; display: flex; align-items: center; justify-content: center; font-size: 3em;">
+      🐳
+    </div>
+    <h1 style="margin-top: 0.5em;">WhaleWatch.Trade</h1>
     <p>We track the whales so you can harvest the premium.</p>
   </div>
 
   <div class="section">
     <div class="card">
-      <h2>🌬️ Whale Meter</h2>
+      <h2>🐋 Whale Meter</h2>
       <div id="whale-meter-bar" class="bar"></div>
-      <div id="whale-sentiment">Loading whale sentiment...</div>
-      <div id="whale-premium-total"></div>
-      <small>🟢 Green = Bullish (Calls) · 🔴 Red = Bearish (Puts) · 🎨 Gradient = Mixed Premium Flow</small>
+      <p id="whale-sentiment">Loading whale sentiment...</p>
+      <p id="whale-premium-total"></p>
+      <p>🟢 Green = Bullish (Calls) · 🔴 Red = Bearish (Puts) · 🎨 Gradient = Mixed Premium Flow</p>
     </div>
 
     <div class="card">
@@ -146,20 +139,62 @@
     <div class="card">
       <h2>🌐 Sentiment Timeline</h2>
       <div id="sentiment-bar" class="bar"></div>
-      <div id="sentiment-text">Loading timeline...</div>
-      <small>The whales have been getting more confident. Watch for foam buildup before a possible wave.</small>
+      <p id="sentiment-text">Loading timeline...</p>
+      <p>The whales have been getting more confident. Watch for foam buildup before a possible wave.</p>
     </div>
 
     <div class="card">
       <h2>🦈 Shark Meter</h2>
       <div id="shark-meter">Loading dark pool trades...</div>
     </div>
+
+    <div class="card">
+      <h2>⚡ Shark Alerts</h2>
+      <div id="shark-alerts">Scanning for hidden accumulation...</div>
+    </div>
+
+    <div class="card">
+      <h2>🧠 Suggested Trade Based on Whale + Shark Signals</h2>
+      <p>Calculating best opportunity...</p>
+    </div>
+
+    <div class="card">
+      <h2>📄 Live Trader Log</h2>
+      <p>Latest real-money trades from our premium harvesting strategy:</p>
+      <p>Loading latest trade...</p>
+    </div>
+
+    <div class="card">
+      <h2>📄 Weekly Premium Harvest Plan</h2>
+      <p><strong>Week:</strong> May 20–24, 2025<br/><strong>Target:</strong> $2000 | <strong>Total:</strong> $2044</p>
+      <div style="display: flex; gap: 2em;">
+        <div>
+          <h3>Roth IRA</h3>
+          <p><strong>Puts:</strong></p>
+          <ul>
+            <li>3x NVDA $120 Put @ $1.66 = $498.00</li>
+            <li>2x NVDA $118 Put @ $1.30 = $260.00</li>
+          </ul>
+          <p><strong>Calls:</strong></p>
+          <ul>
+            <li>2x ABBV $190 Call @ $2.77 = $554.00</li>
+          </ul>
+        </div>
+        <div>
+          <h3>IRA</h3>
+          <p><strong>Puts:</strong></p>
+          <ul>
+            <li>1x NVDA $120 Put @ $1.50 = $150.00</li>
+            <li>2x NVDA $117 Put @ $1.20 = $240.00</li>
+          </ul>
+        </div>
+      </div>
+    </div>
   </div>
 
-  <div id="whalebot-icon" class="whalebot">🐳</div>
-  <div id="whalebotPanel" class="whalebot-panel">
+  <div class="whalebot" id="whalebot-icon">🤖</div>
+  <div class="whalebot-panel" id="whalebotPanel">
     <h3>🤖 WhaleBot</h3>
-    <p>Ask me about:</p>
     <ul>
       <li>Covered calls</li>
       <li>Put selling</li>
