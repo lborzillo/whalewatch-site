@@ -115,16 +115,20 @@
 </head>
 <body>
   <nav>
-    <a href="#">Home</a>
-    <a href="simulate.html">Simulator</a>
-    <a href="learn.html">Learn</a>
-    <a href="whisper.html">Whispers</a>
-  </nav>
+  <a href="#">Home</a>
+  <a href="learn.html">Learn</a>
+  <a href="simulate.html">Simulator</a>
+  <a href="harvesting.html">Premium Harvesting</a>
+  <a href="whisper.html">Whispers</a>
+</nav>
 
   <div class="hero">
   <div style="background-color: black; border-radius: 50%; width: 100px; height: 100px; margin: 0 auto; box-shadow: 0 0 20px #00ffee; display: flex; align-items: center; justify-content: center; font-size: 3em;">
     🐳
   </div>
+  <h1 style="margin-top: 0.5em;">WhaleWatch.Trade</h1>
+  <p>We track the whales so you can harvest the premium.</p>
+</div>
   
 </div>
   <h1>WhaleWatch.Trade</h1>
@@ -140,7 +144,16 @@
   <div class="section card">
     <h2>💨 Whale Meter</h2>
     <div id="whale-meter">
-  <div style="height: 20px; background: linear-gradient(to right, green 50%, red 50%); border-radius: 10px; overflow: hidden; margin-bottom: 0.5em;"></div>
+  <div style="height: 20px; background: linear-gradient(to right, #00ff99 50%, #ff3366 50%); border-radius: 10px; overflow: hidden; margin-bottom: 0.5em;"></div>
+  <div id="whale-meter-label">Loading whale sentiment...</div>
+  <div id="whale-meter-meta" style="margin-top: 0.5em; font-size: 0.95em; color: #ccc;"></div>
+  <div style="margin-top: 0.5em; font-size: 0.9em;">
+    🟢 Green = Bullish (Calls) · 🔴 Red = Bearish (Puts) · 🎨 Gradient = Mixed Premium Flow
+  </div>
+  <div style="margin-top: 0.5em; font-size: 0.85em; color: #bbb;">
+    The Whale Meter shows where the most capital is currently concentrated in the options market, based on open interest and last traded price.
+  </div>
+</div>
   <div id="whale-meter-label">Loading whale sentiment...</div>
 </div>
   </div>
@@ -153,7 +166,15 @@
   <div class="section card">
     <h2>🌐 Sentiment Timeline</h2>
     <div id="sentiment-timeline">
-  <div style="height: 20px; background: linear-gradient(to right, #00ffcc 60%, #002b3f 40%); border-radius: 10px; overflow: hidden; margin-bottom: 0.5em;"></div>
+  <div id="sentiment-bar" style="height: 20px; border-radius: 10px; overflow: hidden; background: linear-gradient(to right, #00ffcc 50%, #002b3f 50%); margin-bottom: 0.5em;"></div>
+  <div id="sentiment-timeline-label">Loading timeline...</div>
+  <div style="margin-top: 0.5em; font-size: 0.9em;">
+    🐂 Bullish: <span id="bullish-pct">--</span> | 🐻 Bearish: <span id="bearish-pct">--</span>
+  </div>
+  <div style="margin-top: 0.5em; font-size: 0.85em; color: #bbb;">
+    The whales have been getting more confident. Watch for foam buildup before a possible wave.
+  </div>
+</div>
   <div id="sentiment-timeline-label">Loading timeline...</div>
 </div>
   </div>
@@ -237,6 +258,7 @@
       .then(res => res.json())
       .then(data => {
         document.getElementById('whale-meter-label').innerText = 'Whale Sentiment: ' + (data.overall_sentiment || 'Mixed');
+        document.getElementById('whale-meter-meta').innerText = 'Total Premium Traded: $' + (data.total_premium ? data.total_premium.toLocaleString() : 'N/A');
 
         const grouped = {};
         data.whale_trades.forEach(trade => {
@@ -255,14 +277,25 @@
     fetch('sentiment.json')
       .then(res => res.json())
       .then(data => {
-        document.getElementById('sentiment-timeline-label').innerText = 'Timeline: ' + (data.timeline ? 'Loaded' : 'Unavailable');
+        document.getElementById('sentiment-timeline-label').innerText = 'Timeline Loaded';
+        document.getElementById('bullish-pct').innerText = (data.bullish * 100).toFixed(1) + '%';
+        document.getElementById('bearish-pct').innerText = (data.bearish * 100).toFixed(1) + '%';
+        const sentimentBar = document.getElementById('sentiment-bar');
+        sentimentBar.style.background = `linear-gradient(to right, #00ffcc ${data.bullish * 100}%, #002b3f ${data.bearish * 100}%)`;
       });
 
     fetch('sharks.json')
       .then(res => res.json())
       .then(data => {
-        document.getElementById('shark-meter-label').innerText = data.trades.length + ' shark trades detected';
-        document.getElementById('shark-alerts').innerText = data.alerts ? data.alerts[0].summary : 'No major shark moves yet';
+        document.getElementById('shark-meter-label').innerText = data.trades.length + ' dark pool trades logged. Volume signals detected.';
+        document.getElementById('shark-alerts').innerHTML = data.alerts && data.alerts.length
+          ? `<div style='background: #013344; padding: 1em; border-radius: 8px; box-shadow: 0 0 8px #00ffee;'>
+              <strong>${data.alerts[0].symbol}</strong> appeared <strong>${data.alerts[0].frequency}x</strong> in dark pool trades.<br>
+              Volume: <strong>${data.alerts[0].volume.toLocaleString()}</strong><br>
+              Latest: ${data.alerts[0].last_seen} @ $${data.alerts[0].price}<br>
+              Confidence: <span style='color: #ffcc00;'>${data.alerts[0].confidence}</span>
+            </div>`
+          : 'No major shark moves yet';
       });
 
     fetch('trades.json')
