@@ -60,10 +60,7 @@
       height: 20px;
       border-radius: 10px;
       margin: 10px 0;
-      background: #003a44;
-    }
-    ul {
-      padding-left: 1.5em;
+      background: #004;
     }
     .whalebot {
       position: fixed;
@@ -73,7 +70,7 @@
       border: 2px solid #00ffee;
       padding: 1em;
       border-radius: 50%;
-      box-shadow: 0 0 15px #00ffee;
+      box-shadow: 0 0 12px #00ffee;
       cursor: pointer;
       z-index: 1000;
     }
@@ -103,6 +100,7 @@
     .whalebot-panel small {
       color: #ccc;
     }
+    ul { padding-left: 1.2em; }
   </style>
 </head>
 <body>
@@ -155,40 +153,13 @@
 
     <div class="card">
       <h2>🧠 Suggested Trade Based on Whale + Shark Signals</h2>
-      <p>Calculating best opportunity...</p>
+      <p id="suggested-trade">Calculating best opportunity...</p>
     </div>
 
     <div class="card">
       <h2>📄 Live Trader Log</h2>
       <p>Latest real-money trades from our premium harvesting strategy:</p>
-      <p>Loading latest trade...</p>
-    </div>
-
-    <div class="card">
-      <h2>📄 Weekly Premium Harvest Plan</h2>
-      <p><strong>Week:</strong> May 20–24, 2025<br/><strong>Target:</strong> $2000 | <strong>Total:</strong> $2044</p>
-      <div style="display: flex; gap: 2em;">
-        <div>
-          <h3>Roth IRA</h3>
-          <p><strong>Puts:</strong></p>
-          <ul>
-            <li>3x NVDA $120 Put @ $1.66 = $498.00</li>
-            <li>2x NVDA $118 Put @ $1.30 = $260.00</li>
-          </ul>
-          <p><strong>Calls:</strong></p>
-          <ul>
-            <li>2x ABBV $190 Call @ $2.77 = $554.00</li>
-          </ul>
-        </div>
-        <div>
-          <h3>IRA</h3>
-          <p><strong>Puts:</strong></p>
-          <ul>
-            <li>1x NVDA $120 Put @ $1.50 = $150.00</li>
-            <li>2x NVDA $117 Put @ $1.20 = $240.00</li>
-          </ul>
-        </div>
-      </div>
+      <p id="latest-trade">Loading latest trade...</p>
     </div>
   </div>
 
