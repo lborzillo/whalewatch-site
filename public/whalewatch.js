@@ -1,4 +1,6 @@
-// Whale Meter
+// ======================
+// 🐋 Whale Meter + Top 10
+// ======================
 fetch('whales.json')
   .then(res => res.json())
   .then(data => {
@@ -7,37 +9,23 @@ fetch('whales.json')
     const total = calls + puts;
     const sentiment = total === 0 ? 'Mixed' : calls > puts ? 'Bullish' : 'Bearish';
 
-    const whaleMeterBar = document.getElementById('whale-meter-bar');
-    const whaleMeterText = document.getElementById('whale-sentiment');
-    const premiumTotal = document.getElementById('whale-premium-total');
+    document.getElementById('whale-meter-bar').style.background = `linear-gradient(to right, green ${calls / total * 100}%, red ${puts / total * 100}%)`;
+    document.getElementById('whale-sentiment').innerText = `Whale Sentiment: ${sentiment}`;
+    document.getElementById('whale-premium-total').innerText = `Total Premium Traded: $${total.toLocaleString()}`;
 
-    if (whaleMeterBar && whaleMeterText && premiumTotal) {
-      whaleMeterBar.style.background = `linear-gradient(to right, green ${calls / total * 100}%, red ${puts / total * 100}%)`;
-      whaleMeterText.innerText = `Whale Sentiment: ${sentiment}`;
-      premiumTotal.innerText = `Total Premium Traded: $${total.toLocaleString()}`;
-    }
-
-    // Top 10 Whale Symbols by Premium
     const symbolMap = {};
     data.whale_trades.forEach(t => {
       symbolMap[t.symbol] = (symbolMap[t.symbol] || 0) + t.premium;
     });
-    const sorted = Object.entries(symbolMap)
-      .sort((a, b) => b[1] - a[1])
-      .slice(0, 10);
 
-    const whaleSymbols = document.getElementById('whale-top-symbols');
-    if (whaleSymbols) {
-      whaleSymbols.innerHTML = '';
-      sorted.forEach(([symbol, premium]) => {
-        const li = document.createElement('li');
-        li.textContent = `${symbol}: $${premium.toLocaleString()}`;
-        whaleSymbols.appendChild(li);
-      });
-    }
+    const sorted = Object.entries(symbolMap).sort((a, b) => b[1] - a[1]).slice(0, 10);
+    const topDiv = document.getElementById('whale-top-symbols');
+    topDiv.innerHTML = sorted.map(([s, p]) => `• ${s}: $${p.toLocaleString()}`).join('<br>');
   });
 
-// Sentiment Timeline
+// ======================
+// 🌐 Sentiment Timeline
+// ======================
 fetch('sentiment.json')
   .then(res => res.json())
   .then(data => {
@@ -51,86 +39,106 @@ fetch('sentiment.json')
     }
   });
 
-// Shark Meter
+// ======================
+// 🦈 Shark Meter
+// ======================
 fetch('sharks.json')
   .then(res => res.json())
   .then(data => {
     const container = document.getElementById('shark-meter');
     container.innerHTML = '';
-    const topSymbols = {};
 
-    // Aggregate volume by symbol
+    const grouped = {};
     data.shark_trades.forEach(t => {
-      if (!topSymbols[t.symbol]) {
-        topSymbols[t.symbol] = { volume: 0, priceTotal: 0, count: 0 };
+      if (!grouped[t.symbol]) {
+        grouped[t.symbol] = { total_volume: 0, total_price: 0, trades: 0 };
       }
-      topSymbols[t.symbol].volume += t.total_volume;
-      topSymbols[t.symbol].priceTotal += t.average_price;
-      topSymbols[t.symbol].count += 1;
+      grouped[t.symbol].total_volume += t.total_volume;
+      grouped[t.symbol].total_price += t.average_price;
+      grouped[t.symbol].trades += 1;
     });
 
-    const sorted = Object.entries(topSymbols)
-      .sort((a, b) => b[1].volume - a[1].volume)
-      .slice(0, 5);
-
+    const sorted = Object.entries(grouped).sort((a, b) => b[1].total_volume - a[1].total_volume).slice(0, 5);
     sorted.forEach(([symbol, info]) => {
-      const avgPrice = (info.priceTotal / info.count).toFixed(2);
+      const avgPrice = info.total_price / info.trades;
       const div = document.createElement('div');
-      div.innerHTML = `🦈 ${symbol}: ${info.volume.toLocaleString()} shares @ $${avgPrice}`;
+      div.innerHTML = `🦈 ${symbol}: ${info.total_volume.toLocaleString()} shares @ $${avgPrice.toFixed(2)}`;
       container.appendChild(div);
     });
   });
 
-// Shark Alerts
+// ======================
+// ⚡ Shark Alerts
+// ======================
 fetch('sharks.json')
   .then(res => res.json())
   .then(data => {
-    const alerts = document.getElementById('shark-alerts');
-    alerts.innerHTML = '';
+    const alertBox = document.getElementById('shark-alerts');
+    alertBox.innerHTML = '';
 
-    const highConfidence = data.shark_trades
+    const alerts = data.shark_trades
       .filter(t => t.confidence && t.confidence.toUpperCase() !== 'LOW')
-      .sort((a, b) => b.total_volume - a.total_volume);
+      .sort((a, b) => b.total_volume - a.total_volume)
+      .slice(0, 3);
 
-    if (highConfidence.length === 0) {
-      alerts.innerHTML = 'No high-confidence shark activity detected.';
-      return;
+    if (alerts.length === 0) {
+      alertBox.innerHTML = 'No high-confidence shark activity detected.';
+    } else {
+      alerts.forEach(t => {
+        const div = document.createElement('div');
+        div.innerHTML = `🔔 ${t.symbol} — ${t.total_volume.toLocaleString()} shares @ $${t.average_price.toFixed(2)} — Confidence: ${t.confidence}`;
+        alertBox.appendChild(div);
+      });
     }
-
-    highConfidence.forEach(info => {
-      const div = document.createElement('div');
-      div.innerHTML = `🔔 ${info.symbol} — ${info.total_volume.toLocaleString()} shares @ $${info.average_price} — Confidence: ${info.confidence}`;
-      alerts.appendChild(div);
-    });
   });
 
-// Suggested Trade (Whale + Shark alignment)
+// ======================
+// 🧠 Suggested Trade
+// ======================
 Promise.all([
   fetch('whales.json').then(res => res.json()),
   fetch('sharks.json').then(res => res.json())
 ]).then(([whales, sharks]) => {
   const suggestion = document.getElementById('suggested-trade');
-  const sharkSymbols = sharks.shark_trades.map(t => t.symbol);
-  const whaleSymbols = whales.whale_trades.map(t => t.symbol);
+  const whaleCounts = whales.whale_trades.reduce((acc, t) => {
+    acc[t.symbol] = (acc[t.symbol] || 0) + t.premium;
+    return acc;
+  }, {});
 
-  const overlap = sharkSymbols.find(sym => whaleSymbols.includes(sym));
-  if (overlap) {
-    suggestion.innerText = `🧠 Consider selling a PUT on ${overlap}. Whales and sharks are both circling.`;
+  const sharkCounts = sharks.shark_trades.reduce((acc, t) => {
+    acc[t.symbol] = (acc[t.symbol] || 0) + t.total_volume;
+    return acc;
+  }, {});
+
+  const matches = Object.keys(whaleCounts).filter(sym => sharkCounts[sym]);
+
+  if (matches.length === 0) {
+    suggestion.innerText = 'No alignment between whale and shark activity found. Keep scanning for foam buildup!';
   } else {
-    suggestion.innerText = `No overlap today between whale and shark signals. Stay alert for foam.`;
+    const best = matches.sort((a, b) => whaleCounts[b] + sharkCounts[b] - whaleCounts[a] - sharkCounts[a])[0];
+    suggestion.innerText = `Try selling a cash-secured PUT on ${best}. Both whales and sharks are circling.`;
   }
 });
 
-// Live Trader Log
+// ======================
+// 📄 Live Trader Log
+// ======================
 fetch('trades.json')
   .then(res => res.json())
   .then(data => {
+    const log = document.getElementById('live-trader-log');
     const latest = data.trades[0];
-    const log = document.getElementById('live-trade');
-    log.innerText = `${latest.symbol} — ${latest.type} ${latest.strike}, Exp: ${latest.expiration}, Premium: $${latest.premium} × ${latest.size}, Status: ${latest.status}`;
+    if (!latest) {
+      log.innerText = 'No trades available yet.';
+    } else {
+      const total = (latest.premium * latest.size).toFixed(2);
+      log.innerText = `${latest.date}: Sold ${latest.size} ${latest.symbol} ${latest.type} ${latest.strike} @ $${latest.premium} = $${total} (${latest.status})`;
+    }
   });
 
-// WhaleBot Toggle
+// ======================
+// 🤖 WhaleBot Toggle
+// ======================
 document.getElementById('whalebot-icon').addEventListener('click', () => {
   const panel = document.getElementById('whalebotPanel');
   panel.style.display = panel.style.display === 'block' ? 'none' : 'block';
