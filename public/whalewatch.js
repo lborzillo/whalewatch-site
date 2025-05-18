@@ -17,7 +17,7 @@ fetch('whales.json')
       premiumTotal.innerText = `Total Premium Traded: $${total.toLocaleString()}`;
     }
 
-    // Top 10 Symbols
+    // Top 10 Whale Symbols by Premium
     const symbolMap = {};
     data.whale_trades.forEach(t => {
       symbolMap[t.symbol] = (symbolMap[t.symbol] || 0) + t.premium;
@@ -26,7 +26,7 @@ fetch('whales.json')
       .sort((a, b) => b[1] - a[1])
       .slice(0, 10);
 
-    const whaleSymbols = document.getElementById('whale-top-symbols'); // <-- corrected here
+    const whaleSymbols = document.getElementById('whale-top-symbols');
     if (whaleSymbols) {
       whaleSymbols.innerHTML = '';
       sorted.forEach(([symbol, premium]) => {
@@ -57,26 +57,26 @@ fetch('sharks.json')
   .then(data => {
     const container = document.getElementById('shark-meter');
     container.innerHTML = '';
-    const trades = data.shark_trades;
+    const topSymbols = {};
 
-    const grouped = trades.reduce((acc, trade) => {
-      if (!acc[trade.symbol]) {
-        acc[trade.symbol] = { volume: 0, total: 0, count: 0 };
+    // Aggregate volume by symbol
+    data.shark_trades.forEach(t => {
+      if (!topSymbols[t.symbol]) {
+        topSymbols[t.symbol] = { volume: 0, priceTotal: 0, count: 0 };
       }
-      acc[trade.symbol].volume += trade.total_volume;
-      acc[trade.symbol].total += trade.average_price * trade.total_volume;
-      acc[trade.symbol].count += trade.total_volume;
-      return acc;
-    }, {});
+      topSymbols[t.symbol].volume += t.total_volume;
+      topSymbols[t.symbol].priceTotal += t.average_price;
+      topSymbols[t.symbol].count += 1;
+    });
 
-    const sorted = Object.entries(grouped)
+    const sorted = Object.entries(topSymbols)
       .sort((a, b) => b[1].volume - a[1].volume)
       .slice(0, 5);
 
-    sorted.forEach(([symbol, stats]) => {
-      const avgPrice = (stats.total / stats.count).toFixed(2);
+    sorted.forEach(([symbol, info]) => {
+      const avgPrice = (info.priceTotal / info.count).toFixed(2);
       const div = document.createElement('div');
-      div.innerHTML = `🦈 ${symbol}: ${stats.volume.toLocaleString()} shares @ $${avgPrice}`;
+      div.innerHTML = `🦈 ${symbol}: ${info.volume.toLocaleString()} shares @ $${avgPrice}`;
       container.appendChild(div);
     });
   });
@@ -87,22 +87,47 @@ fetch('sharks.json')
   .then(data => {
     const alerts = document.getElementById('shark-alerts');
     alerts.innerHTML = '';
-    const trades = data.shark_trades;
 
-    const sorted = trades
+    const highConfidence = data.shark_trades
       .filter(t => t.confidence && t.confidence.toUpperCase() !== 'LOW')
       .sort((a, b) => b.total_volume - a.total_volume);
 
-    if (sorted.length === 0) {
+    if (highConfidence.length === 0) {
       alerts.innerHTML = 'No high-confidence shark activity detected.';
       return;
     }
 
-    sorted.forEach(trade => {
+    highConfidence.forEach(info => {
       const div = document.createElement('div');
-      div.innerHTML = `🔔 ${trade.symbol} — ${trade.total_volume.toLocaleString()} shares @ $${trade.average_price} — Confidence: ${trade.confidence}`;
+      div.innerHTML = `🔔 ${info.symbol} — ${info.total_volume.toLocaleString()} shares @ $${info.average_price} — Confidence: ${info.confidence}`;
       alerts.appendChild(div);
     });
+  });
+
+// Suggested Trade (Whale + Shark alignment)
+Promise.all([
+  fetch('whales.json').then(res => res.json()),
+  fetch('sharks.json').then(res => res.json())
+]).then(([whales, sharks]) => {
+  const suggestion = document.getElementById('suggested-trade');
+  const sharkSymbols = sharks.shark_trades.map(t => t.symbol);
+  const whaleSymbols = whales.whale_trades.map(t => t.symbol);
+
+  const overlap = sharkSymbols.find(sym => whaleSymbols.includes(sym));
+  if (overlap) {
+    suggestion.innerText = `🧠 Consider selling a PUT on ${overlap}. Whales and sharks are both circling.`;
+  } else {
+    suggestion.innerText = `No overlap today between whale and shark signals. Stay alert for foam.`;
+  }
+});
+
+// Live Trader Log
+fetch('trades.json')
+  .then(res => res.json())
+  .then(data => {
+    const latest = data.trades[0];
+    const log = document.getElementById('live-trade');
+    log.innerText = `${latest.symbol} — ${latest.type} ${latest.strike}, Exp: ${latest.expiration}, Premium: $${latest.premium} × ${latest.size}, Status: ${latest.status}`;
   });
 
 // WhaleBot Toggle
