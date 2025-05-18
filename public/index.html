@@ -25,6 +25,26 @@
       text-decoration: none;
       font-weight: bold;
     }
+    .hero {
+      text-align: center;
+      padding: 3em 1em 2em;
+      background-color: #002b3f;
+    }
+    .hero h1::before {
+      content: "🐳 ";
+      font-size: 1.2em;
+      vertical-align: middle;
+    }
+    .hero h1 {
+      font-size: 2.5em;
+      color: #00ffee;
+      margin: 0;
+    }
+    .hero p {
+      color: #a0d8ff;
+      font-size: 1.2em;
+      margin-top: 0.5em;
+    }
     .section {
       padding: 2em 1em;
       max-width: 1000px;
@@ -61,6 +81,33 @@
       border-radius: 50%;
       box-shadow: 0 0 12px #00ffee;
       cursor: pointer;
+      z-index: 1000;
+    }
+    .whalebot-panel {
+      display: none;
+      position: fixed;
+      bottom: 80px;
+      right: 20px;
+      background-color: #002b3f;
+      border: 2px solid #00ffee;
+      border-radius: 1em;
+      padding: 1.5em;
+      max-width: 260px;
+      box-shadow: 0 0 20px #00ffee;
+      z-index: 999;
+    }
+    .whalebot-panel h3 {
+      margin-top: 0;
+      color: #00ffee;
+    }
+    .whalebot-panel ul {
+      list-style-type: circle;
+      padding-left: 1.2em;
+      margin-top: 0.5em;
+      color: #ffffff;
+    }
+    .whalebot-panel small {
+      color: #ccc;
     }
     .grid {
       display: grid;
@@ -77,6 +124,11 @@
     <a href="learn.html">Learn</a>
     <a href="whisper.html">Whispers</a>
   </nav>
+
+  <div class="hero">
+    <h1>WhaleWatch.Trade</h1>
+    <p>Surf the flow. Follow the whales.</p>
+  </div>
 
   <div class="section card">
     <h2>💨 Whale Meter</h2>
@@ -143,13 +195,29 @@
     </div>
   </div>
 
-  <div class="whalebot" title="Ask WhaleBot anything about premium harvesting or options!">🐳</div>
+  <div class="whalebot" title="Ask WhaleBot anything about premium harvesting or options!" onclick="toggleWhaleBot()">🐳</div>
+  <div class="whalebot-panel" id="whalebotPanel">
+    <h3>🧑‍💻 WhaleBot</h3>
+    <p>Ask me anything about:</p>
+    <ul>
+      <li>Covered calls</li>
+      <li>Put selling</li>
+      <li>Whale trades</li>
+      <li>Premium harvesting</li>
+    </ul>
+    <small>(Coming soon: live chat!)</small>
+  </div>
 
   <footer>
     © WhaleWatch.Trade &mdash; Updated May 18, 2025
   </footer>
 
   <script>
+    function toggleWhaleBot() {
+      const panel = document.getElementById('whalebotPanel');
+      panel.style.display = panel.style.display === 'block' ? 'none' : 'block';
+    }
+
     fetch('whales.json')
       .then(res => res.json())
       .then(data => {
