@@ -26,16 +26,14 @@ fetch('whales.json')
       .sort((a, b) => b[1] - a[1])
       .slice(0, 10);
 
-    const whaleSymbols = document.getElementById('whale-top-symbols'); // ✅ Updated ID here
+    const whaleSymbols = document.getElementById('whale-top-symbols'); // <-- corrected here
     if (whaleSymbols) {
       whaleSymbols.innerHTML = '';
-      const ul = document.createElement('ul');
       sorted.forEach(([symbol, premium]) => {
         const li = document.createElement('li');
         li.textContent = `${symbol}: $${premium.toLocaleString()}`;
-        ul.appendChild(li);
+        whaleSymbols.appendChild(li);
       });
-      whaleSymbols.appendChild(ul);
     }
   });
 
@@ -59,28 +57,26 @@ fetch('sharks.json')
   .then(data => {
     const container = document.getElementById('shark-meter');
     container.innerHTML = '';
-    const bySymbol = {};
+    const trades = data.shark_trades;
 
-    data.shark_trades.forEach(trade => {
-      if (!bySymbol[trade.symbol]) {
-        bySymbol[trade.symbol] = { total_volume: 0, weighted_sum: 0 };
+    const grouped = trades.reduce((acc, trade) => {
+      if (!acc[trade.symbol]) {
+        acc[trade.symbol] = { volume: 0, total: 0, count: 0 };
       }
-      bySymbol[trade.symbol].total_volume += trade.total_volume;
-      bySymbol[trade.symbol].weighted_sum += trade.total_volume * trade.average_price;
-    });
+      acc[trade.symbol].volume += trade.total_volume;
+      acc[trade.symbol].total += trade.average_price * trade.total_volume;
+      acc[trade.symbol].count += trade.total_volume;
+      return acc;
+    }, {});
 
-    const ranked = Object.entries(bySymbol)
-      .map(([symbol, { total_volume, weighted_sum }]) => ({
-        symbol,
-        total_volume,
-        average_price: (weighted_sum / total_volume).toFixed(2)
-      }))
-      .sort((a, b) => b.total_volume - a.total_volume)
+    const sorted = Object.entries(grouped)
+      .sort((a, b) => b[1].volume - a[1].volume)
       .slice(0, 5);
 
-    ranked.forEach(({ symbol, total_volume, average_price }) => {
+    sorted.forEach(([symbol, stats]) => {
+      const avgPrice = (stats.total / stats.count).toFixed(2);
       const div = document.createElement('div');
-      div.innerHTML = `🦈 ${symbol}: ${total_volume.toLocaleString()} shares @ $${average_price}`;
+      div.innerHTML = `🦈 ${symbol}: ${stats.volume.toLocaleString()} shares @ $${avgPrice}`;
       container.appendChild(div);
     });
   });
@@ -91,33 +87,20 @@ fetch('sharks.json')
   .then(data => {
     const alerts = document.getElementById('shark-alerts');
     alerts.innerHTML = '';
+    const trades = data.shark_trades;
 
-    const grouped = {};
+    const sorted = trades
+      .filter(t => t.confidence && t.confidence.toUpperCase() !== 'LOW')
+      .sort((a, b) => b.total_volume - a.total_volume);
 
-    data.shark_trades.forEach(trade => {
-      if (!grouped[trade.symbol]) grouped[trade.symbol] = [];
-      grouped[trade.symbol].push(trade);
-    });
-
-    const highConfidence = Object.entries(grouped)
-      .map(([symbol, trades]) => {
-        const latest = trades[trades.length - 1];
-        const count = trades.length;
-        const volume = trades.reduce((acc, t) => acc + t.total_volume, 0);
-        const avgConf = trades.filter(t => t.confidence.toUpperCase() === 'HIGH').length / trades.length;
-        return { symbol, frequency: count, volume, last_seen: latest.last_seen, confidence: latest.confidence, avgConf };
-      })
-      .filter(t => t.confidence.toUpperCase() !== 'LOW')
-      .sort((a, b) => b.volume - a.volume);
-
-    if (highConfidence.length === 0) {
+    if (sorted.length === 0) {
       alerts.innerHTML = 'No high-confidence shark activity detected.';
       return;
     }
 
-    highConfidence.forEach(info => {
+    sorted.forEach(trade => {
       const div = document.createElement('div');
-      div.innerHTML = `🔔 ${info.symbol} appeared ${info.frequency}x — Latest @ $${info.last_seen} — Confidence: ${info.confidence}`;
+      div.innerHTML = `🔔 ${trade.symbol} — ${trade.total_volume.toLocaleString()} shares @ $${trade.average_price} — Confidence: ${trade.confidence}`;
       alerts.appendChild(div);
     });
   });
