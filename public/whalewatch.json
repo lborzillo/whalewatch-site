@@ -1,0 +1,60 @@
+// Load Whale Meter
+fetch('whales.json')
+  .then(res => res.json())
+  .then(data => {
+    const calls = data.whale_trades.filter(t => t.type === 'CALL').reduce((acc, t) => acc + t.premium, 0);
+    const puts = data.whale_trades.filter(t => t.type === 'PUT').reduce((acc, t) => acc + t.premium, 0);
+    const total = calls + puts;
+    const sentiment = total === 0 ? 'Mixed' : calls > puts ? 'Bullish' : 'Bearish';
+    const whaleMeterBar = document.getElementById('whale-meter-bar');
+    const whaleMeterText = document.getElementById('whale-sentiment');
+    const premiumTotal = document.getElementById('whale-premium-total');
+
+    if (whaleMeterBar && whaleMeterText && premiumTotal) {
+      whaleMeterBar.style.background = `linear-gradient(to right, green ${calls / total * 100}%, red ${puts / total * 100}%)`;
+      whaleMeterText.innerText = `Whale Sentiment: ${sentiment}`;
+      premiumTotal.innerText = `Total Premium Traded: $${total.toLocaleString()}`;
+    }
+  });
+
+// Load Sentiment Timeline
+fetch('sentiment.json')
+  .then(res => res.json())
+  .then(data => {
+    const latest = data.sentiment_timeline[data.sentiment_timeline.length - 1];
+    const bar = document.getElementById('sentiment-bar');
+    const text = document.getElementById('sentiment-text');
+
+    if (bar && text) {
+      bar.style.background = `linear-gradient(to right, #00ffcc ${latest.bullish_pct}%, #002b3f ${latest.bearish_pct}%)`;
+      text.innerText = `🐂 Bullish: ${latest.bullish_pct}% | 🐻 Bearish: ${latest.bearish_pct}%`;
+    }
+  });
+
+// Load Shark Alerts
+fetch('sharks.json')
+  .then(res => res.json())
+  .then(data => {
+    const sharkMeter = document.getElementById('shark-meter');
+    if (sharkMeter && data.shark_alerts && data.shark_alerts.length > 0) {
+      sharkMeter.innerHTML = data.shark_alerts.map(alert => `
+        <div class="shark-alert">
+          <strong>🦈 ${alert.symbol}</strong> appeared ${alert.frequency}x<br>
+          Total volume: ${alert.total_volume.toLocaleString()}<br>
+          Last seen: ${alert.last_seen} @ $${alert.average_price}<br>
+          Confidence Level: ${alert.confidence}
+        </div>
+      `).join('');
+    }
+  });
+
+// WhaleBot Panel Logic
+document.addEventListener('DOMContentLoaded', () => {
+  const icon = document.getElementById('whalebot-icon');
+  const panel = document.getElementById('whalebotPanel');
+  if (icon && panel) {
+    icon.onclick = () => {
+      panel.style.display = panel.style.display === 'block' ? 'none' : 'block';
+    };
+  }
+});
