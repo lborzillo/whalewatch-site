@@ -125,8 +125,7 @@
   <div style="background-color: black; border-radius: 50%; width: 100px; height: 100px; margin: 0 auto; box-shadow: 0 0 20px #00ffee; display: flex; align-items: center; justify-content: center; font-size: 3em;">
     🐳
   </div>
-  <h1>WhaleWatch.Trade</h1>
-  <p>We track the whales so you can harvest the premium.</p>
+  
 </div>
   <h1>WhaleWatch.Trade</h1>
   <p>We track the whales so you can harvest the premium.</p>
@@ -140,7 +139,10 @@
 
   <div class="section card">
     <h2>💨 Whale Meter</h2>
-    <div id="whale-meter">Loading whale sentiment...</div>
+    <div id="whale-meter">
+  <div style="height: 20px; background: linear-gradient(to right, green 50%, red 50%); border-radius: 10px; overflow: hidden; margin-bottom: 0.5em;"></div>
+  <div id="whale-meter-label">Loading whale sentiment...</div>
+</div>
   </div>
 
   <div class="section card">
@@ -150,12 +152,17 @@
 
   <div class="section card">
     <h2>🌐 Sentiment Timeline</h2>
-    <div id="sentiment-timeline">Loading timeline...</div>
+    <div id="sentiment-timeline">
+  <div style="height: 20px; background: linear-gradient(to right, #00ffcc 60%, #002b3f 40%); border-radius: 10px; overflow: hidden; margin-bottom: 0.5em;"></div>
+  <div id="sentiment-timeline-label">Loading timeline...</div>
+</div>
   </div>
 
   <div class="section card">
     <h2>🦈 Shark Meter</h2>
-    <div id="shark-meter">Loading dark pool trades...</div>
+    <div id="shark-meter">
+  <div style="font-weight: bold; margin-bottom: 0.3em;" id="shark-meter-label">Loading dark pool trades...</div>
+</div>
   </div>
 
   <div class="section card">
@@ -229,7 +236,7 @@
     fetch('whales.json')
       .then(res => res.json())
       .then(data => {
-        document.getElementById('whale-meter').innerText = 'Whale Sentiment: ' + (data.overall_sentiment || 'Mixed');
+        document.getElementById('whale-meter-label').innerText = 'Whale Sentiment: ' + (data.overall_sentiment || 'Mixed');
 
         const grouped = {};
         data.whale_trades.forEach(trade => {
@@ -248,13 +255,13 @@
     fetch('sentiment.json')
       .then(res => res.json())
       .then(data => {
-        document.getElementById('sentiment-timeline').innerText = 'Timeline: ' + (data.timeline ? 'Loaded' : 'Unavailable');
+        document.getElementById('sentiment-timeline-label').innerText = 'Timeline: ' + (data.timeline ? 'Loaded' : 'Unavailable');
       });
 
     fetch('sharks.json')
       .then(res => res.json())
       .then(data => {
-        document.getElementById('shark-meter').innerText = data.trades.length + ' shark trades detected';
+        document.getElementById('shark-meter-label').innerText = data.trades.length + ' shark trades detected';
         document.getElementById('shark-alerts').innerText = data.alerts ? data.alerts[0].summary : 'No major shark moves yet';
       });
 
