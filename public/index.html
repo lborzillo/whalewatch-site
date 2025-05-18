@@ -131,8 +131,7 @@
 </div>
   
 </div>
-  <h1>WhaleWatch.Trade</h1>
-  <p>We track the whales so you can harvest the premium.</p>
+  
 </div>
 <nav>
   <a href="#">Home</a>
@@ -145,7 +144,7 @@
     <h2>💨 Whale Meter</h2>
     <div id="whale-meter">
   <div style="height: 20px; background: linear-gradient(to right, #00ff99 50%, #ff3366 50%); border-radius: 10px; overflow: hidden; margin-bottom: 0.5em;"></div>
-  <div id="whale-meter-label">Loading whale sentiment...</div>
+  
   <div id="whale-meter-meta" style="margin-top: 0.5em; font-size: 0.95em; color: #ccc;"></div>
   <div style="margin-top: 0.5em; font-size: 0.9em;">
     🟢 Green = Bullish (Calls) · 🔴 Red = Bearish (Puts) · 🎨 Gradient = Mixed Premium Flow
@@ -271,17 +270,22 @@
           .slice(0, 10);
 
         const container = document.getElementById('top-whales');
-        container.innerHTML = '<ul>' + sorted.map(([sym, prem]) => `<li><strong>${sym}</strong>: $${prem.toFixed(2)}</li>`).join('') + '</ul>';
+        container.innerHTML = '<ul>' + sorted.map(([sym, prem]) => `<li><strong>${sym}</strong>: $${prem.toLocaleString(undefined, {maximumFractionDigits: 2})}</li>`).join('') + '</ul>';
+      });
       });
 
     fetch('sentiment.json')
       .then(res => res.json())
       .then(data => {
+        const latest = data.sentiment_timeline[data.sentiment_timeline.length - 1];
+        const bullish = latest.bullish_pct || 0;
+        const bearish = latest.bearish_pct || 0;
         document.getElementById('sentiment-timeline-label').innerText = 'Timeline Loaded';
-        document.getElementById('bullish-pct').innerText = (data.bullish * 100).toFixed(1) + '%';
-        document.getElementById('bearish-pct').innerText = (data.bearish * 100).toFixed(1) + '%';
+        document.getElementById('bullish-pct').innerText = bullish.toFixed(1) + '%';
+        document.getElementById('bearish-pct').innerText = bearish.toFixed(1) + '%';
         const sentimentBar = document.getElementById('sentiment-bar');
-        sentimentBar.style.background = `linear-gradient(to right, #00ffcc ${data.bullish * 100}%, #002b3f ${data.bearish * 100}%)`;
+        sentimentBar.style.background = `linear-gradient(to right, #00ffcc ${bullish}%, #002b3f ${bearish}%)`;
+      });
       });
 
     fetch('sharks.json')
