@@ -57,10 +57,6 @@
       color: #00ffff;
       margin-top: 0;
     }
-    .metric {
-      font-weight: bold;
-      color: #00ffaa;
-    }
     .bar {
       height: 20px;
       border-radius: 10px;
@@ -72,21 +68,23 @@
       bottom: 20px;
       right: 20px;
       background: black;
-      background-image: url('whale.png');
-      background-size: cover;
       border: 2px solid #00ffee;
-      padding: 1em;
-      width: 64px;
-      height: 64px;
+      padding: 0.5em;
       border-radius: 50%;
-      box-shadow: 0 0 20px #00ffee;
+      width: 60px;
+      height: 60px;
+      box-shadow: 0 0 15px #00ffee;
       cursor: pointer;
       z-index: 1000;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 2em;
     }
     .whalebot-panel {
       display: none;
       position: fixed;
-      bottom: 100px;
+      bottom: 90px;
       right: 20px;
       background-color: #002b3f;
       border: 2px solid #00ffee;
@@ -106,10 +104,12 @@
       margin-top: 0.5em;
       color: #ffffff;
     }
+    .whalebot-panel p {
+      margin: 0.2em 0;
+    }
     .whalebot-panel small {
       color: #ccc;
     }
-    ul { padding-left: 1.2em; }
   </style>
 </head>
 <body>
@@ -136,7 +136,6 @@
       <p id="whale-sentiment">Loading whale sentiment...</p>
       <p id="whale-premium-total"></p>
       <p id="whale-last-updated"></p>
-      <p>🟢 Green = Bullish (Calls) · 🔴 Red = Bearish (Puts) · 🎨 Gradient = Mixed Premium Flow</p>
     </div>
 
     <div class="card">
@@ -149,7 +148,6 @@
       <div id="sentiment-bar" class="bar"></div>
       <p id="sentiment-text">Loading timeline...</p>
       <p id="sentiment-last-updated"></p>
-      <p>The whales have been getting more confident. Watch for foam buildup before a possible wave.</p>
     </div>
 
     <div class="card">
@@ -161,28 +159,33 @@
     <div class="card">
       <h2>⚡ Shark Alerts</h2>
       <div id="shark-alerts">Scanning for hidden accumulation...</div>
+      <p><small>Confidence levels are based on volume, frequency, and recency. High = repeated activity + elevated volume.</small></p>
     </div>
 
     <div class="card">
       <h2>🧠 Suggested Trade Based on Whale + Shark Signals</h2>
       <p id="suggested-trade">Calculating best opportunity...</p>
+      <p id="suggested-last-updated"></p>
     </div>
 
     <div class="card">
       <h2>📄 Live Trader Log</h2>
       <p>Latest real-money trades from our premium harvesting strategy:</p>
       <p id="live-trade">Loading latest trade...</p>
+      <p><small>Symbol hidden — upgrade for full trade details.</small></p>
     </div>
   </div>
 
-  <div class="whalebot" id="whalebot-icon"></div>
+  <div class="whalebot" id="whalebot-icon">🐳</div>
   <div class="whalebot-panel" id="whalebotPanel">
-    <h3>🤖 WhaleBot</h3>
+    <h3>WhaleBot</h3>
+    <p>Ask me anything about trading.</p>
     <ul>
       <li>Covered calls</li>
       <li>Put selling</li>
       <li>Whale trades</li>
       <li>Premium harvesting</li>
+      <li>How to use Active Trader</li>
     </ul>
     <small>(Coming soon: live chat!)</small>
   </div>
