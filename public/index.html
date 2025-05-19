@@ -61,12 +61,6 @@
       font-weight: bold;
       color: #00ffaa;
     }
-    footer {
-      text-align: center;
-      padding: 1em;
-      font-size: 0.9em;
-      color: #aaa;
-    }
     .bar {
       height: 20px;
       border-radius: 10px;
@@ -78,23 +72,21 @@
       bottom: 20px;
       right: 20px;
       background: black;
+      background-image: url('whale.png');
+      background-size: cover;
       border: 2px solid #00ffee;
-      padding: 0.5em;
+      padding: 1em;
+      width: 64px;
+      height: 64px;
       border-radius: 50%;
       box-shadow: 0 0 20px #00ffee;
       cursor: pointer;
       z-index: 1000;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      font-size: 2em;
-      width: 60px;
-      height: 60px;
     }
     .whalebot-panel {
       display: none;
       position: fixed;
-      bottom: 90px;
+      bottom: 100px;
       right: 20px;
       background-color: #002b3f;
       border: 2px solid #00ffee;
@@ -117,11 +109,7 @@
     .whalebot-panel small {
       color: #ccc;
     }
-    .updated-time {
-      font-size: 0.85em;
-      color: #bbb;
-      margin-top: 0.3em;
-    }
+    ul { padding-left: 1.2em; }
   </style>
 </head>
 <body>
@@ -147,7 +135,7 @@
       <div id="whale-meter-bar" class="bar"></div>
       <p id="whale-sentiment">Loading whale sentiment...</p>
       <p id="whale-premium-total"></p>
-      <p class="updated-time" id="whale-updated"></p>
+      <p id="whale-last-updated"></p>
       <p>🟢 Green = Bullish (Calls) · 🔴 Red = Bearish (Puts) · 🎨 Gradient = Mixed Premium Flow</p>
     </div>
 
@@ -160,39 +148,36 @@
       <h2>🌐 Sentiment Timeline</h2>
       <div id="sentiment-bar" class="bar"></div>
       <p id="sentiment-text">Loading timeline...</p>
-      <p class="updated-time" id="sentiment-updated"></p>
+      <p id="sentiment-last-updated"></p>
       <p>The whales have been getting more confident. Watch for foam buildup before a possible wave.</p>
     </div>
 
     <div class="card">
       <h2>🦈 Shark Meter</h2>
       <div id="shark-meter">Loading dark pool trades...</div>
-      <p class="updated-time" id="shark-updated"></p>
+      <p id="shark-last-updated"></p>
     </div>
 
     <div class="card">
       <h2>⚡ Shark Alerts</h2>
       <div id="shark-alerts">Scanning for hidden accumulation...</div>
-      <p class="updated-time" id="shark-alerts-updated"></p>
     </div>
 
     <div class="card">
       <h2>🧠 Suggested Trade Based on Whale + Shark Signals</h2>
       <p id="suggested-trade">Calculating best opportunity...</p>
-      <p class="updated-time" id="suggested-updated"></p>
     </div>
 
     <div class="card">
       <h2>📄 Live Trader Log</h2>
       <p>Latest real-money trades from our premium harvesting strategy:</p>
       <p id="live-trade">Loading latest trade...</p>
-      <p class="updated-time" id="trade-updated"></p>
     </div>
   </div>
 
-  <div class="whalebot" id="whalebot-icon">🐳</div>
+  <div class="whalebot" id="whalebot-icon"></div>
   <div class="whalebot-panel" id="whalebotPanel">
-    <h3>🐳 WhaleBot</h3>
+    <h3>🤖 WhaleBot</h3>
     <ul>
       <li>Covered calls</li>
       <li>Put selling</li>
