@@ -4,7 +4,6 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>WhaleWatch.Trade</title>
-  <link rel="stylesheet" href="style.css" />
   <style>
     body {
       font-family: 'Segoe UI', sans-serif;
@@ -18,8 +17,7 @@
       padding: 1em;
       display: flex;
       justify-content: center;
-      flex-wrap: wrap;
-      gap: 1.5em;
+      gap: 2em;
     }
     nav a {
       color: #00ffee;
@@ -31,14 +29,15 @@
       padding: 3em 1em 2em;
       background-color: #002b3f;
     }
-    .hero h1 {
+    .hero img {
+      width: 100px;
+      height: 100px;
+      border-radius: 50%;
+      box-shadow: 0 0 20px #00ffee;
+    }
+    h1 {
       font-size: 2.5em;
       color: #00ffee;
-      margin: 0;
-    }
-    .hero p {
-      color: #a0d8ff;
-      font-size: 1.2em;
       margin-top: 0.5em;
     }
     .section {
@@ -53,51 +52,43 @@
       margin-bottom: 2em;
       box-shadow: 0 0 10px #003c5c;
     }
-    h2 {
-      color: #00ffff;
-      margin-top: 0;
-    }
     .bar {
       height: 20px;
       border-radius: 10px;
-      margin: 10px 0;
-      background: #004;
+      margin-top: 10px;
+      background: #001d2d;
     }
     .whalebot {
       position: fixed;
       bottom: 20px;
       right: 20px;
-      background: url('whale.png') center center / contain no-repeat;
+      background-color: transparent;
+      border: none;
+      cursor: pointer;
+      z-index: 1000;
+    }
+    .whalebot img {
       width: 60px;
       height: 60px;
       border-radius: 50%;
-      border: 2px solid #00ffee;
-      box-shadow: 0 0 12px #00ffee;
-      cursor: pointer;
-      z-index: 1000;
+      box-shadow: 0 0 15px #00ffee;
     }
     .whalebot-panel {
       display: none;
       position: fixed;
-      bottom: 100px;
+      bottom: 90px;
       right: 20px;
       background-color: #002b3f;
       border: 2px solid #00ffee;
       border-radius: 1em;
       padding: 1.5em;
-      max-width: 260px;
+      width: 260px;
       box-shadow: 0 0 20px #00ffee;
       z-index: 999;
     }
     .whalebot-panel h3 {
       margin-top: 0;
       color: #00ffee;
-    }
-    .whalebot-panel ul {
-      list-style-type: disc;
-      padding-left: 1.2em;
-      margin-top: 0.5em;
-      color: #ffffff;
     }
     .whalebot-panel small {
       color: #ccc;
@@ -114,10 +105,8 @@
   </nav>
 
   <div class="hero">
-    <div style="background-color: black; border-radius: 50%; width: 100px; height: 100px; margin: 0 auto; box-shadow: 0 0 20px #00ffee; display: flex; align-items: center; justify-content: center; font-size: 3em;">
-      🐳
-    </div>
-    <h1 style="margin-top: 0.5em;">WhaleWatch.Trade</h1>
+    <img src="whale.png" alt="Whale Logo" />
+    <h1>WhaleWatch.Trade</h1>
     <p>We track the whales so you can harvest the premium.</p>
   </div>
 
@@ -127,7 +116,6 @@
       <div id="whale-meter-bar" class="bar"></div>
       <p id="whale-sentiment">Loading whale sentiment...</p>
       <p id="whale-premium-total"></p>
-      <p>🟢 Green = Bullish (Calls) · 🔴 Red = Bearish (Puts) · 🎨 Gradient = Mixed Premium Flow</p>
     </div>
 
     <div class="card">
@@ -139,7 +127,6 @@
       <h2>🌐 Sentiment Timeline</h2>
       <div id="sentiment-bar" class="bar"></div>
       <p id="sentiment-text">Loading timeline...</p>
-      <p>The whales have been getting more confident. Watch for foam buildup before a possible wave.</p>
     </div>
 
     <div class="card">
@@ -159,14 +146,15 @@
 
     <div class="card">
       <h2>📄 Live Trader Log</h2>
-      <p>Latest real-money trades from our premium harvesting strategy:</p>
       <div id="live-trader-log">Loading latest trade...</div>
     </div>
   </div>
 
-  <div class="whalebot" id="whalebot-icon"></div>
+  <button class="whalebot" onclick="toggleWhaleBot()">
+    <img src="whale.png" alt="WhaleBot" />
+  </button>
   <div class="whalebot-panel" id="whalebotPanel">
-    <h3>🧠 WhaleBot</h3>
+    <h3>WhaleBot</h3>
     <ul>
       <li>Covered calls</li>
       <li>Put selling</li>
@@ -177,5 +165,11 @@
   </div>
 
   <script src="whalewatch.js"></script>
+  <script>
+    function toggleWhaleBot() {
+      const panel = document.getElementById('whalebotPanel');
+      panel.style.display = panel.style.display === 'block' ? 'none' : 'block';
+    }
+  </script>
 </body>
 </html>
