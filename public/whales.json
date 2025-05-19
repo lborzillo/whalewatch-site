@@ -1,5 +1,5 @@
 {
-  "latest_update": "2025-05-19T20:02:47.275007",
+  "latest_update": "2025-05-19T20:19:41.926889",
   "whale_trades": [
     {
       "symbol": "TSLA",
@@ -8,7 +8,7 @@
       "expiration": "2025-05-24",
       "premium": 20000000,
       "size": 100,
-      "timestamp": "2025-05-19T20:02:47.274950"
+      "timestamp": "2025-05-19T20:19:41.926897"
     },
     {
       "symbol": "NVDA",
@@ -17,7 +17,7 @@
       "expiration": "2025-05-24",
       "premium": 19000000,
       "size": 100,
-      "timestamp": "2025-05-19T20:02:47.274960"
+      "timestamp": "2025-05-19T20:19:41.926899"
     }
   ]
 }
