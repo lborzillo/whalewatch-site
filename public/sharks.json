@@ -1,141 +1,133 @@
 {
-  "timestamp": "2025-05-19T15:40:05.286526+00:00",
+  "timestamp": "2025-05-19T16:50:45.667263+00:00",
   "shark_trades": [
     {
       "symbol": "AAPL",
-      "average_price": 482.6,
-      "total_volume": 341634,
-      "average_volume": 170817,
-      "last_seen": "2025-05-19T15:40:05.286438+00:00",
-      "confidence": "High"
+      "average_price": 165.98,
+      "total_volume": 460638,
+      "average_volume": 230319,
+      "last_seen": "2025-05-19T16:50:45.667180+00:00",
+      "confidence": "Low"
     },
     {
       "symbol": "AAPL",
-      "average_price": 493.28,
-      "total_volume": 161318,
-      "average_volume": 80659,
-      "last_seen": "2025-05-19T15:40:05.286451+00:00",
-      "confidence": "High"
-    },
-    {
-      "symbol": "AAPL",
-      "average_price": 169.56,
-      "total_volume": 169816,
-      "average_volume": 84908,
-      "last_seen": "2025-05-19T15:40:05.286457+00:00",
-      "confidence": "High"
-    },
-    {
-      "symbol": "NVDA",
-      "average_price": 316.75,
-      "total_volume": 185562,
-      "average_volume": 92781,
-      "last_seen": "2025-05-19T15:40:05.286463+00:00",
+      "average_price": 339.23,
+      "total_volume": 404404,
+      "average_volume": 202202,
+      "last_seen": "2025-05-19T16:50:45.667193+00:00",
       "confidence": "Medium"
     },
     {
-      "symbol": "NVDA",
-      "average_price": 244.7,
-      "total_volume": 487322,
-      "average_volume": 243661,
-      "last_seen": "2025-05-19T15:40:05.286467+00:00",
+      "symbol": "AAPL",
+      "average_price": 280.9,
+      "total_volume": 273554,
+      "average_volume": 136777,
+      "last_seen": "2025-05-19T16:50:45.667199+00:00",
       "confidence": "Low"
     },
     {
       "symbol": "NVDA",
-      "average_price": 311.68,
-      "total_volume": 243534,
-      "average_volume": 121767,
-      "last_seen": "2025-05-19T15:40:05.286472+00:00",
+      "average_price": 317.59,
+      "total_volume": 369018,
+      "average_volume": 184509,
+      "last_seen": "2025-05-19T16:50:45.667205+00:00",
+      "confidence": "Low"
+    },
+    {
+      "symbol": "NVDA",
+      "average_price": 339.53,
+      "total_volume": 490629,
+      "average_volume": 245314,
+      "last_seen": "2025-05-19T16:50:45.667209+00:00",
+      "confidence": "Low"
+    },
+    {
+      "symbol": "NVDA",
+      "average_price": 236.21,
+      "total_volume": 403466,
+      "average_volume": 201733,
+      "last_seen": "2025-05-19T16:50:45.667213+00:00",
+      "confidence": "Low"
+    },
+    {
+      "symbol": "TSLA",
+      "average_price": 154.82,
+      "total_volume": 353802,
+      "average_volume": 176901,
+      "last_seen": "2025-05-19T16:50:45.667219+00:00",
       "confidence": "High"
     },
     {
-      "symbol": "TSLA",
-      "average_price": 325.99,
-      "total_volume": 356041,
-      "average_volume": 178020,
-      "last_seen": "2025-05-19T15:40:05.286477+00:00",
-      "confidence": "Low"
-    },
-    {
-      "symbol": "TSLA",
-      "average_price": 450.82,
-      "total_volume": 469843,
-      "average_volume": 234921,
-      "last_seen": "2025-05-19T15:40:05.286483+00:00",
+      "symbol": "AMD",
+      "average_price": 238.58,
+      "total_volume": 166830,
+      "average_volume": 83415,
+      "last_seen": "2025-05-19T16:50:45.667226+00:00",
       "confidence": "Medium"
     },
     {
       "symbol": "AMD",
-      "average_price": 424.7,
-      "total_volume": 108278,
-      "average_volume": 54139,
-      "last_seen": "2025-05-19T15:40:05.286488+00:00",
+      "average_price": 175.74,
+      "total_volume": 261400,
+      "average_volume": 130700,
+      "last_seen": "2025-05-19T16:50:45.667231+00:00",
       "confidence": "Medium"
     },
     {
       "symbol": "META",
-      "average_price": 175.64,
-      "total_volume": 179920,
-      "average_volume": 89960,
-      "last_seen": "2025-05-19T15:40:05.286493+00:00",
+      "average_price": 133.33,
+      "total_volume": 356559,
+      "average_volume": 178279,
+      "last_seen": "2025-05-19T16:50:45.667236+00:00",
+      "confidence": "Low"
+    },
+    {
+      "symbol": "MSFT",
+      "average_price": 495.59,
+      "total_volume": 171611,
+      "average_volume": 85805,
+      "last_seen": "2025-05-19T16:50:45.667241+00:00",
+      "confidence": "Low"
+    },
+    {
+      "symbol": "MSFT",
+      "average_price": 221.23,
+      "total_volume": 119382,
+      "average_volume": 59691,
+      "last_seen": "2025-05-19T16:50:45.667245+00:00",
       "confidence": "Medium"
     },
     {
-      "symbol": "META",
-      "average_price": 338.58,
-      "total_volume": 362200,
-      "average_volume": 181100,
-      "last_seen": "2025-05-19T15:40:05.286497+00:00",
-      "confidence": "Low"
-    },
-    {
-      "symbol": "META",
-      "average_price": 109.85,
-      "total_volume": 396472,
-      "average_volume": 198236,
-      "last_seen": "2025-05-19T15:40:05.286501+00:00",
-      "confidence": "High"
-    },
-    {
       "symbol": "MSFT",
-      "average_price": 300.0,
-      "total_volume": 470338,
-      "average_volume": 235169,
-      "last_seen": "2025-05-19T15:40:05.286507+00:00",
+      "average_price": 175.91,
+      "total_volume": 403350,
+      "average_volume": 201675,
+      "last_seen": "2025-05-19T16:50:45.667248+00:00",
       "confidence": "High"
-    },
-    {
-      "symbol": "MSFT",
-      "average_price": 136.27,
-      "total_volume": 158396,
-      "average_volume": 79198,
-      "last_seen": "2025-05-19T15:40:05.286510+00:00",
-      "confidence": "Low"
     },
     {
       "symbol": "AMZN",
-      "average_price": 408.55,
-      "total_volume": 144399,
-      "average_volume": 72199,
-      "last_seen": "2025-05-19T15:40:05.286515+00:00",
+      "average_price": 296.74,
+      "total_volume": 307450,
+      "average_volume": 153725,
+      "last_seen": "2025-05-19T16:50:45.667253+00:00",
       "confidence": "Medium"
     },
     {
       "symbol": "AMZN",
-      "average_price": 211.96,
-      "total_volume": 56962,
-      "average_volume": 28481,
-      "last_seen": "2025-05-19T15:40:05.286519+00:00",
-      "confidence": "Low"
+      "average_price": 298.86,
+      "total_volume": 59396,
+      "average_volume": 29698,
+      "last_seen": "2025-05-19T16:50:45.667257+00:00",
+      "confidence": "High"
     },
     {
       "symbol": "GOOG",
-      "average_price": 181.82,
-      "total_volume": 127202,
-      "average_volume": 63601,
-      "last_seen": "2025-05-19T15:40:05.286524+00:00",
-      "confidence": "Medium"
+      "average_price": 169.17,
+      "total_volume": 422593,
+      "average_volume": 211296,
+      "last_seen": "2025-05-19T16:50:45.667262+00:00",
+      "confidence": "Low"
     }
   ]
 }
