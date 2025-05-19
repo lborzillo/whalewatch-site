@@ -5,6 +5,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>WhaleWatch.Trade</title>
+  <link rel="stylesheet" href="style.css" />
   <style>
     body {
       font-family: 'Segoe UI', sans-serif;
@@ -18,6 +19,7 @@
       padding: 1em;
       display: flex;
       justify-content: center;
+      flex-wrap: wrap;
       gap: 1.5em;
     }
     nav a {
@@ -33,6 +35,12 @@
     .hero h1 {
       font-size: 2.5em;
       color: #00ffee;
+      margin: 0;
+    }
+    .hero p {
+      color: #a0d8ff;
+      font-size: 1.2em;
+      margin-top: 0.5em;
     }
     .section {
       padding: 2em 1em;
@@ -46,11 +54,15 @@
       margin-bottom: 2em;
       box-shadow: 0 0 10px #003c5c;
     }
+    h2 {
+      color: #00ffff;
+      margin-top: 0;
+    }
     .bar {
       height: 20px;
       border-radius: 10px;
       margin: 10px 0;
-      background: #001a33;
+      background: #004;
     }
     .whalebot {
       position: fixed;
@@ -58,37 +70,37 @@
       right: 20px;
       background: black;
       border: 2px solid #00ffee;
+      padding: 1em;
       border-radius: 50%;
       box-shadow: 0 0 12px #00ffee;
-      width: 60px;
-      height: 60px;
-      font-size: 2em;
-      display: flex;
-      align-items: center;
-      justify-content: center;
       cursor: pointer;
       z-index: 1000;
+    }
+    .whalebot img {
+      width: 40px;
+      height: 40px;
     }
     .whalebot-panel {
       display: none;
       position: fixed;
-      bottom: 100px;
+      bottom: 80px;
       right: 20px;
       background-color: #002b3f;
       border: 2px solid #00ffee;
       border-radius: 1em;
-      padding: 1em;
+      padding: 1.5em;
       max-width: 260px;
       box-shadow: 0 0 20px #00ffee;
       z-index: 999;
     }
     .whalebot-panel h3 {
+      margin-top: 0;
       color: #00ffee;
-      margin: 0 0 0.5em 0;
     }
     .whalebot-panel ul {
+      list-style-type: disc;
       padding-left: 1.2em;
-      margin: 0.5em 0;
+      color: #ffffff;
     }
     .whalebot-panel small {
       color: #ccc;
@@ -105,24 +117,60 @@
   </nav>
 
   <div class="hero">
-    <div style="background-color: black; border-radius: 50%; width: 100px; height: 100px; margin: 0 auto; box-shadow: 0 0 20px #00ffee; display: flex; align-items: center; justify-content: center; font-size: 3em;">
-      🐳
+    <div style="background-color: black; border-radius: 50%; width: 100px; height: 100px; margin: 0 auto; box-shadow: 0 0 20px #00ffee; display: flex; align-items: center; justify-content: center;">
+      <img src="whale.png" alt="Whale" style="width: 60px;" />
     </div>
     <h1>WhaleWatch.Trade</h1>
     <p>We track the whales so you can harvest the premium.</p>
   </div>
 
   <div class="section">
-    <div class="card"><h2>🐋 Whale Meter</h2><div id="whale-meter-bar" class="bar"></div><p id="whale-sentiment">Loading whale sentiment...</p><p id="whale-premium-total"></p></div>
-    <div class="card"><h2>📈 Top 10 Whale Symbols by Premium</h2><div id="whale-top-symbols">Loading whale trades...</div></div>
-    <div class="card"><h2>🌐 Sentiment Timeline</h2><div id="sentiment-bar" class="bar"></div><p id="sentiment-text">Loading timeline...</p></div>
-    <div class="card"><h2>🦈 Shark Meter</h2><div id="shark-meter">Loading dark pool trades...</div></div>
-    <div class="card"><h2>⚡ Shark Alerts</h2><div id="shark-alerts">Scanning for hidden accumulation...</div></div>
-    <div class="card"><h2>🧠 Suggested Trade Based on Whale + Shark Signals</h2><div id="suggested-trade">Calculating best opportunity...</div></div>
-    <div class="card"><h2>📄 Live Trader Log</h2><div id="live-trader-log">Loading latest trade...</div></div>
+    <div class="card">
+      <h2>🐋 Whale Meter</h2>
+      <div id="whale-meter-bar" class="bar"></div>
+      <p id="whale-sentiment">Loading whale sentiment...</p>
+      <p id="whale-premium-total"></p>
+      <p>🟢 Green = Bullish (Calls) · 🔴 Red = Bearish (Puts) · 🎨 Gradient = Mixed Premium Flow</p>
+    </div>
+
+    <div class="card">
+      <h2>📈 Top 10 Whale Symbols by Premium</h2>
+      <div id="whale-top-symbols">Loading whale trades...</div>
+    </div>
+
+    <div class="card">
+      <h2>🌐 Sentiment Timeline</h2>
+      <div id="sentiment-bar" class="bar"></div>
+      <p id="sentiment-text">Loading timeline...</p>
+      <p>The whales have been getting more confident. Watch for foam buildup before a possible wave.</p>
+    </div>
+
+    <div class="card">
+      <h2>🦈 Shark Meter</h2>
+      <div id="shark-meter">Loading dark pool trades...</div>
+    </div>
+
+    <div class="card">
+      <h2>⚡ Shark Alerts</h2>
+      <div id="shark-alerts">Scanning for hidden accumulation...</div>
+      <p><small><strong>Confidence:</strong> High = repeat large trades, Medium = volume spike, Low = uncertain. Use caution.</small></p>
+    </div>
+
+    <div class="card">
+      <h2>🧠 Suggested Trade Based on Whale + Shark Signals</h2>
+      <div id="suggested-trade">Calculating best opportunity...</div>
+    </div>
+
+    <div class="card">
+      <h2>📰 Live Trader Log</h2>
+      <p>Latest real-money trades from our premium harvesting strategy:</p>
+      <div id="trader-log">Loading latest trade...</div>
+    </div>
   </div>
 
-  <div class="whalebot" id="whalebot-icon">🐳</div>
+  <div class="whalebot" id="whalebot-icon">
+    <img src="whale.png" alt="WhaleBot">
+  </div>
   <div class="whalebot-panel" id="whalebotPanel">
     <h3>WhaleBot</h3>
     <ul>
@@ -131,7 +179,7 @@
       <li>Whale trades</li>
       <li>Premium harvesting</li>
     </ul>
-    <small>Ask me anything about trading. (Coming soon: live chat!)</small>
+    <small>Ask me anything about trading.</small>
   </div>
 
   <script src="whalewatch.js"></script>
