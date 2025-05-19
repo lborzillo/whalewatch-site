@@ -1,12 +1,22 @@
 {
   "trades": [
     {
+      "date": "2025-05-12",
+      "symbol": "HIDDEN",
+      "type": "MIXED",
+      "strike": null,
+      "expiration": "2025-05-17",
+      "premium": 1900.76,
+      "size": 9,
+      "status": "CLOSED"
+    },
+    {
       "date": "2025-05-16",
       "symbol": "NVDA",
       "type": "PUT",
       "strike": 114,
       "expiration": "2025-05-24",
-      "premium": 1.50,
+      "premium": 4.5,
       "size": 3,
       "status": "OPEN"
     },
