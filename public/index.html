@@ -1,19 +1,69 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
+  <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>WhaleWatch.Trade</title>
   <link rel="stylesheet" href="style.css" />
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background-color: #001d2d;
+      color: #ffffff;
+      margin: 0;
+      padding: 0;
+    }
+    nav {
+      background-color: #001520;
+      padding: 1em;
+      text-align: center;
+    }
+    nav a {
+      margin: 0 1em;
+      color: #00ffee;
+      font-weight: bold;
+      text-decoration: none;
+    }
+    .hero {
+      text-align: center;
+      padding: 2em;
+    }
+    .section {
+      background-color: #003144;
+      margin: 1em auto;
+      padding: 1.5em;
+      border-radius: 10px;
+      width: 90%;
+      max-width: 960px;
+    }
+    .timestamp {
+      font-size: 0.9em;
+      color: #a0d0ff;
+    }
+  </style>
 </head>
 <body>
-  <!-- Full production homepage restored -->
-  <div id="app">
-    <!-- Whale Meter, Sentiment Timeline, Shark Meter, Shark Alerts, Suggested Trade, Live Trader Log, WhaleBot -->
-    <h1>🐳 WhaleWatch.Trade</h1>
+  <nav>
+    <a href="#">Home</a>
+    <a href="learn.html">Learn</a>
+    <a href="simulate.html">Simulator</a>
+  </nav>
+  <div class="hero">
+    <h1>🐳 WhaleWatch.<span style="color:#00ffee">Trade</span></h1>
     <p>We track the whales so you can harvest the premium.</p>
-    <!-- Add your full HTML layout here -->
   </div>
+
+  <div class="section" id="whale-meter"></div>
+  <div class="section" id="whale-top-symbols"></div>
+  <div class="section" id="sentiment-timeline"></div>
+  <div class="section" id="shark-meter"></div>
+  <div class="section" id="shark-alerts"></div>
+  <div class="section" id="suggested-trade"></div>
+  <div class="section" id="live-trader-log"></div>
+
+  <div id="whale-bot" style="position: fixed; bottom: 20px; right: 20px; font-size: 2em; filter: drop-shadow(0 0 8px #00ffee); cursor: pointer;">🐳</div>
+
   <script src="whalewatch.js"></script>
 </body>
 </html>
