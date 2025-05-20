@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -59,10 +58,10 @@
       right: 20px;
       background-color: black;
       border-radius: 50%;
-      width: 100px;
-      height: 100px;
-      font-size: 3em;
-      box-shadow: 0 0 20px #00ffee;
+      width: 60px;
+      height: 60px;
+      font-size: 2em;
+      box-shadow: 0 0 12px #00ffee;
       display: flex;
       justify-content: center;
       align-items: center;
@@ -72,7 +71,7 @@
     .whalebot-panel {
       display: none;
       position: fixed;
-      bottom: 120px;
+      bottom: 100px;
       right: 20px;
       background: #002b3f;
       padding: 1em;
@@ -117,15 +116,13 @@
     <p>We track the whales so you can harvest the premium.</p>
   </div>
 
-  <div class="section card">
-    <h2>💨 Whale Meter</h2>
-    <div id="whale-meter">Loading...</div>
-  </div>
-
-  <div class="section card">
-    <h2>📈 Top 10 Whale Symbols by Premium</h2>
-    <div id="top-whales">Loading whale trades...</div>
-  </div>
+  <div class="section card"><h2>💨 Whale Meter</h2><div id="whale-meter">Loading...</div></div>
+  <div class="section card"><h2>📈 Top 10 Whale Symbols by Premium</h2><div id="top-whales">Loading whale trades...</div></div>
+  <div class="section card"><h2>🌐 Sentiment Timeline</h2><div id="sentiment-timeline">Loading...</div></div>
+  <div class="section card"><h2>🦈 Shark Meter</h2><div id="shark-meter">Loading dark pool trades...</div></div>
+  <div class="section card"><h2>⚡ Shark Alerts</h2><div id="shark-alerts">Scanning for hidden accumulation...</div></div>
+  <div class="section card"><h2>🕵️ Suggested Trade Based on Whale + Shark Signals</h2><div id="suggested-trade">Calculating best opportunity...</div></div>
+  <div class="section card"><h2>📃 Live Trader Log</h2><div id="live-trades">Loading latest trade...</div></div>
 
   <div class="whalebot" onclick="toggleWhaleBot()">🐳</div>
   <div class="whalebot-panel" id="whalebotPanel">
@@ -139,10 +136,7 @@
     <small>Ask me anything about trading. (Coming soon!)</small>
   </div>
 
-  <footer>
-    Last Updated: 2025-05-20 10:16 UTC
-  </footer>
-
+  <footer>Last Updated: 2025-05-20 10:16 UTC</footer>
   <script src="whalewatch.js"></script>
 </body>
 </html>
