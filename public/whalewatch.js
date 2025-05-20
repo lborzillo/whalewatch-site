@@ -50,10 +50,16 @@ async function loadWhaleWatchData() {
     ).join('');
     document.getElementById("sentimentTimeline").innerHTML = timeline;
 
-    // Whale Trades
-    const whaleHTML = whales.whale_trades.map(w =>
-      `<div>${w.symbol} — ${w.type} @ $${w.strike}, Exp: ${w.expiration}, Premium: $${w.premium}</div>`
-    ).join('');
+    // Whale Trades - Grouped by Symbol
+    const whaleMap = {};
+    whales.whale_trades.forEach(w => {
+      if (!whaleMap[w.symbol]) whaleMap[w.symbol] = 0;
+      whaleMap[w.symbol] += w.premium;
+    });
+
+    const whaleHTML = Object.entries(whaleMap).map(
+      ([sym, prem]) => `<div><strong>${sym}</strong> — Total Premium: $${prem.toLocaleString()}</div>`
+    ).join('<hr>');
     document.getElementById("whaleTrades").innerHTML = whaleHTML;
 
     // Leaderboard
@@ -64,10 +70,10 @@ async function loadWhaleWatchData() {
     leaderboardHTML += '</ol>';
     document.getElementById("leaderboard").innerHTML = leaderboardHTML;
 
-    // Suggested Trade
+    // Suggested Trade (alignment between whale + shark)
     const match = sharks.trades.find(s => whales.whale_trades.some(w => w.symbol === s.symbol));
     document.getElementById("suggestedTrade").innerHTML = match
-      ? `📌 Based on activity in <strong>${match.symbol}</strong>, consider a put near $${Math.floor(match.average_price)}.`
+      ? `📌 Based on aligned activity in <strong>${match.symbol}</strong>, consider selling a cash-secured put near $${Math.floor(match.average_price)}.`
       : 'No alignment today. Explore other setups.';
 
     // Shark Meter
