@@ -31,6 +31,12 @@ fetch('whales.json')
       <div style="font-size: 0.95em; color: #ccc;">Total Premium: $${totalPremium.toLocaleString()}</div>
     `;
 
+    // Timestamp
+    const whaleStamp = document.getElementById('timestamp-whales');
+    if (data.timestamp && whaleStamp) {
+      whaleStamp.innerText = `Last Updated: ${new Date(data.timestamp).toLocaleString()}`;
+    }
+
     // Top 10 Symbols
     const symbols = {};
     data.whale_trades.forEach(t => {
@@ -49,28 +55,50 @@ fetch('whales.json')
 fetch('sentiment.json')
   .then(res => res.json())
   .then(data => {
-    const latest = data.sentiment_timeline[data.sentiment_timeline.length - 1];
+    const latest = data?.sentiment_timeline?.at(-1);
+    if (!latest) {
+      document.getElementById('sentiment-timeline').innerText = 'No sentiment data available.';
+      return;
+    }
+
     const bull = latest.bullish_pct;
     const bear = latest.bearish_pct;
+
     document.getElementById('sentiment-timeline').innerHTML = `
       <div style="height: 20px; border-radius: 10px; overflow: hidden; background: linear-gradient(to right, #00ffcc ${bull}%, #002b3f ${bear}%); margin-bottom: 0.5em;"></div>
       <div>🐂 Bullish: ${bull.toFixed(1)}% | 🐻 Bearish: ${bear.toFixed(1)}%</div>
     `;
+
+    const stamp = document.getElementById('timestamp-sentiment');
+    if (data.timestamp && stamp) {
+      stamp.innerText = `Last Updated: ${new Date(data.timestamp).toLocaleString()}`;
+    }
   });
 
-// Load Shark Meter
+// Load Shark Meter and Alerts
 fetch('sharks.json')
   .then(res => res.json())
   .then(data => {
     const sharkBox = document.getElementById('shark-meter');
-    sharkBox.innerHTML = data.trades && data.trades.length
-      ? `<div>${data.trades.length} dark pool trades loaded.</div>`
-      : 'No dark pool activity detected.';
-
     const alerts = document.getElementById('shark-alerts');
-    alerts.innerHTML = data.alerts && data.alerts.length
-      ? `<strong>${data.alerts[0].symbol}</strong> | Volume: ${data.alerts[0].volume.toLocaleString()} | Confidence: ${data.alerts[0].confidence}`
-      : 'No Shark Alerts today.';
+
+    if (data.trades && data.trades.length) {
+      sharkBox.innerHTML = `<div>${data.trades.length} dark pool trades loaded.</div>`;
+    } else {
+      sharkBox.innerHTML = 'No dark pool activity detected.';
+    }
+
+    if (data.alerts && data.alerts.length) {
+      const a = data.alerts[0];
+      alerts.innerHTML = `<strong>${a.symbol}</strong> | Volume: ${a.volume.toLocaleString()} | Confidence: ${a.confidence}`;
+    } else {
+      alerts.innerText = 'No Shark Alerts today.';
+    }
+
+    const stamp = document.getElementById('timestamp-sharks');
+    if (data.timestamp && stamp) {
+      stamp.innerText = `Last Updated: ${new Date(data.timestamp).toLocaleString()}`;
+    }
   });
 
 // Load Suggested Trade
@@ -79,13 +107,29 @@ fetch('suggested.json')
   .then(data => {
     const block = document.getElementById('suggested-trade');
     block.innerText = data.trade || 'No alignment today. Explore other setups!';
+
+    const stamp = document.getElementById('timestamp-suggested');
+    if (data.timestamp && stamp) {
+      stamp.innerText = `Last Updated: ${new Date(data.timestamp).toLocaleString()}`;
+    }
   });
 
 // Load Live Trade Log
 fetch('trades.json')
   .then(res => res.json())
   .then(data => {
-    const t = data.trades[0];
+    const t = data.trades?.[0];
+    const log = document.getElementById('live-trades');
+    if (!t || !log) {
+      log.innerText = 'No recent trades logged.';
+      return;
+    }
+
     const date = new Date(t.date).toLocaleDateString('en-US');
-    document.getElementById('live-trades').innerText = `${date} | ${t.size}x $${t.strike} ${t.type} | Premium: $${(t.size * t.premium).toFixed(2)}`;
+    log.innerText = `${date} | ${t.size}x $${t.strike} ${t.type} | Premium: $${(t.size * t.premium).toFixed(2)}`;
+
+    const stamp = document.getElementById('timestamp-trades');
+    if (data.timestamp && stamp) {
+      stamp.innerText = `Last Updated: ${new Date(data.timestamp).toLocaleString()}`;
+    }
   });
