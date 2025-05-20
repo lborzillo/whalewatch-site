@@ -118,7 +118,79 @@
       const panel = document.getElementById('whalebotPanel');
       panel.style.display = panel.style.display === 'block' ? 'none' : 'block';
     }
+
+    async function loadWhaleWatchData() {
+      try {
+        const [trades, harvest, sharks, whales] = await Promise.all([
+          fetch('trades.json').then(res => res.json()),
+          fetch('harvest.json').then(res => res.json()),
+          fetch('sharks.json').then(res => res.json()),
+          fetch('whales.json').then(res => res.json()),
+        ]);
+
+        // Live Trade Log
+        const latest = trades.trades?.[0];
+        if (latest) {
+          document.getElementById('liveTrade').innerHTML = `
+            <div><strong>${latest.symbol}</strong> — ${latest.type}<br>
+            Strike: $${latest.strike}, Exp: ${latest.expiration}<br>
+            Premium: $${latest.premium} × ${latest.size} = <strong>$${(latest.premium * latest.size).toFixed(2)}</strong><br>
+            Status: <span style="color:${latest.status === 'OPEN' ? '#00ff88' : '#ccc'}">${latest.status}</span> (${latest.date})</div>
+          `;
+        }
+
+        // Weekly Harvest Plan
+        const harvestDiv = document.getElementById('harvestPlan');
+        let html = `<p><strong>Week:</strong> ${harvest.week}</p>`;
+        html += `<p><strong>Target:</strong> $${harvest.premium_goal} | <strong>Total:</strong> $${harvest.total_premium}</p>`;
+        for (const [account, info] of Object.entries(harvest.accounts)) {
+          html += `<h3>${account}</h3>`;
+          if (info.puts?.length) {
+            html += `<strong>Puts:</strong><ul>`;
+            info.puts.forEach(p => {
+              const total = p.premium * 100 * p.contracts;
+              html += `<li>${p.contracts}x ${p.symbol} $${p.strike} Put @ $${p.premium} = $${total.toFixed(2)}</li>`;
+            });
+            html += `</ul>`;
+          }
+          if (info.calls?.length) {
+            html += `<strong>Calls:</strong><ul>`;
+            info.calls.forEach(c => {
+              const total = c.premium * 100 * c.contracts;
+              html += `<li>${c.contracts}x ${c.symbol} $${c.strike} Call @ $${c.premium} = $${total.toFixed(2)}</li>`;
+            });
+            html += `</ul>`;
+          }
+        }
+        harvestDiv.innerHTML = html;
+
+        // Shark Meter
+        document.getElementById('sharkList').innerHTML = sharks.shark_trades.map(s => `
+          <div>🔔 <strong>${s.symbol}</strong> — $${s.average_price}, Vol: ${s.total_volume.toLocaleString()}<br>
+          Confidence: <strong>${s.confidence}</strong></div>`).join("<hr>");
+
+        // Shark Alert
+        const alert = sharks.shark_trades?.[0];
+        if (alert) {
+          document.getElementById('sharkAlert').innerHTML = `
+            🚨 <strong>${alert.symbol}</strong> — High volume alert<br>
+            Avg Price: $${alert.average_price}, Volume: ${alert.total_volume.toLocaleString()}<br>
+            Confidence: <strong style="color:#ffaa00">${alert.confidence}</strong>`;
+        }
+
+        // Suggested Trade (Whale + Shark Alignment)
+        const match = sharks.shark_trades.find(s => whales.whale_trades.some(w => w.symbol === s.symbol));
+        document.getElementById('suggestedTrade').innerHTML = match ? `
+          📌 Based on activity in <strong>${match.symbol}</strong>, consider selling a put near $${Math.floor(match.average_price)}.
+          <br><span style="font-size:0.9em;color:#ccc;">Institutional interest aligns across both whales and sharks.</span>`
+          : "No alignment today. Explore other setups.";
+
+      } catch (err) {
+        console.error("Error loading data:", err);
+      }
+    }
+
+    loadWhaleWatchData();
   </script>
-  <script src="whalewatch.js"></script>
 </body>
 </html>
