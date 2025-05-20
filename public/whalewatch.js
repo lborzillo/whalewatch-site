@@ -1,135 +1,92 @@
-// Toggle the WhaleBot panel
-function toggleWhaleBot() {
-  const panel = document.getElementById('whalebotPanel');
-  panel.style.display = panel.style.display === 'block' ? 'none' : 'block';
+async function loadWhaleWatchData() {
+  try {
+    const [trades, harvest, sentiment, sharks, whales, leaderboard] = await Promise.all([
+      fetch('trades.json').then(res => res.json()),
+      fetch('harvest.json').then(res => res.json()),
+      fetch('sentiment.json').then(res => res.json()),
+      fetch('sharks.json').then(res => res.json()),
+      fetch('whales.json').then(res => res.json()),
+      fetch('leaderboard.json').then(res => res.json())
+    ]);
+
+    // Live Trader Log
+    const t = trades.trades?.[0];
+    if (t) {
+      document.getElementById("liveTrade").innerHTML = `
+        <strong>${t.symbol}</strong> — ${t.type}<br>
+        Strike: $${t.strike ?? 'N/A'}, Exp: ${t.expiration}<br>
+        Premium: $${t.premium} × ${t.size} = <strong>$${(t.premium * t.size).toFixed(2)}</strong><br>
+        Status: <span style="color:${t.status === 'OPEN' ? '#00ff88' : '#ccc'}">${t.status}</span> (Date: ${t.date})
+      `;
+    }
+
+    // Weekly Harvest Plan
+    let planHTML = `<p><strong>Week:</strong> ${harvest.week}</p>`;
+    planHTML += `<p><strong>Target:</strong> $${harvest.premium_goal} | <strong>Total:</strong> $${harvest.total_premium}</p>`;
+    for (const [acct, data] of Object.entries(harvest.accounts)) {
+      planHTML += `<h3>${acct}</h3>`;
+      if (data.puts) {
+        planHTML += `<strong>Puts:</strong><ul>`;
+        data.puts.forEach(p => {
+          const total = p.premium * p.contracts * 100;
+          planHTML += `<li>${p.contracts}x ${p.symbol} $${p.strike} @ $${p.premium} = $${total.toFixed(2)}</li>`;
+        });
+        planHTML += `</ul>`;
+      }
+      if (data.calls) {
+        planHTML += `<strong>Calls:</strong><ul>`;
+        data.calls.forEach(c => {
+          const total = c.premium * c.contracts * 100;
+          planHTML += `<li>${c.contracts}x ${c.symbol} $${c.strike} @ $${c.premium} = $${total.toFixed(2)}</li>`;
+        });
+        planHTML += `</ul>`;
+      }
+    }
+    document.getElementById("harvestPlan").innerHTML = planHTML;
+
+    // Sentiment Timeline
+    const timeline = sentiment.sentiment_timeline.map(d =>
+      `<div>${d.timestamp}: 🐂 ${d.bullish_pct}% | 🐻 ${d.bearish_pct}%</div>`
+    ).join('');
+    document.getElementById("sentimentTimeline").innerHTML = timeline;
+
+    // Whale Trades
+    const whaleHTML = whales.whale_trades.map(w =>
+      `<div>${w.symbol} — ${w.type} @ $${w.strike}, Exp: ${w.expiration}, Premium: $${w.premium}</div>`
+    ).join('');
+    document.getElementById("whaleTrades").innerHTML = whaleHTML;
+
+    // Leaderboard
+    let leaderboardHTML = '<ol>';
+    for (const [symbol, stats] of Object.entries(leaderboard.top_10)) {
+      leaderboardHTML += `<li>${symbol}: $${stats.total_premium.toLocaleString()} (${stats.count} trades)</li>`;
+    }
+    leaderboardHTML += '</ol>';
+    document.getElementById("leaderboard").innerHTML = leaderboardHTML;
+
+    // Suggested Trade
+    const match = sharks.trades.find(s => whales.whale_trades.some(w => w.symbol === s.symbol));
+    document.getElementById("suggestedTrade").innerHTML = match
+      ? `📌 Based on activity in <strong>${match.symbol}</strong>, consider a put near $${Math.floor(match.average_price)}.`
+      : 'No alignment today. Explore other setups.';
+
+    // Shark Meter
+    document.getElementById("sharkList").innerHTML = sharks.trades.map(s =>
+      `<div><strong>${s.symbol}</strong> | Vol: ${s.volume.toLocaleString()} | Confidence: ${s.confidence}</div>`
+    ).join('<hr>');
+
+    // Shark Alert
+    const alert = sharks.alerts?.[0];
+    if (alert) {
+      document.getElementById("sharkAlert").innerHTML = `
+        <strong>${alert.symbol}</strong> | Vol: ${alert.volume.toLocaleString()}<br>
+        Confidence: <span style="color:#ffaa00">${alert.confidence}</span>
+      `;
+    }
+
+  } catch (err) {
+    console.error("Error loading WhaleWatch data:", err);
+  }
 }
 
-// Load Whale Meter and Top Symbols
-fetch('whales.json')
-  .then(res => res.json())
-  .then(data => {
-    const meter = document.getElementById('whale-meter');
-    const totalPremium = data.whale_trades.reduce((sum, trade) => sum + trade.premium, 0);
-    const callPremium = data.whale_trades
-      .filter(t => t.type === 'CALL')
-      .reduce((sum, t) => sum + t.premium, 0);
-    const putPremium = totalPremium - callPremium;
-    const callPct = (callPremium / totalPremium) * 100;
-    const putPct = 100 - callPct;
-
-    let gradient;
-    if (callPct > 60) {
-      gradient = `linear-gradient(to right, #00ff99 ${callPct}%, #002b3f ${putPct}%)`;
-    } else if (putPct > 60) {
-      gradient = `linear-gradient(to right, #ff3366 ${putPct}%, #002b3f ${callPct}%)`;
-    } else {
-      gradient = `linear-gradient(to right, #00ff99 ${callPct}%, #ff3366 ${putPct}%)`;
-    }
-
-    meter.innerHTML = `
-      <div style="height: 20px; background: ${gradient}; border-radius: 10px; margin-bottom: 0.5em;"></div>
-      <div style="font-size: 0.95em; color: #ccc;">Total Premium: $${totalPremium.toLocaleString()}</div>
-    `;
-
-    // Timestamp
-    const whaleStamp = document.getElementById('timestamp-whales');
-    if (data.timestamp && whaleStamp) {
-      whaleStamp.innerText = `Last Updated: ${new Date(data.timestamp).toLocaleString()}`;
-    }
-
-    // Top 10 Symbols
-    const symbols = {};
-    data.whale_trades.forEach(t => {
-      symbols[t.symbol] = (symbols[t.symbol] || 0) + t.premium;
-    });
-
-    const sorted = Object.entries(symbols)
-      .sort((a, b) => b[1] - a[1])
-      .slice(0, 10)
-      .map(([s, v]) => `<li>${s}: $${v.toLocaleString()}</li>`).join('');
-
-    document.getElementById('top-whales').innerHTML = `<ul>${sorted}</ul>`;
-  });
-
-// Load Sentiment Timeline
-fetch('sentiment.json')
-  .then(res => res.json())
-  .then(data => {
-    const latest = data?.sentiment_timeline?.at(-1);
-    if (!latest) {
-      document.getElementById('sentiment-timeline').innerText = 'No sentiment data available.';
-      return;
-    }
-
-    const bull = latest.bullish_pct;
-    const bear = latest.bearish_pct;
-
-    document.getElementById('sentiment-timeline').innerHTML = `
-      <div style="height: 20px; border-radius: 10px; overflow: hidden; background: linear-gradient(to right, #00ffcc ${bull}%, #002b3f ${bear}%); margin-bottom: 0.5em;"></div>
-      <div>🐂 Bullish: ${bull.toFixed(1)}% | 🐻 Bearish: ${bear.toFixed(1)}%</div>
-    `;
-
-    const stamp = document.getElementById('timestamp-sentiment');
-    if (data.timestamp && stamp) {
-      stamp.innerText = `Last Updated: ${new Date(data.timestamp).toLocaleString()}`;
-    }
-  });
-
-// Load Shark Meter and Alerts
-fetch('sharks.json')
-  .then(res => res.json())
-  .then(data => {
-    const sharkBox = document.getElementById('shark-meter');
-    const alerts = document.getElementById('shark-alerts');
-
-    if (data.trades && data.trades.length) {
-      sharkBox.innerHTML = `<div>${data.trades.length} dark pool trades loaded.</div>`;
-    } else {
-      sharkBox.innerHTML = 'No dark pool activity detected.';
-    }
-
-    if (data.alerts && data.alerts.length) {
-      const a = data.alerts[0];
-      alerts.innerHTML = `<strong>${a.symbol}</strong> | Volume: ${a.volume.toLocaleString()} | Confidence: ${a.confidence}`;
-    } else {
-      alerts.innerText = 'No Shark Alerts today.';
-    }
-
-    const stamp = document.getElementById('timestamp-sharks');
-    if (data.timestamp && stamp) {
-      stamp.innerText = `Last Updated: ${new Date(data.timestamp).toLocaleString()}`;
-    }
-  });
-
-// Load Suggested Trade
-fetch('suggested.json')
-  .then(res => res.json())
-  .then(data => {
-    const block = document.getElementById('suggested-trade');
-    block.innerText = data.trade || 'No alignment today. Explore other setups!';
-
-    const stamp = document.getElementById('timestamp-suggested');
-    if (data.timestamp && stamp) {
-      stamp.innerText = `Last Updated: ${new Date(data.timestamp).toLocaleString()}`;
-    }
-  });
-
-// Load Live Trade Log
-fetch('trades.json')
-  .then(res => res.json())
-  .then(data => {
-    const t = data.trades?.[0];
-    const log = document.getElementById('live-trades');
-    if (!t || !log) {
-      log.innerText = 'No recent trades logged.';
-      return;
-    }
-
-    const date = new Date(t.date).toLocaleDateString('en-US');
-    log.innerText = `${date} | ${t.size}x $${t.strike} ${t.type} | Premium: $${(t.size * t.premium).toFixed(2)}`;
-
-    const stamp = document.getElementById('timestamp-trades');
-    if (data.timestamp && stamp) {
-      stamp.innerText = `Last Updated: ${new Date(data.timestamp).toLocaleString()}`;
-    }
-  });
+loadWhaleWatchData();
