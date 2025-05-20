@@ -2,14 +2,14 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>WhaleWatch.Trade</title>
   <link href="https://fonts.googleapis.com/css2?family=Segoe+UI&display=swap" rel="stylesheet">
   <style>
     body {
       font-family: 'Segoe UI', sans-serif;
       background-color: #001d2d;
-      color: #ffffff;
+      color: white;
       margin: 0;
       padding: 0;
     }
@@ -31,6 +31,21 @@
     h2 {
       color: #00ffee;
     }
+    .trade-card, .suggested-trade {
+      background: radial-gradient(circle at center, #0c344a, #001d2d);
+      border: 1px solid #00ffee88;
+      padding: 1em;
+      border-radius: 12px;
+      margin-bottom: 1em;
+    }
+    .suggested-trade {
+      background-color: #0b2a3a;
+      font-size: 1.05em;
+    }
+    .timestamp, .tip {
+      font-size: 0.9em;
+      color: #aaa;
+    }
     #whalebotIcon {
       position: fixed;
       bottom: 20px;
@@ -47,13 +62,8 @@
       background-color: #012733;
       padding: 1em;
       border-radius: 10px;
-      max-width: 280px;
-      box-shadow: 0 0 10px #00ffee;
-    }
-    .timestamp {
-      font-size: 0.8em;
-      color: #88aabb;
-      margin-top: 0.3em;
+      max-width: 260px;
+      box-shadow: 0 0 12px #00ffee;
     }
   </style>
 </head>
@@ -62,56 +72,53 @@
   <nav>
     <a href="index.html">Home</a>
     <a href="learn.html">Learn</a>
-    <a href="simulate.html">Simulator</a>
+    <a href="simulate.html">Simulate</a>
+    <a href="harvesting.html">Premium Harvesting</a>
     <a href="whisper.html">Whispers</a>
   </nav>
 
-  <div class="section" id="whale-meter-section">
-    <h2>🐳 Whale Meter</h2>
-    <div id="whale-meter"></div>
-    <div class="timestamp" id="timestamp-whales"></div>
+  <div class="section">
+    <h2>📒 Live Trader Log</h2>
+    <div id="liveTrade" class="trade-card">Loading latest trade...</div>
+    <p class="tip">Want to see all my trades? <a href="whisper.html">Unlock Premium Access</a>.</p>
   </div>
 
-  <div class="section" id="top-whales-section">
-    <h2>Top 10 Whale Symbols</h2>
-    <div id="top-whales"></div>
+  <div class="section">
+    <h2>🧾 Weekly Premium Harvest Plan</h2>
+    <div id="harvestPlan" class="trade-card">Loading plan...</div>
   </div>
 
-  <div class="section" id="sentiment-timeline-section">
-    <h2>📊 Sentiment Timeline</h2>
-    <div id="sentiment-timeline"></div>
-    <div class="timestamp" id="timestamp-sentiment"></div>
+  <div class="section">
+    <h2>🔍 Suggested Trade Based on Whale + Shark Signals <span style="color:#ffaa00">(🔒 Premium Preview)</span></h2>
+    <div id="suggestedTrade" class="suggested-trade">Loading...</div>
   </div>
 
-  <div class="section" id="shark-meter-section">
-    <h2>🦈 Shark Meter</h2>
-    <div id="shark-meter"></div>
-    <div class="timestamp" id="timestamp-sharks"></div>
+  <div class="section">
+    <h2>🧱 Shark Meter</h2>
+    <div class="trade-card" id="sharkList">Loading...</div>
   </div>
 
-  <div class="section" id="shark-alerts-section">
-    <h2>⚠️ Shark Alerts</h2>
-    <div id="shark-alerts"></div>
-  </div>
-
-  <div class="section" id="suggested-trade-section">
-    <h2>🎯 Suggested Trade Based on Whale + Shark Signals</h2>
-    <div id="suggested-trade"></div>
-    <div class="timestamp" id="timestamp-suggested"></div>
-  </div>
-
-  <div class="section" id="live-trades-section">
-    <h2>📈 Live Trader Log</h2>
-    <div id="live-trades"></div>
-    <div class="timestamp" id="timestamp-trades"></div>
+  <div class="section">
+    <h2>🚨 Shark Alert</h2>
+    <div class="trade-card" id="sharkAlert">Loading latest alert...</div>
   </div>
 
   <div id="whalebotIcon" onclick="toggleWhaleBot()">🐳</div>
   <div id="whalebotPanel">
     <strong>WhaleBot</strong><br>
-    Ask me anything about trading.
+    Ask me anything about trading.<br><br>
+    • Covered calls<br>
+    • Put selling<br>
+    • Whale trades<br>
+    • Premium harvesting
   </div>
 
+  <script>
+    function toggleWhaleBot() {
+      const panel = document.getElementById('whalebotPanel');
+      panel.style.display = panel.style.display === 'block' ? 'none' : 'block';
+    }
+  </script>
   <script src="whalewatch.js"></script>
 </body>
 </html>
