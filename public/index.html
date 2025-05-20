@@ -1,11 +1,9 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>WhaleWatch.Trade</title>
-  <link rel="stylesheet" href="style.css" />
   <style>
     body {
       font-family: 'Segoe UI', sans-serif;
@@ -17,53 +15,316 @@
     nav {
       background-color: #001520;
       padding: 1em;
-      text-align: center;
+      display: flex;
+      justify-content: center;
+      flex-wrap: wrap;
+      gap: 1.5em;
     }
     nav a {
-      margin: 0 1em;
       color: #00ffee;
-      font-weight: bold;
       text-decoration: none;
+      font-weight: bold;
     }
     .hero {
       text-align: center;
-      padding: 2em;
+      padding: 3em 1em 2em;
+      background-color: #002b3f;
+    }
+    
+    .hero h1 {
+      font-size: 2.5em;
+      color: #00ffee;
+      margin: 0;
+    }
+    .hero p {
+      color: #a0d8ff;
+      font-size: 1.2em;
+      margin-top: 0.5em;
     }
     .section {
-      background-color: #003144;
-      margin: 1em auto;
+      padding: 2em 1em;
+      max-width: 1000px;
+      margin: auto;
+    }
+    .card {
+      background-color: #002b3f;
+      border-radius: 12px;
       padding: 1.5em;
-      border-radius: 10px;
-      width: 90%;
-      max-width: 960px;
+      margin-bottom: 2em;
+      box-shadow: 0 0 10px #003c5c;
     }
-    .timestamp {
+    h2 {
+      color: #00ffff;
+      margin-top: 0;
+    }
+    .metric {
+      font-weight: bold;
+      color: #00ffaa;
+    }
+    footer {
+      text-align: center;
+      padding: 1em;
       font-size: 0.9em;
-      color: #a0d0ff;
+      color: #aaa;
     }
+    .whalebot {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      background: #004f66;
+      border: 2px solid #00ffee;
+      padding: 1em;
+      border-radius: 50%;
+      box-shadow: 0 0 12px #00ffee;
+      cursor: pointer;
+      z-index: 1000;
+    }
+    .whalebot-panel {
+      display: none;
+      position: fixed;
+      bottom: 80px;
+      right: 20px;
+      background-color: #002b3f;
+      border: 2px solid #00ffee;
+      border-radius: 1em;
+      padding: 1.5em;
+      max-width: 260px;
+      box-shadow: 0 0 20px #00ffee;
+      z-index: 999;
+    }
+    .whalebot-panel h3 {
+      margin-top: 0;
+      color: #00ffee;
+    }
+    .whalebot-panel ul {
+      list-style-type: circle;
+      padding-left: 1.2em;
+      margin-top: 0.5em;
+      color: #ffffff;
+    }
+    .whalebot-panel small {
+      color: #ccc;
+    }
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 1em;
+    }
+    ul { padding-left: 1.2em; }
   </style>
 </head>
 <body>
   <nav>
-    <a href="#">Home</a>
-    <a href="learn.html">Learn</a>
-    <a href="simulate.html">Simulator</a>
-  </nav>
+  <a href="#">Home</a>
+  <a href="learn.html">Learn</a>
+  <a href="simulate.html">Simulator</a>
+  <a href="harvesting.html">Premium Harvesting</a>
+  <a href="whisper.html">Whispers</a>
+</nav>
+
   <div class="hero">
-    <h1>🐳 WhaleWatch.<span style="color:#00ffee">Trade</span></h1>
-    <p>We track the whales so you can harvest the premium.</p>
+  <div style="background-color: black; border-radius: 50%; width: 100px; height: 100px; margin: 0 auto; box-shadow: 0 0 20px #00ffee; display: flex; align-items: center; justify-content: center; font-size: 3em;">
+    🐳
+  </div>
+  <h1 style="margin-top: 0.5em;">WhaleWatch.Trade</h1>
+  <p>We track the whales so you can harvest the premium.</p>
+</div>
+  
+</div>
+  
+</div>
+<nav>
+  <a href="#">Home</a>
+  <a href="simulate.html">Simulator</a>
+  <a href="learn.html">Learn</a>
+  <a href="whisper.html">Whispers</a>
+</nav>
+
+  <div class="section card">
+    <h2>💨 Whale Meter</h2>
+    <div id="whale-meter">
+  <div style="height: 20px; background: linear-gradient(to right, #00ff99 50%, #ff3366 50%); border-radius: 10px; overflow: hidden; margin-bottom: 0.5em;"></div>
+  
+  <div id="whale-meter-meta" style="margin-top: 0.5em; font-size: 0.95em; color: #ccc;"></div>
+  <div style="margin-top: 0.5em; font-size: 0.9em;">
+    🟢 Green = Bullish (Calls) · 🔴 Red = Bearish (Puts) · 🎨 Gradient = Mixed Premium Flow
+  </div>
+  <div style="margin-top: 0.5em; font-size: 0.85em; color: #bbb;">
+    The Whale Meter shows where the most capital is currently concentrated in the options market, based on open interest and last traded price.
+  </div>
+</div>
+  <div id="whale-meter-label">Loading whale sentiment...</div>
+</div>
   </div>
 
-  <div class="section" id="whale-meter"></div>
-  <div class="section" id="whale-top-symbols"></div>
-  <div class="section" id="sentiment-timeline"></div>
-  <div class="section" id="shark-meter"></div>
-  <div class="section" id="shark-alerts"></div>
-  <div class="section" id="suggested-trade"></div>
-  <div class="section" id="live-trader-log"></div>
+  <div class="section card">
+    <h2>📈 Top 10 Whale Symbols by Premium</h2>
+    <div id="top-whales">Loading whale trades...</div>
+  </div>
 
-  <div id="whale-bot" style="position: fixed; bottom: 20px; right: 20px; font-size: 2em; filter: drop-shadow(0 0 8px #00ffee); cursor: pointer;">🐳</div>
+  <div class="section card">
+    <h2>🌐 Sentiment Timeline</h2>
+    <div id="sentiment-timeline">
+  <div id="sentiment-bar" style="height: 20px; border-radius: 10px; overflow: hidden; background: linear-gradient(to right, #00ffcc 50%, #002b3f 50%); margin-bottom: 0.5em;"></div>
+  <div id="sentiment-timeline-label">Loading timeline...</div>
+  <div style="margin-top: 0.5em; font-size: 0.9em;">
+    🐂 Bullish: <span id="bullish-pct">--</span> | 🐻 Bearish: <span id="bearish-pct">--</span>
+  </div>
+  <div style="margin-top: 0.5em; font-size: 0.85em; color: #bbb;">
+    The whales have been getting more confident. Watch for foam buildup before a possible wave.
+  </div>
+</div>
+  <div id="sentiment-timeline-label">Loading timeline...</div>
+</div>
+  </div>
 
-  <script src="whalewatch.js"></script>
+  <div class="section card">
+    <h2>🦈 Shark Meter</h2>
+    <div id="shark-meter">
+  <div style="font-weight: bold; margin-bottom: 0.3em;" id="shark-meter-label">Loading dark pool trades...</div>
+</div>
+  </div>
+
+  <div class="section card">
+    <h2>⚡ Shark Alerts</h2>
+    <div id="shark-alerts">Scanning for hidden accumulation...</div>
+  </div>
+
+  <div class="section card">
+    <h2>🕵️ Suggested Trade Based on Whale + Shark Signals</h2>
+    <div id="suggested-trade">Calculating best opportunity...</div>
+  </div>
+
+  <div class="section card">
+    <h2>📃 Live Trader Log</h2>
+    <p>Latest real-money trades from our premium harvesting strategy:</p>
+    <div id="live-trades">Loading latest trade...</div>
+  </div>
+
+  <div class="section card">
+    <h2>📃 Weekly Premium Harvest Plan</h2>
+    <p><span class="metric">Week:</span> May 20–24, 2025<br />
+       <span class="metric">Target:</span> $2000 | <span class="metric">Total:</span> $2044</p>
+
+    <div class="grid">
+      <div>
+        <h3>Roth IRA</h3>
+        <strong>Puts:</strong>
+        <ul>
+          <li>3x NVDA $120 Put @ $1.66 = $498.00</li>
+          <li>2x NVDA $118 Put @ $1.30 = $260.00</li>
+        </ul>
+        <strong>Calls:</strong>
+        <ul>
+          <li>2x ABBV $190 Call @ $2.77 = $554.00</li>
+        </ul>
+      </div>
+      <div>
+        <h3>IRA</h3>
+        <strong>Puts:</strong>
+        <ul>
+          <li>1x NVDA $120 Put @ $1.50 = $150.00</li>
+          <li>2x NVDA $117 Put @ $1.20 = $240.00</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <div class="whalebot" title="Ask WhaleBot anything about premium harvesting or options!" onclick="toggleWhaleBot()">🐳</div>
+  <div class="whalebot-panel" id="whalebotPanel">
+    <h3>🧑‍💻 WhaleBot</h3>
+    <p>Ask me anything about:</p>
+    <ul>
+      <li>Covered calls</li>
+      <li>Put selling</li>
+      <li>Whale trades</li>
+      <li>Premium harvesting</li>
+    </ul>
+    <small>(Coming soon: live chat!)</small>
+  </div>
+
+  <footer>
+    © WhaleWatch.Trade &mdash; Updated May 18, 2025
+  </footer>
+
+  <script>
+    function toggleWhaleBot() {
+      const panel = document.getElementById('whalebotPanel');
+      panel.style.display = panel.style.display === 'block' ? 'none' : 'block';
+    }
+
+    fetch('whales.json')
+      .then(res => res.json())
+      .then(data => {
+        document.getElementById('whale-meter-label').innerText = 'Whale Sentiment: ' + (data.overall_sentiment || 'Mixed');
+        document.getElementById('whale-meter-meta').innerText = 'Total Premium Traded: $' + (data.total_premium ? data.total_premium.toLocaleString() : 'N/A');
+
+        const grouped = {};
+        data.whale_trades.forEach(trade => {
+          if (!grouped[trade.symbol]) grouped[trade.symbol] = 0;
+          grouped[trade.symbol] += parseFloat(trade.premium || 0);
+        });
+
+        const sorted = Object.entries(grouped)
+          .sort((a, b) => b[1] - a[1])
+          .slice(0, 10);
+
+        const container = document.getElementById('top-whales');
+        container.innerHTML = '<ul>' + sorted.map(([sym, prem]) => `<li><strong>${sym}</strong>: $${prem.toLocaleString(undefined, {maximumFractionDigits: 2})}</li>`).join('') + '</ul>';
+      });
+      });
+
+    fetch('sentiment.json')
+      .then(res => res.json())
+      .then(data => {
+        const latest = data.sentiment_timeline[data.sentiment_timeline.length - 1];
+        const bullish = latest.bullish_pct || 0;
+        const bearish = latest.bearish_pct || 0;
+        document.getElementById('sentiment-timeline-label').innerText = 'Timeline Loaded';
+        document.getElementById('bullish-pct').innerText = bullish.toFixed(1) + '%';
+        document.getElementById('bearish-pct').innerText = bearish.toFixed(1) + '%';
+        const sentimentBar = document.getElementById('sentiment-bar');
+        sentimentBar.style.background = `linear-gradient(to right, #00ffcc ${bullish}%, #002b3f ${bearish}%)`;
+      });
+      });
+
+    fetch('sharks.json')
+      .then(res => res.json())
+      .then(data => {
+        document.getElementById('shark-meter-label').innerText = data.trades.length + ' dark pool trades logged. Volume signals detected.';
+        document.getElementById('shark-alerts').innerHTML = data.alerts && data.alerts.length
+          ? `<div style='background: #013344; padding: 1em; border-radius: 8px; box-shadow: 0 0 8px #00ffee;'>
+              <strong>${data.alerts[0].symbol}</strong> appeared <strong>${data.alerts[0].frequency}x</strong> in dark pool trades.<br>
+              Volume: <strong>${data.alerts[0].volume.toLocaleString()}</strong><br>
+              Latest: ${data.alerts[0].last_seen} @ $${data.alerts[0].price}<br>
+              Confidence: <span style='color: #ffcc00;'>${data.alerts[0].confidence}</span>
+            </div>`
+          : 'No major shark moves yet';
+      });
+
+    fetch('trades.json')
+      .then(res => res.json())
+      .then(data => {
+        let latest = data.trades[0];
+        let strategy = `${latest.size}x $${latest.strike} ${latest.type}`;
+        let premium = `$${(latest.premium * latest.size).toFixed(2)}`;
+
+        // Format the date
+        let dateObj = new Date(latest.date);
+        let formattedDate = dateObj.toLocaleDateString('en-US', {
+          year: 'numeric',
+          month: 'short',
+          day: 'numeric'
+        });
+
+        document.getElementById('live-trades').innerText = `${formattedDate} | ${latest.symbol} | ${strategy} | ${premium}`;
+      });
+
+    fetch('suggested.json')
+      .then(res => res.json())
+      .then(data => {
+        document.getElementById('suggested-trade').innerText = data.trade || 'No alignment today. Explore other setups!';
+      });
+  </script>
 </body>
 </html>

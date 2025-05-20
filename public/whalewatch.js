@@ -1,91 +1,108 @@
 
-document.addEventListener("DOMContentLoaded", async () => {
-  const $ = (id) => document.getElementById(id);
+// WhaleWatch.js — Production Version
+// Includes: Whale Meter, Sentiment Timeline, Shark Meter, Shark Alerts, Suggested Trade, Live Trader Log
 
-  async function fetchAndRender(url, targetId, parser) {
-    try {
-      const res = await fetch(url);
-      const data = await res.json();
-      $(targetId).innerHTML = parser(data);
-    } catch (e) {
-      $(targetId).innerHTML = "<p>Failed to load data.</p>";
-    }
-  }
+document.addEventListener("DOMContentLoaded", () => {
+  // Whale Meter
+  fetch('whales.json')
+    .then(res => res.json())
+    .then(data => {
+      const calls = data.whale_trades.filter(t => t.type === 'CALL').reduce((sum, t) => sum + t.premium, 0);
+      const puts = data.whale_trades.filter(t => t.type === 'PUT').reduce((sum, t) => sum + t.premium, 0);
+      const total = calls + puts;
+      const sentiment = calls === puts ? 'Mixed' : calls > puts ? 'Bullish' : 'Bearish';
+      const updated = new Date(data.latest_update).toLocaleString();
 
-  function formatTimestamp(ts) {
-    return new Date(ts).toLocaleString();
-  }
+      const meter = document.getElementById('whale-meter-bar');
+      const sentimentText = document.getElementById('whale-sentiment');
+      const totalText = document.getElementById('whale-premium-total');
+      const updateText = document.getElementById('whale-last-updated');
 
-  function whaleMeter(data) {
-    const calls = data.whale_trades.filter(t => t.type === 'CALL').reduce((sum, t) => sum + t.premium, 0);
-    const puts = data.whale_trades.filter(t => t.type === 'PUT').reduce((sum, t) => sum + t.premium, 0);
-    const total = calls + puts;
-    const greenWidth = Math.round((calls / total) * 100);
-    const redWidth = 100 - greenWidth;
-    const sentiment = greenWidth > 60 ? 'Bullish' : redWidth > 60 ? 'Bearish' : 'Mixed';
-    return \`
-      <h2>🐳 Whale Meter</h2>
-      <div style="display: flex; height: 20px; border-radius: 10px; overflow: hidden; margin-bottom: 1em;">
-        <div style="background-color: green; width: \${greenWidth}%"></div>
-        <div style="background-color: red; width: \${redWidth}%"></div>
-      </div>
-      <p>Whale Sentiment: <strong>\${sentiment}</strong></p>
-      <p>Total Premium Traded: \$\${total.toLocaleString()}</p>
-      <p class="timestamp">Last updated: \${formatTimestamp(data.latest_update)}</p>
-      <p><strong>What does this mean?</strong><br/>
-        The Whale Meter shows where the biggest option trades are flowing.<br/>
-        🟢 Green = Whales buying CALLS (bullish bets)<br/>
-        🔴 Red = Whales buying PUTS (bearish bets)<br/>
-        🎨 A split bar means whales are divided — expect volatility or a turning point.
-      </p>
-    \`;
-  }
+      meter.style.background = total === 0
+        ? 'gray'
+        : `linear-gradient(to right, green ${calls / total * 100}%, red ${puts / total * 100}%)`;
+      sentimentText.innerText = `Whale Sentiment: ${sentiment}`;
+      totalText.innerText = `Total Premium Traded: $${total.toLocaleString()}`;
+      updateText.innerText = `Last updated: ${updated}`;
+    });
 
-  function sentimentTimeline(data) {
-    return \`
-      <h2>📈 Sentiment Timeline</h2>
-      <p class="timestamp">Last updated: \${formatTimestamp(data.latest_update)}</p>
-      <p>[Timeline chart will be rendered here]</p>
-    \`;
-  }
+  // Sentiment Timeline
+  fetch('sentiment.json')
+    .then(res => res.json())
+    .then(data => {
+      const latest = data.sentiment_timeline.at(-1);
+      const bar = document.getElementById('sentiment-bar');
+      const label = document.getElementById('sentiment-text');
+      bar.style.background = `linear-gradient(to right, #00ffcc ${latest.bullish_pct}%, #002b3f ${latest.bearish_pct}%)`;
+      label.innerHTML = `🐂 Bullish: ${latest.bullish_pct}% | 🐻 Bearish: ${latest.bearish_pct}%`;
+    });
 
-  function sharkMeter(data) {
-    return \`
-      <h2>🦈 Shark Meter</h2>
-      <p class="timestamp">Last updated: \${formatTimestamp(data.latest_update)}</p>
-      <p>[Dark pool volume visual goes here]</p>
-    \`;
-  }
+  // Shark Meter
+  fetch('sharks.json')
+    .then(res => res.json())
+    .then(data => {
+      const container = document.getElementById('shark-meter');
+      container.innerHTML = '';
+      const sorted = Object.entries(data).sort((a, b) => b[1].total_volume - a[1].total_volume);
+      sorted.slice(0, 5).forEach(([symbol, info]) => {
+        const div = document.createElement('div');
+        div.innerHTML = `🦈 ${symbol}: ${info.total_volume.toLocaleString()} shares @ $${info.average_price}`;
+        container.appendChild(div);
+      });
+    });
 
-  function sharkAlerts(data) {
-    return \`
-      <h2>🚨 Shark Alerts</h2>
-      <p class="timestamp">Last updated: \${formatTimestamp(data.latest_update)}</p>
-      <p>[Alerts based on dark pool anomaly logic]</p>
-    \`;
-  }
+  // Shark Alerts
+  fetch('sharks.json')
+    .then(res => res.json())
+    .then(data => {
+      const alerts = document.getElementById('shark-alerts');
+      alerts.innerHTML = '';
+      const items = Object.entries(data).filter(([_, d]) => d.confidence !== 'Low');
+      items.sort((a, b) => b[1].total_volume - a[1].total_volume);
+      items.forEach(([symbol, info]) => {
+        const div = document.createElement('div');
+        div.innerHTML = `🔔 ${symbol} — ${info.total_volume.toLocaleString()} shares @ $${info.average_price} — Confidence: ${info.confidence}`;
+        alerts.appendChild(div);
+      });
+      if (!items.length) {
+        alerts.innerHTML = 'No high-confidence shark alerts found today.';
+      } else {
+        const explanation = document.createElement('div');
+        explanation.innerHTML = `<strong>Confidence:</strong> High = repeat large trades, Medium = volume spike, Low = uncertain. Use caution.`;
+        alerts.appendChild(explanation);
+      }
+    });
 
-  function suggestedTrade(data) {
-    return \`
-      <h2>📊 Suggested Trade Based on Whale + Shark Signals</h2>
-      <p class="timestamp">Last updated: \${formatTimestamp(data.latest_update)}</p>
-      <p>[Example: Consider selling PUTS on TSLA if whales and sharks show accumulation]</p>
-    \`;
-  }
+  // Suggested Trade
+  fetch('suggested.json')
+    .then(res => res.json())
+    .then(data => {
+      const block = document.getElementById('suggested-trade');
+      if (data.symbol && data.strategy) {
+        block.innerHTML = `Try selling a ${data.strategy.toUpperCase()} on ${data.symbol}. Both whales and sharks are circling.`;
+      } else {
+        block.innerHTML = 'No high-confidence overlaps found today. Explore the data for opportunities.';
+      }
+    });
 
-  function liveTraderLog(data) {
-    return \`
-      <h2>📘 Live Trader Log</h2>
-      <p class="timestamp">Last updated: \${formatTimestamp(data.latest_update)}</p>
-      <p>Total Premium Today: \$\${data.total_premium.toLocaleString()}<br/>
-         Trade Types: \${data.calls} CALLS / \${data.puts} PUTS</p>
-    \`;
-  }
+  // Live Trader Log
+  fetch('trades.json')
+    .then(res => res.json())
+    .then(data => {
+      const latest = data.trades.at(-1);
+      const block = document.getElementById('live-trades');
+      if (!latest) return;
+      const total = (latest.premium * latest.size).toFixed(2);
+      const tradeLine = `${latest.date} | HIDDEN | ${latest.size}× $${latest.strike} ${latest.type} | $${total}`;
+      block.innerHTML = `
+        <strong>${tradeLine}</strong><br>
+        Symbol hidden — upgrade for full trade details.
+      `;
+    });
 
-  await fetchAndRender("whales.json", "whale-meter", whaleMeter);
-  await fetchAndRender("sentiment.json", "sentiment-timeline", sentimentTimeline);
-  await fetchAndRender("sharks.json", "shark-meter", sharkMeter);
-  await fetchAndRender("sharks.json", "shark-alerts", sharkAlerts);
-  await fetchAndRender("suggested.json", "suggested-trade", suggestedTrade);
-  await fetchAndRender("trades.json", "live-trader-log", liveTraderLog);
+  // WhaleBot toggle
+  document.getElementById('whalebot-icon').addEventListener('click', () => {
+    const panel = document.getElementById('whalebotPanel');
+    panel.style.display = panel.style.display === 'block' ? 'none' : 'block';
+  });
 });
