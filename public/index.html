@@ -4,6 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>WhaleWatch.Trade</title>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Segoe+UI&display=swap" />
   <style>
     body {
       font-family: 'Segoe UI', sans-serif;
@@ -25,86 +26,117 @@
       text-decoration: none;
       font-weight: bold;
     }
+    .hero {
+      text-align: center;
+      padding: 3em 1em 2em;
+      background-color: #002b3f;
+    }
+    .hero h1 {
+      font-size: 2.5em;
+      color: #00ffee;
+      margin: 0.5em 0 0 0;
+    }
+    .hero p {
+      color: #a0d8ff;
+      font-size: 1.2em;
+    }
+    .emoji-logo {
+      background-color: black;
+      border-radius: 50%;
+      width: 100px;
+      height: 100px;
+      margin: 0 auto;
+      box-shadow: 0 0 20px #00ffee;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 3em;
+    }
+    .whalebot {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      background-color: black;
+      border-radius: 50%;
+      width: 60px;
+      height: 60px;
+      font-size: 2em;
+      box-shadow: 0 0 12px #00ffee;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      cursor: pointer;
+      z-index: 1000;
+    }
+    .whalebot-panel {
+      display: none;
+      position: fixed;
+      bottom: 100px;
+      right: 20px;
+      background: #002b3f;
+      padding: 1em;
+      border: 2px solid #00ffee;
+      border-radius: 10px;
+      width: 260px;
+      box-shadow: 0 0 15px #00ffee;
+      z-index: 999;
+    }
     .section {
-      background: #012634;
-      padding: 1.5em;
-      margin: 1em;
+      padding: 2em 1em;
+      max-width: 1000px;
+      margin: auto;
+    }
+    .card {
+      background-color: #002b3f;
       border-radius: 12px;
+      padding: 1.5em;
+      margin-bottom: 2em;
+      box-shadow: 0 0 10px #003c5c;
     }
-    .section h2 {
-      margin-top: 0;
-    }
-    .bar {
-      height: 12px;
-      border-radius: 8px;
-      background: linear-gradient(to right, #00f2ff 85%, #ff66cc 15%);
-    }
-    .timestamp {
+    footer {
+      text-align: center;
+      padding: 1em;
       font-size: 0.9em;
-      color: #cccccc;
-      margin-top: 0.5em;
-    }
-    .blurred {
-      filter: blur(4px);
-      user-select: none;
+      color: #aaa;
     }
   </style>
 </head>
 <body>
   <nav>
-    <a href="/">Home</a>
-    <a href="/learn.html">Learn</a>
-    <a href="/simulate.html">Simulator</a>
-    <a href="/whisper.html">Whispers</a>
+    <a href="#">Home</a>
+    <a href="simulate.html">Simulator</a>
+    <a href="learn.html">Learn</a>
+    <a href="harvesting.html">Premium Harvesting</a>
+    <a href="whisper.html">Whispers</a>
   </nav>
 
-  <div class="section">
-    <h2>💨 Whale Meter</h2>
-    <div id="whale-meter" class="bar"></div>
-    <div class="timestamp" id="whale-timestamp"></div>
+  <div class="hero">
+    <div class="emoji-logo">🐳</div>
+    <h1>WhaleWatch.Trade</h1>
+    <p>We track the whales so you can harvest the premium.</p>
   </div>
 
-  <div class="section">
-    <h2>📈 Top 10 Whale Symbols by Premium</h2>
-    <ul id="whale-top-symbols"></ul>
+  <div class="section card"><h2>💨 Whale Meter</h2><div id="whale-meter">Loading...</div></div>
+  <div class="section card"><h2>📈 Top 10 Whale Symbols by Premium</h2><div id="top-whales">Loading whale trades...</div></div>
+  <div class="section card"><h2>🌐 Sentiment Timeline</h2><div id="sentiment-timeline">Loading...</div></div>
+  <div class="section card"><h2>🦈 Shark Meter</h2><div id="shark-meter">Loading dark pool trades...</div></div>
+  <div class="section card"><h2>⚡ Shark Alerts</h2><div id="shark-alerts">Scanning for hidden accumulation...</div></div>
+  <div class="section card"><h2>🕵️ Suggested Trade Based on Whale + Shark Signals</h2><div id="suggested-trade">Calculating best opportunity...</div></div>
+  <div class="section card"><h2>📃 Live Trader Log</h2><div id="live-trades">Loading latest trade...</div></div>
+
+  <div class="whalebot" onclick="toggleWhaleBot()">🐳</div>
+  <div class="whalebot-panel" id="whalebotPanel">
+    <h3>🧠 WhaleBot</h3>
+    <ul>
+      <li>Covered Calls</li>
+      <li>Put Selling</li>
+      <li>Whale Trades</li>
+      <li>Premium Harvesting</li>
+    </ul>
+    <small>Ask me anything about trading. (Coming soon!)</small>
   </div>
 
-  <div class="section">
-    <h2>🌐 Sentiment Timeline</h2>
-    <div id="sentiment-bar" class="bar"></div>
-    <div class="timestamp" id="sentiment-timestamp"></div>
-  </div>
-
-  <div class="section">
-    <h2>🦦 Shark Meter</h2>
-    <ul id="shark-meter"></ul>
-    <div class="timestamp" id="shark-timestamp"></div>
-  </div>
-
-  <div class="section">
-    <h2>🔍 Shark Alerts</h2>
-    <div id="shark-alerts"></div>
-  </div>
-
-  <div class="section">
-    <h2>🧠 Suggested Trade Based on Whale + Shark Signals</h2>
-    <div id="suggested-trade"></div>
-    <div class="timestamp" id="suggested-timestamp"></div>
-  </div>
-
-  <div class="section">
-    <h2>📄 Live Trader Log</h2>
-    <div id="live-log"></div>
-    <div class="timestamp" id="log-timestamp"></div>
-  </div>
-
-  <div class="section">
-    <h2>🏋️ Weekly Premium Collected</h2>
-    <canvas id="premiumChart" style="max-height: 300px;"></canvas>
-    <div class="timestamp" id="weekly-timestamp"></div>
-  </div>
-
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <footer>Last Updated: 2025-05-20 10:16 UTC</footer>
   <script src="whalewatch.js"></script>
 </body>
 </html>
