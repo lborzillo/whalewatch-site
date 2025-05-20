@@ -2,7 +2,7 @@ name: Update Sharks Hourly
 
 on:
   schedule:
-    - cron: '5 * * * *'  # Runs 5 minutes past every hour
+    - cron: '5 * * * *'  # Runs at 5 minutes past every hour
   workflow_dispatch:
 
 jobs:
@@ -26,11 +26,14 @@ jobs:
       - name: Run shark update script
         run: python sharks_tracker.py
 
-      - name: Commit and push updated sharks.json
+      - name: Configure Git
         run: |
           git config user.name "whalewatch-bot"
           git config user.email "actions@github.com"
-          git pull origin main --rebase || echo "No remote changes to rebase"
+
+      - name: Commit and push updated sharks.json
+        run: |
           git add public/sharks.json
           git commit -m "🦈 Update sharks.json (hourly sync)" || echo "No changes to commit"
-          git push --force
+          git pull origin main --rebase || echo "No remote changes to rebase"
+          git push origin main
