@@ -1,15 +1,16 @@
-name: Update Sharks Hourly
+name: Update Whales Hourly
+
 on:
   schedule:
-    - cron: '5 * * * *'
+    - cron: '0 * * * *'  # Every hour on the hour
   workflow_dispatch:
 
 jobs:
-  update:
+  update-whales:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout repository
+      - name: Checkout repo
         uses: actions/checkout@v3
         with:
           fetch-depth: 0
@@ -17,20 +18,28 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v4
         with:
-          python-version: '3.10'
+          python-version: 3.x
 
       - name: Install dependencies
-        run: pip install pandas
+        run: pip install yfinance pandas
 
-      - name: Run shark update script
-        run: python sharks_tracker.py
+      - name: Run whale tracker
+        run: python whale_tracker.py
 
-      - name: Commit and push updated sharks.json
+      - name: Configure Git
         run: |
-          git config user.name "whalewatch-bot"
-          git config user.email "actions@github.com"
-          git fetch origin main
-          git reset --hard origin/main
-          git add public/sharks.json
-          git commit -m "🦈 Update sharks.json (hourly sync)" || echo "No changes to commit"
-          git push origin main
+          git config --global user.email "github-actions@github.com"
+          git config --global user.name "GitHub Actions"
+
+      - name: Stash and pull latest changes
+        run: |
+          git config pull.rebase false
+          git stash --include-untracked || true
+          git pull origin main
+          git stash pop || true
+
+      - name: Commit and push if changed
+        run: |
+          git add public/whales.json
+          git diff --quiet && echo "No changes to commit" || git commit -m "Auto-update whales.json"
+          git push
