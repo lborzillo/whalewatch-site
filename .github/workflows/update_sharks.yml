@@ -1,12 +1,12 @@
-name: Update Whales Hourly
+name: Update Sharks Hourly
 
 on:
   schedule:
-    - cron: '0 * * * *'  # Every hour on the hour
+    - cron: '5 * * * *'  # Every hour at minute 5 (staggered)
   workflow_dispatch:
 
 jobs:
-  update-whales:
+  update-sharks:
     runs-on: ubuntu-latest
 
     steps:
@@ -21,10 +21,10 @@ jobs:
           python-version: 3.x
 
       - name: Install dependencies
-        run: pip install yfinance pandas
+        run: pip install pandas
 
-      - name: Run whale tracker
-        run: python whale_tracker.py
+      - name: Run shark tracker
+        run: python sharks_tracker.py
 
       - name: Configure Git
         run: |
@@ -35,11 +35,11 @@ jobs:
         run: |
           git config pull.rebase false
           git stash --include-untracked || true
-          git pull origin main
+          git pull origin main || true
           git stash pop || true
 
       - name: Commit and push if changed
         run: |
-          git add public/whales.json
-          git diff --quiet && echo "No changes to commit" || git commit -m "Auto-update whales.json"
+          git add public/sharks.json
+          git diff --quiet && echo "No changes to commit" || git commit -m "Auto-update sharks.json"
           git push
